@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>진우선 | 포트폴리오</title>
+  <style>
+    /* ── 기본 설정 ── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:  #4f46e5;
+      --primary2: #7c3aed;
+      --text:     #1e293b;
+      --sub:      #64748b;
+      --bg:       #ffffff;
+      --bg2:      #f8fafc;
+      --border:   #e2e8f0;
+      --card:     #ffffff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── 네비게이션 ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--sub);
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--primary); }
+
+    /* ── 공통 섹션 ── */
+    section { padding: 100px 5%; }
+    .section-label {
+      display: inline-block;
+      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .section-sub {
+      color: var(--sub);
+      font-size: 1rem;
+      max-width: 520px;
+      margin-bottom: 48px;
+    }
+
+    /* ── 1. HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 60px;
+      background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fff 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(79,70,229,0.08), transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-content { max-width: 680px; position: relative; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      color: var(--sub);
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.3); }
+    }
+    .hero-name {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 900;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero-name .highlight {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--sub);
+      margin-bottom: 36px;
+      max-width: 520px;
+    }
+    .hero-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 13px 28px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 16px rgba(79,70,229,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.4); }
+    .btn-outline {
+      padding: 13px 28px;
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover { background: var(--primary); color: #fff; }
+
+    /* ── 2. ABOUT ── */
+    #about { background: var(--bg2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 960px;
+    }
+    .about-avatar {
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 320px;
+      background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 100px;
+      box-shadow: 0 8px 32px rgba(79,70,229,0.15);
+    }
+    .about-text p {
+      color: var(--sub);
+      margin-bottom: 16px;
+      font-size: 1rem;
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .stat-box {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-num { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+    .stat-lbl { font-size: 11px; color: var(--sub); margin-top: 2px; }
+
+    /* ── 3. SKILLS ── */
+    #skills { background: var(--bg); }
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+    }
+    .skill-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+    .skill-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(79,70,229,0.12);
+      border-color: var(--primary);
+    }
+    .skill-icon { font-size: 28px; margin-bottom: 10px; }
+    .skill-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; }
+    .skill-bar {
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .skill-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      border-radius: 3px;
+      width: 0;
+      transition: width 1.2s ease;
+    }
+    .skill-level { font-size: 11px; color: var(--sub); margin-top: 5px; }
+
+    /* ── 4. PROJECTS ── */
+    #projects { background: var(--bg2); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+    }
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.1);
+    }
+    .project-thumb {
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 64px;
+    }
+    .project-body { padding: 20px; }
+    .project-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .tag {
+      background: #ede9fe;
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .project-name { font-weight: 800; font-size: 1rem; margin-bottom: 6px; }
+    .project-desc { color: var(--sub); font-size: 0.85rem; margin-bottom: 16px; }
+    .project-actions { display: flex; gap: 10px; align-items: center; }
+    .project-link {
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 8px; }
+    .btn-detail {
+      padding: 7px 14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 8px rgba(79,70,229,0.25);
+    }
+    .btn-detail:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,0.4); }
+
+    /* ── 5. CONTACT ── */
+    #contact { background: var(--bg); }
+    .contact-box {
+      max-width: 600px;
+      background: linear-gradient(135deg, #f0f4ff, #faf5ff);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 48px;
+      text-align: center;
+    }
+    .contact-box h3 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; }
+    .contact-box p  { color: var(--sub); margin-bottom: 28px; }
+    .contact-links  { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+    .contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .contact-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* ── 푸터 ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--sub);
+      font-size: 13px;
+    }
+
+    /* ── 스크롤 등장 애니메이션 ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── 프로젝트 상세 모달 ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 24px;
+      max-width: 720px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(30px) scale(0.97);
+      transition: transform 0.3s ease;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.25);
+    }
+    .modal-overlay.open .modal {
+      transform: translateY(0) scale(1);
+    }
+    .modal-header {
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      border-radius: 24px 24px 0 0;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .modal-close:hover { background: #fff; transform: scale(1.1); }
+    .modal-body { padding: 32px; }
+    .modal-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .modal-tag {
+      background: #ede9fe;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+    .modal-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 10px; }
+    .modal-desc { color: var(--sub); font-size: 0.95rem; margin-bottom: 28px; line-height: 1.7; }
+    .modal-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--sub);
+      margin-bottom: 12px;
+    }
+    .modal-features {
+      list-style: none;
+      margin-bottom: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .modal-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .modal-features li::before {
+      content: '✓';
+      color: var(--primary);
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .modal-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .modal-btn-primary {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(79,70,229,0.3);
+    }
+    .modal-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.4); }
+    .modal-btn-outline {
+      padding: 12px 24px;
+      background: transparent;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .modal-btn-outline:hover { background: var(--primary); color: #fff; }
+    .coming-soon-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid #fde68a;
+    }
+
+    /* ── 반응형 ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .about-grid { grid-template-columns: 1fr; }
+      .about-avatar { max-width: 200px; font-size: 64px; }
+      section { padding: 70px 6%; }
+      .contact-box { padding: 28px 20px; }
+      .modal-body { padding: 20px; }
+      .modal-header { height: 160px; font-size: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── 네비게이션 ── -->
+<nav>
+  <div class="nav-logo">진우선.dev</div>
+  <ul class="nav-links">
+    <li><a href="#about">소개</a></li>
+    <li><a href="#skills">기술</a></li>
+    <li><a href="#projects">프로젝트</a></li>
+    <li><a href="#contact">연락처</a></li>
+  </ul>
+</nav>
+
+<!-- ── 1. HERO ── -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      현재 새로운 기회를 찾고 있습니다
+    </div>
+    <h1 class="hero-name">
+      안녕하세요,<br>
+      저는 <span class="highlight">진우선</span>입니다
+    </h1>
+    <p class="hero-desc">
+      안녕하세요 웹/앱 개발자가 꿈인 진우선입니다. 반갑습니다.<br>
+      서울특별시에 살고 있어요. 반가워요! 🚀
+    </p>
+    <div class="hero-buttons">
+      <a href="#projects" class="btn-primary">프로젝트 보기 →</a>
+      <a href="#contact" class="btn-outline">연락하기</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── 2. ABOUT ── -->
+<section id="about">
+  <div class="about-grid fade-up">
+    <div class="about-avatar">👨‍💻</div>
+    <div class="about-text">
+      <div class="section-label">About Me</div>
+      <h2 class="section-title">저에 대해</h2>
+      <p>
+        안녕하세요 웹/앱 개발자가 꿈인 진우선입니다. 반갑습니다.
+        서울특별시에 살고 있으며, 코딩의 세계에 첫발을 내딛고 있습니다.
+      </p>
+      <p>
+        현재 JavaScript를 중심으로 웹 개발을 배우고 있으며,
+        AI와 함께 바이브 코딩으로 계산기, 날씨 지도 등 다양한 프로젝트를
+        직접 만들어가며 성장하고 있습니다.
+      </p>
+      <div class="about-stats">
+        <div class="stat-box">
+          <div class="stat-num">3+</div>
+          <div class="stat-lbl">완성한 프로젝트</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">2025</div>
+          <div class="stat-lbl">개발 시작</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">∞</div>
+          <div class="stat-lbl">배울 것들</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3. SKILLS ── -->
+<section id="skills">
+  <div class="section-label">Skills</div>
+  <h2 class="section-title">기술 스택</h2>
+  <p class="section-sub">현재 배우고 있거나 사용할 수 있는 기술들입니다.</p>
+  <div class="skills-grid">
+    <div class="skill-card fade-up">
+      <div class="skill-icon">🌐</div>
+      <div class="skill-name">HTML / CSS</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="25"></div></div>
+      <div class="skill-level">입문 중</div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">⚡</div>
+      <div class="skill-name">JavaScript</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="20"></div></div>
+      <div class="skill-level">배우는 중</div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">🗺️</div>
+      <div class="skill-name">Leaflet.js</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="15"></div></div>
+      <div class="skill-level">첫 프로젝트 경험</div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">🔌</div>
+      <div class="skill-name">REST API</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="15"></div></div>
+      <div class="skill-level">개념 이해 단계</div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">🤖</div>
+      <div class="skill-name">AI 협업</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="40"></div></div>
+      <div class="skill-level">바이브 코딩 실践</div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">📱</div>
+      <div class="skill-name">반응형 디자인</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="15"></div></div>
+      <div class="skill-level">입문 단계</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 4. PROJECTS ── -->
+<section id="projects">
+  <div class="section-label">Projects</div>
+  <h2 class="section-title">프로젝트</h2>
+  <p class="section-sub">직접 만들어본 프로젝트들입니다.</p>
+  <div class="projects-grid">
+
+    <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#f0fdf4,#dcfce7)">🧮</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <div class="project-name">웹 계산기</div>
+        <div class="project-desc">사칙연산, 키보드 입력, 연산자 오류 방지 기능이 포함된 계산기 앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('calculator')">자세히 보기</button>
+          <a class="project-link" href="../js_calculator/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#eff6ff,#dbeafe)">🌍</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">Leaflet.js</span>
+          <span class="tag">API</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <div class="project-name">날씨 지도 앱</div>
+        <div class="project-desc">대한민국 30개 도시와 미국 51개 주 실시간 날씨를 지도 위에 표시</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('weather')">자세히 보기</button>
+          <a class="project-link" href="../js_weather/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">준비 중</span>
+        </div>
+        <div class="project-name">다음 프로젝트</div>
+        <div class="project-desc">현재 새로운 프로젝트를 기획 중입니다. 곧 공개될 예정이에요!</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('next')">미리보기</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 5. CONTACT ── -->
+<section id="contact">
+  <div class="contact-box fade-up">
+    <div class="section-label">Contact</div>
+    <h3>함께 만들어요! 👋</h3>
+    <p>새로운 기회나 협업 제안은 언제든지 환영합니다.<br>아래 채널로 연락해 주세요.</p>
+    <div class="contact-links">
+      <a class="contact-btn" href="mailto:gamsa1106@hotmail.com">
+        📧 이메일
+      </a>
+      <a class="contact-btn" href="https://github.com" target="_blank">
+        💻 GitHub
+      </a>
+      <a class="contact-btn" href="https://linkedin.com" target="_blank">
+        💼 LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── 푸터 ── -->
+<footer>
+  <p>© 2025 진우선 · JavaScript로 직접 만든 포트폴리오 🛠️</p>
+</footer>
+
+<!-- ── 프로젝트 상세 모달 ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header" id="modalHeader">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <span id="modalEmoji"></span>
+    </div>
+    <div class="modal-body">
+      <div class="modal-tags" id="modalTags"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-desc" id="modalDesc"></div>
+      <div class="modal-section-title">주요 기능</div>
+      <ul class="modal-features" id="modalFeatures"></ul>
+      <div class="modal-btns" id="modalBtns"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── 프로젝트 데이터 ──
+  const projects = {
+    calculator: {
+      emoji: '🧮',
+      bg: 'linear-gradient(135deg,#f0fdf4,#dcfce7)',
+      tags: ['HTML', 'CSS', 'JavaScript'],
+      title: '웹 계산기',
+      desc: '처음으로 완성한 웹 프로젝트입니다. 단순한 계산기처럼 보이지만 키보드 입력 지원, 연산자 연속 입력 방지, 소수점 중복 방지 등 사용성을 고려한 여러 기능을 직접 구현했습니다.',
+      features: [
+        '사칙연산 (더하기, 빼기, 곱하기, 나누기) 지원',
+        '키보드 입력 완벽 지원 (숫자, Enter, Backspace)',
+        '연산자 연속 입력 방지 로직',
+        '소수점 중복 방지',
+        '나누기 0 오류 처리',
+        '반응형 디자인 (모바일 화면 지원)',
+      ],
+      liveUrl: '../js_calculator/index.html',
+      liveLabel: '🚀 실행해보기',
+    },
+    weather: {
+      emoji: '🌍',
+      bg: 'linear-gradient(135deg,#eff6ff,#dbeafe)',
+      tags: ['Leaflet.js', 'OpenWeather API', 'JavaScript', 'REST API'],
+      title: '날씨 지도 앱',
+      desc: '지도 위에 실시간 날씨 정보를 표시하는 앱입니다. OpenWeatherMap API를 처음으로 사용한 프로젝트로, 외부 API 연동과 비동기 처리(fetch, async/await)를 배웠습니다. 대한민국 30개 도시와 미국 51개 주요 도시의 날씨를 한눈에 볼 수 있습니다.',
+      features: [
+        '대한민국 30개 주요 도시 실시간 날씨 표시',
+        '미국 51개 주 주요 도시 날씨 표시',
+        'Leaflet.js 오픈소스 지도 라이브러리 활용',
+        'OpenWeatherMap REST API 연동',
+        '날씨 아이콘 및 온도 마커 표시',
+        '한국/미국 지도 탭 전환 기능',
+      ],
+      liveUrl: '../js_weather/index.html',
+      liveLabel: '🚀 실행해보기',
+    },
+    next: {
+      emoji: '🚀',
+      bg: 'linear-gradient(135deg,#fdf4ff,#fae8ff)',
+      tags: ['기획 중'],
+      title: '다음 프로젝트',
+      desc: '현재 새로운 아이디어를 기획하고 있습니다. 지금까지 배운 HTML, CSS, JavaScript와 API 활용 경험을 바탕으로 더 완성도 높은 프로젝트를 만들 예정입니다.',
+      features: [
+        '새로운 기술 스택 도전 예정',
+        '사용자 경험(UX) 중심 설계',
+        '실용적인 문제 해결에 초점',
+        '곧 공개될 예정입니다!',
+      ],
+      comingSoon: true,
+    },
+  };
+
+  function openModal(key) {
+    const p = projects[key];
+    const overlay = document.getElementById('modalOverlay');
+    document.getElementById('modalEmoji').textContent = p.emoji;
+    document.getElementById('modalHeader').style.background = p.bg;
+    document.getElementById('modalTitle').textContent = p.title;
+    document.getElementById('modalDesc').textContent = p.desc;
+
+    const tagsEl = document.getElementById('modalTags');
+    tagsEl.innerHTML = p.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+
+    const featuresEl = document.getElementById('modalFeatures');
+    featuresEl.innerHTML = p.features.map(f => `<li>${f}</li>`).join('');
+
+    const btnsEl = document.getElementById('modalBtns');
+    if (p.comingSoon) {
+      btnsEl.innerHTML = `<span class="coming-soon-badge">⏳ 준비 중입니다</span>`;
+    } else {
+      btnsEl.innerHTML = `
+        <a href="${p.liveUrl}" class="modal-btn-primary">${p.liveLabel}</a>
+        <a href="https://github.com" target="_blank" class="modal-btn-outline">💻 GitHub</a>
+      `;
+    }
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── 스크롤 등장 애니메이션 ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+          const fill = entry.target.querySelector('.skill-fill');
+          if (fill) fill.style.width = fill.dataset.width + '%';
+        }, i * 100);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── 네비게이션 활성 링크 표시 ──
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(sec => {
+      if (window.scrollY >= sec.offsetTop - 80) current = sec.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--primary)' : '';
+    });
+  });
+</script>
+</body>
+</html>
