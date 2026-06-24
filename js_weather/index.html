@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>날씨 지도 – 한국 & 미국</title>
+
+  <!-- Leaflet.js (지도 라이브러리) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0d0d2b;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── 헤더 ── */
+    .header {
+      background: rgba(8, 8, 32, 0.97);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      flex-shrink: 0;
+      z-index: 1000;
+    }
+    .header h1 { font-size: 1.1rem; white-space: nowrap; }
+
+    .tabs { display: flex; gap: 8px; }
+    .tab-btn {
+      padding: 7px 18px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: #8892b0;
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: #fff; border-color: rgba(255,255,255,0.4); }
+    .tab-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+
+    .api-section {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .api-section label { font-size: 11px; color: #8892b0; white-space: nowrap; }
+    .api-section input {
+      padding: 6px 10px;
+      border-radius: 7px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      font-size: 11px;
+      width: 210px;
+    }
+    .api-section input::placeholder { color: #555; }
+    .btn-apply  { padding: 6px 12px; border-radius: 7px; border: none; background: #e94560; color: #fff; cursor: pointer; font-size: 11px; }
+    .btn-reset  { padding: 6px 10px; border-radius: 7px; border: 1px solid #555; background: transparent; color: #8892b0; cursor: pointer; font-size: 11px; }
+    .btn-apply:hover { background: #c0392b; }
+    .btn-reset:hover { color: #fff; }
+
+    .demo-badge {
+      background: #f39c12;
+      color: #000;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── 지도 ── */
+    #map { flex: 1; z-index: 1; }
+
+    /* ── 로딩 ── */
+    #loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(8, 8, 32, 0.95);
+      border: 1px solid rgba(233,69,96,0.5);
+      border-radius: 14px;
+      padding: 24px 36px;
+      z-index: 99999;
+      text-align: center;
+      display: none;
+    }
+    #loading.show { display: block; }
+    .spinner {
+      width: 34px; height: 34px;
+      border: 3px solid rgba(233,69,96,0.25);
+      border-top-color: #e94560;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { font-size: 13px; color: #8892b0; }
+
+    /* ── 범례 ── */
+    .legend {
+      position: fixed;
+      bottom: 28px;
+      left: 14px;
+      z-index: 1000;
+      background: rgba(8, 8, 32, 0.88);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 11px 14px;
+      pointer-events: none;
+    }
+    .legend h4 { font-size: 10px; color: #8892b0; margin-bottom: 7px; letter-spacing: 0.5px; }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 10px; color: #ccc; margin-bottom: 4px; }
+    .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+    /* API 안내 배너 */
+    #api-notice {
+      position: fixed;
+      bottom: 28px;
+      right: 14px;
+      z-index: 1000;
+      background: rgba(243,156,18,0.12);
+      border: 1px solid rgba(243,156,18,0.4);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: #f0c060;
+      max-width: 260px;
+      line-height: 1.5;
+      display: none;
+    }
+    #api-notice.show { display: block; }
+    #api-notice a { color: #f39c12; }
+
+    /* ── 날씨 마커 ── */
+    .weather-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+    .weather-marker:hover { transform: scale(1.2); }
+    .m-icon { font-size: 18px; line-height: 1; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.7)); }
+    .m-temp {
+      font-weight: 800;
+      font-size: 12px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-top: 2px;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.2);
+      white-space: nowrap;
+    }
+    .m-name {
+      font-size: 9px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 4px #000, 0 0 8px #000;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    /* ── Leaflet 팝업 오버라이드 ── */
+    .leaflet-popup-content-wrapper {
+      background: rgba(8, 8, 32, 0.97) !important;
+      border: 1px solid rgba(233,69,96,0.45) !important;
+      border-radius: 14px !important;
+      color: #fff !important;
+      box-shadow: 0 8px 36px rgba(0,0,0,0.65) !important;
+    }
+    .leaflet-popup-tip-container { display: none; }
+    .leaflet-popup-close-button { color: #555 !important; font-size: 18px !important; top: 8px !important; right: 10px !important; }
+
+    .p-city { font-size: 15px; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 9px; margin-bottom: 11px; }
+    .p-main { display: flex; align-items: center; gap: 12px; margin-bottom: 11px; }
+    .p-icon { font-size: 40px; line-height: 1; }
+    .p-temp { font-size: 32px; font-weight: 800; }
+    .p-cond { font-size: 12px; color: #8892b0; margin-top: 2px; }
+    .p-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .p-cell { background: rgba(255,255,255,0.05); border-radius: 8px; padding: 7px 10px; }
+    .p-label { font-size: 10px; color: #8892b0; }
+    .p-val   { font-size: 14px; font-weight: 700; margin-top: 1px; }
+    .p-demo  { font-size: 10px; color: #f39c12; margin-top: 9px; text-align: center; }
+  </style>
+</head>
+<body>
+
+<!-- ── 헤더 ── -->
+<div class="header">
+  <h1>🌍 날씨 지도</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchView('korea', this)">🇰🇷 대한민국</button>
+    <button class="tab-btn"       onclick="switchView('usa',   this)">🇺🇸 미국 51개주</button>
+  </div>
+
+  <span class="demo-badge" id="demo-badge">DEMO</span>
+
+  <div class="api-section">
+    <label>OpenWeatherMap API Key</label>
+    <input id="api-input" type="text" placeholder="여기에 API 키 붙여넣기"/>
+    <button class="btn-apply" onclick="applyKey()">적용</button>
+    <button class="btn-reset" onclick="resetKey()">초기화</button>
+  </div>
+</div>
+
+<!-- ── 지도 ── -->
+<div id="map"></div>
+
+<!-- ── 로딩 ── -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p id="loading-text">날씨 데이터 불러오는 중...</p>
+</div>
+
+<!-- ── 범례 ── -->
+<div class="legend">
+  <h4>기온 (°C)</h4>
+  <div class="legend-item"><div class="legend-dot" style="background:#81d4fa"></div>0°C 이하</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7"></div>0 – 10°C</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#81c784"></div>10 – 20°C</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#aed581"></div>20 – 25°C</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ffd54f"></div>25 – 30°C</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ff8a65"></div>30 – 35°C</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#ef5350"></div>35°C 이상</div>
+</div>
+
+<!-- ── API 안내 ── -->
+<div id="api-notice">
+  ⚠️ 현재 <b>샘플 데이터</b>입니다.<br>
+  실제 날씨를 보려면<br>
+  <a href="https://openweathermap.org/api" target="_blank">openweathermap.org</a>에서<br>
+  무료 API Key를 발급받아 입력하세요.
+</div>
+
+<script>
+// ==============================================
+// 도시 데이터 (좌표 포함)
+// ==============================================
+const koreaCities = [
+  { name:'서울',  lat:37.5665, lon:126.9780, base:28 },
+  { name:'부산',  lat:35.1796, lon:129.0756, base:26 },
+  { name:'인천',  lat:37.4563, lon:126.7052, base:25 },
+  { name:'대구',  lat:35.8714, lon:128.6014, base:30 },
+  { name:'광주',  lat:35.1595, lon:126.8526, base:27 },
+  { name:'대전',  lat:36.3504, lon:127.3845, base:28 },
+  { name:'울산',  lat:35.5384, lon:129.3114, base:26 },
+  { name:'세종',  lat:36.4800, lon:127.2890, base:27 },
+  { name:'수원',  lat:37.2636, lon:127.0286, base:27 },
+  { name:'고양',  lat:37.6584, lon:126.8320, base:26 },
+  { name:'용인',  lat:37.2411, lon:127.1776, base:26 },
+  { name:'창원',  lat:35.2281, lon:128.6811, base:25 },
+  { name:'청주',  lat:36.6424, lon:127.4890, base:28 },
+  { name:'전주',  lat:35.8242, lon:127.1480, base:28 },
+  { name:'천안',  lat:36.8151, lon:127.1139, base:27 },
+  { name:'포항',  lat:36.0190, lon:129.3435, base:26 },
+  { name:'제주',  lat:33.4996, lon:126.5312, base:25 },
+  { name:'춘천',  lat:37.8813, lon:127.7298, base:24 },
+  { name:'강릉',  lat:37.7519, lon:128.8761, base:24 },
+  { name:'원주',  lat:37.3422, lon:127.9202, base:25 },
+  { name:'경주',  lat:35.8562, lon:129.2247, base:27 },
+  { name:'진주',  lat:35.1800, lon:128.1076, base:26 },
+  { name:'목포',  lat:34.8118, lon:126.3922, base:24 },
+  { name:'여수',  lat:34.7604, lon:127.6622, base:24 },
+  { name:'순천',  lat:34.9506, lon:127.4877, base:25 },
+  { name:'안동',  lat:36.5684, lon:128.7294, base:27 },
+  { name:'속초',  lat:38.2070, lon:128.5918, base:23 },
+  { name:'평택',  lat:36.9921, lon:127.1128, base:26 },
+  { name:'광양',  lat:34.9400, lon:127.6955, base:25 },
+  { name:'통영',  lat:34.8544, lon:128.4333, base:24 },
+];
+
+const usStates = [
+  { name:'Alabama',        abbr:'AL', city:'Montgomery',    lat:32.3617, lon:-86.2792,  base:31 },
+  { name:'Alaska',         abbr:'AK', city:'Anchorage',     lat:61.2181, lon:-149.9003, base:12 },
+  { name:'Arizona',        abbr:'AZ', city:'Phoenix',       lat:33.4484, lon:-112.0740, base:40 },
+  { name:'Arkansas',       abbr:'AR', city:'Little Rock',   lat:34.7465, lon:-92.2896,  base:30 },
+  { name:'California',     abbr:'CA', city:'Los Angeles',   lat:34.0522, lon:-118.2437, base:24 },
+  { name:'Colorado',       abbr:'CO', city:'Denver',        lat:39.7392, lon:-104.9903, base:26 },
+  { name:'Connecticut',    abbr:'CT', city:'Hartford',      lat:41.7637, lon:-72.6851,  base:24 },
+  { name:'Delaware',       abbr:'DE', city:'Dover',         lat:39.1582, lon:-75.5244,  base:26 },
+  { name:'Florida',        abbr:'FL', city:'Miami',         lat:25.7617, lon:-80.1918,  base:33 },
+  { name:'Georgia',        abbr:'GA', city:'Atlanta',       lat:33.7490, lon:-84.3880,  base:30 },
+  { name:'Hawaii',         abbr:'HI', city:'Honolulu',      lat:21.3069, lon:-157.8583, base:29 },
+  { name:'Idaho',          abbr:'ID', city:'Boise',         lat:43.6150, lon:-116.2023, base:28 },
+  { name:'Illinois',       abbr:'IL', city:'Chicago',       lat:41.8781, lon:-87.6298,  base:24 },
+  { name:'Indiana',        abbr:'IN', city:'Indianapolis',  lat:39.7684, lon:-86.1581,  base:25 },
+  { name:'Iowa',           abbr:'IA', city:'Des Moines',    lat:41.5868, lon:-93.6250,  base:25 },
+  { name:'Kansas',         abbr:'KS', city:'Topeka',        lat:39.0489, lon:-95.6778,  base:28 },
+  { name:'Kentucky',       abbr:'KY', city:'Louisville',    lat:38.2527, lon:-85.7585,  base:27 },
+  { name:'Louisiana',      abbr:'LA', city:'New Orleans',   lat:29.9511, lon:-90.0715,  base:32 },
+  { name:'Maine',          abbr:'ME', city:'Portland',      lat:43.6591, lon:-70.2568,  base:20 },
+  { name:'Maryland',       abbr:'MD', city:'Baltimore',     lat:39.2904, lon:-76.6122,  base:27 },
+  { name:'Massachusetts',  abbr:'MA', city:'Boston',        lat:42.3601, lon:-71.0589,  base:22 },
+  { name:'Michigan',       abbr:'MI', city:'Detroit',       lat:42.3314, lon:-83.0458,  base:22 },
+  { name:'Minnesota',      abbr:'MN', city:'Minneapolis',   lat:44.9778, lon:-93.2650,  base:22 },
+  { name:'Mississippi',    abbr:'MS', city:'Jackson',       lat:32.2988, lon:-90.1848,  base:31 },
+  { name:'Missouri',       abbr:'MO', city:'Kansas City',   lat:39.0997, lon:-94.5786,  base:28 },
+  { name:'Montana',        abbr:'MT', city:'Helena',        lat:46.5958, lon:-112.0270, base:23 },
+  { name:'Nebraska',       abbr:'NE', city:'Omaha',         lat:41.2565, lon:-95.9345,  base:26 },
+  { name:'Nevada',         abbr:'NV', city:'Las Vegas',     lat:36.1699, lon:-115.1398, base:38 },
+  { name:'New Hampshire',  abbr:'NH', city:'Manchester',    lat:42.9956, lon:-71.4548,  base:21 },
+  { name:'New Jersey',     abbr:'NJ', city:'Newark',        lat:40.7357, lon:-74.1724,  base:25 },
+  { name:'New Mexico',     abbr:'NM', city:'Albuquerque',   lat:35.0844, lon:-106.6504, base:32 },
+  { name:'New York',       abbr:'NY', city:'New York',      lat:40.7128, lon:-74.0060,  base:24 },
+  { name:'North Carolina', abbr:'NC', city:'Charlotte',     lat:35.2271, lon:-80.8431,  base:28 },
+  { name:'North Dakota',   abbr:'ND', city:'Fargo',         lat:46.8772, lon:-96.7898,  base:22 },
+  { name:'Ohio',           abbr:'OH', city:'Columbus',      lat:39.9612, lon:-82.9988,  base:24 },
+  { name:'Oklahoma',       abbr:'OK', city:'Oklahoma City', lat:35.4676, lon:-97.5164,  base:32 },
+  { name:'Oregon',         abbr:'OR', city:'Portland',      lat:45.5051, lon:-122.6750, base:20 },
+  { name:'Pennsylvania',   abbr:'PA', city:'Philadelphia',  lat:39.9526, lon:-75.1652,  base:25 },
+  { name:'Rhode Island',   abbr:'RI', city:'Providence',    lat:41.8240, lon:-71.4128,  base:22 },
+  { name:'South Carolina', abbr:'SC', city:'Columbia',      lat:34.0007, lon:-81.0348,  base:30 },
+  { name:'South Dakota',   abbr:'SD', city:'Sioux Falls',   lat:43.5473, lon:-96.7283,  base:24 },
+  { name:'Tennessee',      abbr:'TN', city:'Nashville',     lat:36.1627, lon:-86.7816,  base:29 },
+  { name:'Texas',          abbr:'TX', city:'Houston',       lat:29.7604, lon:-95.3698,  base:34 },
+  { name:'Utah',           abbr:'UT', city:'Salt Lake City',lat:40.7608, lon:-111.8910, base:32 },
+  { name:'Vermont',        abbr:'VT', city:'Burlington',    lat:44.4759, lon:-73.2121,  base:21 },
+  { name:'Virginia',       abbr:'VA', city:'Richmond',      lat:37.5407, lon:-77.4360,  base:28 },
+  { name:'Washington',     abbr:'WA', city:'Seattle',       lat:47.6062, lon:-122.3321, base:18 },
+  { name:'West Virginia',  abbr:'WV', city:'Charleston',    lat:38.3498, lon:-81.6326,  base:25 },
+  { name:'Wisconsin',      abbr:'WI', city:'Milwaukee',     lat:43.0389, lon:-87.9065,  base:21 },
+  { name:'Wyoming',        abbr:'WY', city:'Cheyenne',      lat:41.1400, lon:-104.8202, base:22 },
+  { name:'D.C.',           abbr:'DC', city:'Washington D.C.',lat:38.9072,lon:-77.0369,  base:28 },
+];
+
+// ==============================================
+// 유틸 함수
+// ==============================================
+function tempColor(t) {
+  if (t <  0) return '#81d4fa';
+  if (t < 10) return '#4fc3f7';
+  if (t < 20) return '#81c784';
+  if (t < 25) return '#aed581';
+  if (t < 30) return '#ffd54f';
+  if (t < 35) return '#ff8a65';
+  return '#ef5350';
+}
+
+function weatherEmoji(icon) {
+  const p = (icon || '01d').slice(0, 2);
+  return {'01':'☀️','02':'⛅','03':'☁️','04':'☁️','09':'🌧️','10':'🌦️','11':'⛈️','13':'❄️','50':'🌫️'}[p] || '🌤️';
+}
+
+// 시드 난수 (데모 데이터용 – 새로고침해도 같은 값)
+function srand(s) { const x = Math.sin(s+1)*10000; return x - Math.floor(x); }
+
+const demoConds = [
+  {icon:'01d', label:'맑음',      h:[20,45], w:[1,4]  },
+  {icon:'02d', label:'구름 조금', h:[35,55], w:[2,5]  },
+  {icon:'03d', label:'흐림',      h:[55,70], w:[2,6]  },
+  {icon:'10d', label:'비',        h:[75,90], w:[3,8]  },
+  {icon:'11d', label:'천둥번개',  h:[80,95], w:[4,12] },
+  {icon:'50d', label:'안개',      h:[85,99], w:[0,2]  },
+];
+
+function demoData(key, base) {
+  let s = 0;
+  for (let i = 0; i < key.length; i++) s += key.charCodeAt(i) * (i + 1);
+  const c    = demoConds[Math.floor(srand(s)   * demoConds.length)];
+  const temp = Math.round(base + srand(s+1) * 6 - 3);
+  return {
+    icon:      c.icon,
+    label:     c.label,
+    temp,
+    feels:     temp - Math.round(srand(s+2) * 3 + 1),
+    humidity:  Math.round(srand(s+3) * (c.h[1]-c.h[0]) + c.h[0]),
+    wind:      (srand(s+4) * (c.w[1]-c.w[0]) + c.w[0]).toFixed(1),
+    vis:       Math.round(srand(s+5) * 8 + 3),
+    isDemo:    true,
+  };
+}
+
+// ==============================================
+// 지도 초기화 (CartoDB 다크 타일)
+// ==============================================
+const map = L.map('map', { zoomControl: true });
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a> © <a href="https://carto.com">CARTO</a>',
+  subdomains: 'abcd',
+  maxZoom: 18,
+}).addTo(map);
+
+let layer   = L.layerGroup().addTo(map);
+let curView = 'korea';
+
+const VIEWS = {
+  korea: { center: [36.5, 127.8], zoom: 7  },
+  usa:   { center: [39.5, -98.4], zoom: 4  },
+};
+
+// ==============================================
+// API Key 관리
+// ==============================================
+let apiKey = localStorage.getItem('owm_key') || '';
+if (apiKey) {
+  document.getElementById('api-input').value = apiKey;
+  document.getElementById('demo-badge').style.display = 'none';
+}
+
+function applyKey() {
+  const v = document.getElementById('api-input').value.trim();
+  if (!v) { alert('API 키를 입력해주세요.'); return; }
+  apiKey = v;
+  localStorage.setItem('owm_key', apiKey);
+  document.getElementById('demo-badge').style.display = 'none';
+  document.getElementById('api-notice').classList.remove('show');
+  loadWeather();
+}
+
+function resetKey() {
+  apiKey = '';
+  localStorage.removeItem('owm_key');
+  document.getElementById('api-input').value = '';
+  document.getElementById('demo-badge').style.display = '';
+  loadWeather();
+}
+
+// ==============================================
+// 실제 API 호출
+// ==============================================
+async function fetchOne(lat, lon) {
+  const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=kr`;
+  const res  = await fetch(url);
+  if (!res.ok) throw new Error(res.status);
+  const d = await res.json();
+  return {
+    icon:     d.weather[0].icon,
+    label:    d.weather[0].description,
+    temp:     Math.round(d.main.temp),
+    feels:    Math.round(d.main.feels_like),
+    humidity: d.main.humidity,
+    wind:     d.wind.speed.toFixed(1),
+    vis:      Math.round((d.visibility || 10000) / 1000),
+    isDemo:   false,
+  };
+}
+
+// ==============================================
+// 마커 생성
+// ==============================================
+function makeMarker(lat, lon, label, w) {
+  const color = tempColor(w.temp);
+  const emoji = weatherEmoji(w.icon);
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div class="weather-marker">
+             <div class="m-icon">${emoji}</div>
+             <div class="m-temp" style="background:${color}">${w.temp}°</div>
+             <div class="m-name">${label}</div>
+           </div>`,
+    iconSize:   [70, 60],
+    iconAnchor: [35, 30],
+    popupAnchor:[0, -34],
+  });
+
+  const demoNote = w.isDemo
+    ? `<div class="p-demo">⚠️ 샘플 데이터입니다 (API 키 필요)</div>` : '';
+
+  const popup = `
+    <div class="p-city">${label}</div>
+    <div class="p-main">
+      <div class="p-icon">${emoji}</div>
+      <div>
+        <div class="p-temp">${w.temp}°C</div>
+        <div class="p-cond">${w.label}</div>
+      </div>
+    </div>
+    <div class="p-grid">
+      <div class="p-cell"><div class="p-label">체감온도</div><div class="p-val">${w.feels}°C</div></div>
+      <div class="p-cell"><div class="p-label">습도</div><div class="p-val">${w.humidity}%</div></div>
+      <div class="p-cell"><div class="p-label">바람</div><div class="p-val">${w.wind} m/s</div></div>
+      <div class="p-cell"><div class="p-label">가시거리</div><div class="p-val">${w.vis} km</div></div>
+    </div>
+    ${demoNote}`;
+
+  return L.marker([lat, lon], { icon }).bindPopup(popup, { maxWidth: 240, minWidth: 220 });
+}
+
+// ==============================================
+// 날씨 로드
+// ==============================================
+async function loadWeather() {
+  layer.clearLayers();
+  const cities = curView === 'korea' ? koreaCities : usStates;
+
+  if (!apiKey) {
+    document.getElementById('api-notice').classList.add('show');
+    cities.forEach(c => {
+      const key  = c.name || c.abbr;
+      const label = curView === 'korea' ? c.name : `${c.abbr}`;
+      const w    = demoData(key, c.base);
+      makeMarker(c.lat, c.lon, label, w).addTo(layer);
+    });
+    return;
+  }
+
+  document.getElementById('api-notice').classList.remove('show');
+  showLoad(true);
+
+  // 10개씩 배치 처리 (API 레이트 리밋 방지)
+  const BATCH = 10;
+  let done = 0;
+  for (let i = 0; i < cities.length; i += BATCH) {
+    const slice = cities.slice(i, i + BATCH);
+    await Promise.all(slice.map(async c => {
+      try {
+        const w     = await fetchOne(c.lat, c.lon);
+        const label = curView === 'korea' ? c.name : c.abbr;
+        makeMarker(c.lat, c.lon, label, w).addTo(layer);
+      } catch (e) {
+        // 실패한 도시는 데모 데이터로 대체
+        const key  = c.name || c.abbr;
+        const w    = demoData(key, c.base);
+        const label = curView === 'korea' ? c.name : c.abbr;
+        makeMarker(c.lat, c.lon, label, w).addTo(layer);
+      }
+      done++;
+      document.getElementById('loading-text').textContent =
+        `날씨 데이터 불러오는 중... (${done}/${cities.length})`;
+    }));
+    if (i + BATCH < cities.length) await sleep(150);
+  }
+  showLoad(false);
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function showLoad(show) {
+  document.getElementById('loading').classList.toggle('show', show);
+}
+
+// ==============================================
+// 탭 전환
+// ==============================================
+function switchView(view, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  curView = view;
+  const v = VIEWS[view];
+  map.setView(v.center, v.zoom);
+  loadWeather();
+}
+
+// ==============================================
+// 시작
+// ==============================================
+map.setView(VIEWS.korea.center, VIEWS.korea.zoom);
+loadWeather();
+</script>
+</body>
+</html>
