@@ -705,6 +705,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#1a1a2e,#16213e); font-size: 48px;">🍀</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">Chart.js</span>
+        </div>
+        <div class="project-name">로또 번호 분석 사이트</div>
+        <div class="project-desc">통계 기반 번호 추천, 출현 빈도 차트, 당첨번호 조회 기능을 갖춘 로또 분석 웹앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('lotto')">자세히 보기</button>
+          <a class="project-link" href="lotto-site/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -819,6 +837,25 @@
       ],
       liveUrl: 'js_reservation/index.html',
       liveLabel: '🚀 예약해보기',
+    },
+    lotto: {
+      emoji: '🍀',
+      bg: 'linear-gradient(135deg,#1a1a2e,#16213e)',
+      tags: ['HTML', 'CSS', 'JavaScript', 'Chart.js', 'LocalStorage'],
+      title: '로또 번호 분석 사이트',
+      desc: '통계와 데이터를 기반으로 로또 번호를 추천하고 분석하는 웹앱입니다. 완전 랜덤, 핫 번호 기반, 콜드 번호 기반, 혼합 추천 등 4가지 방식으로 번호를 생성할 수 있으며, Chart.js로 시각화한 출현 빈도 통계와 당첨 번호 조회 기능을 제공합니다.',
+      features: [
+        '4가지 번호 생성 방식 (완전랜덤 / 핫번호 / 콜드번호 / 혼합)',
+        '1~5게임 동시 생성 지원',
+        'LocalStorage로 번호 저장·삭제 기능',
+        'Chart.js 기반 번호 출현 빈도 막대그래프',
+        '핫/콜드 번호 TOP 10 랭킹 표시',
+        '홀짝 비율 및 구간별 분포 도넛·막대 차트',
+        '최근 당첨번호 5회차 조회',
+        '반응형 디자인 (모바일 지원)',
+      ],
+      liveUrl: 'lotto-site/index.html',
+      liveLabel: '🍀 실행해보기',
     },
     next: {
       emoji: '🚀',
