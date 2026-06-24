@@ -4,10 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>관리자 페이지</title>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --brown:  #6b4423;
@@ -60,12 +58,6 @@
     .gate-btn:hover { transform: translateY(-2px); }
     .gate-error { color: #dc2626; font-size: 0.82rem; margin-top: 10px; display: none; }
     .gate-error.show { display: block; }
-    .google-btn {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      background: #fff; color: #333; border: 1.5px solid #ddd;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-top: 0;
-    }
-    .google-btn:hover { background: #f8f8f8; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
 
     /* ── 대시보드 ── */
     #dashboard { display: none; }
@@ -185,17 +177,16 @@
 </head>
 <body>
 
-<!-- ── Google 로그인 게이트 ── -->
+<!-- ── 비밀번호 게이트 ── -->
 <div id="gate">
   <div class="gate-box">
-    <div class="gate-icon">☕</div>
+    <div class="gate-icon">🔐</div>
     <h2>관리자 로그인</h2>
-    <p>카페 예약 관리 페이지입니다.<br>관리자 Google 계정으로 로그인하세요.</p>
-    <button class="gate-btn google-btn" onclick="login()">
-      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" alt="Google">
-      Google로 로그인
-    </button>
-    <div class="gate-error" id="gateError">접근 권한이 없는 계정입니다.</div>
+    <p>카페 예약 관리 페이지입니다.<br>비밀번호를 입력하세요.</p>
+    <input class="gate-input" type="password" id="pwInput" placeholder="비밀번호"
+           onkeydown="if(event.key==='Enter') login()">
+    <button class="gate-btn" onclick="login()">로그인</button>
+    <div class="gate-error" id="gateError">비밀번호가 틀렸습니다.</div>
   </div>
 </div>
 
@@ -205,7 +196,6 @@
     <div class="header-left">
       <h1>☕ 카페 예약 관리</h1>
       <span id="todayLabel"></span>
-      <span id="userInfo" style="font-size:0.8rem;opacity:0.8;"></span>
     </div>
     <button class="btn-logout" onclick="logout()">로그아웃</button>
   </header>
@@ -276,69 +266,60 @@
 </div>
 
 <script>
-  const firebaseConfig = {
-    apiKey:            'AIzaSyB1AfPS5KqOukCMb-rTkNGqT7M0g_XVweY',
-    authDomain:        'test1106-8bba4.firebaseapp.com',
-    projectId:         'test1106-8bba4',
-    storageBucket:     'test1106-8bba4.firebasestorage.app',
-    messagingSenderId: '543280090989',
-    appId:             '1:543280090989:web:897c966075ba15c613d464',
-  };
+  // ── Supabase ─────────────────────────────────────────────────
+  const { createClient } = supabase;
+  const db = createClient(
+    'https://eyjvwketdjrjmojndrie.supabase.co',
+    'sb_publishable_L_wFuKlrKGJlq1pzmuiKmA_uMx748lk'
+  );
 
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  const db   = firebase.firestore();
-
-  const ADMIN_EMAIL = 'gamsa1106@gmail.com'; // 관리자 이메일
-  const provider    = new firebase.auth.GoogleAuthProvider();
+  const PASSWORD = 'cafe2025';
 
   let allReservations = [];
-  let unsubscribe     = null;
+  let channel = null;
 
-  // Google 로그인
   function login() {
-    auth.signInWithPopup(provider).catch(() => {
-      document.getElementById('gateError').classList.add('show');
-    });
-  }
-
-  // 로그아웃
-  function logout() {
-    if (unsubscribe) unsubscribe();
-    auth.signOut();
-  }
-
-  // 인증 상태 감지 — 자동 로그인 유지
-  auth.onAuthStateChanged(user => {
-    if (user && user.email === ADMIN_EMAIL) {
+    const val = document.getElementById('pwInput').value;
+    if (val === PASSWORD) {
       document.getElementById('gate').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
-      document.getElementById('userInfo').textContent = user.displayName || user.email;
-      document.getElementById('gateError').classList.remove('show');
+      sessionStorage.setItem('admin_ok', '1');
       init();
     } else {
-      if (unsubscribe) { unsubscribe(); unsubscribe = null; }
-      document.getElementById('gate').style.display = 'flex';
-      document.getElementById('dashboard').style.display = 'none';
-      if (user && user.email !== ADMIN_EMAIL) {
-        auth.signOut();
-        document.getElementById('gateError').classList.add('show');
-      }
+      document.getElementById('gateError').classList.add('show');
+      document.getElementById('pwInput').value = '';
     }
-  });
+  }
+
+  function logout() {
+    if (channel) { db.removeChannel(channel); channel = null; }
+    sessionStorage.removeItem('admin_ok');
+    location.reload();
+  }
+
+  if (sessionStorage.getItem('admin_ok') === '1') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    init();
+  }
+
+  async function fetchReservations() {
+    const { data } = await db.from('reservations').select('*').order('created_at', { ascending: false });
+    allReservations = data || [];
+    updateStats();
+    renderTable();
+  }
 
   function init() {
     document.getElementById('todayLabel').textContent =
       new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
 
-    // Firestore 실시간 리스너
-    unsubscribe = db.collection('reservations')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot(snapshot => {
-        allReservations = snapshot.docs.map(doc => ({ _docId: doc.id, ...doc.data() }));
-        updateStats();
-        renderTable();
-      });
+    fetchReservations();
+
+    channel = db.channel('admin-res')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations' },
+        () => fetchReservations())
+      .subscribe();
   }
 
   function updateStats() {
@@ -370,7 +351,7 @@
 
     if (sort === 'date-asc')     list.sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
     if (sort === 'date-desc')    list.sort((a,b) => b.date.localeCompare(a.date) || a.time.localeCompare(b.time));
-    if (sort === 'created-desc') list.sort((a,b) => b.createdAt - a.createdAt);
+    if (sort === 'created-desc') list.sort((a,b) => b.created_at - a.created_at);
 
     document.getElementById('resCount').textContent = `총 ${list.length}건`;
 
@@ -381,7 +362,7 @@
     }
 
     tbody.innerHTML = list.map(r => {
-      const isNew  = r.createdAt > oneDayAgo;
+      const isNew  = r.created_at > oneDayAgo;
       const isPast = r.date < today;
       return `<tr style="${isPast ? 'opacity:0.55' : ''}">
         <td>
@@ -394,7 +375,7 @@
         <td><b>${r.time}</b></td>
         <td>${r.guests}명</td>
         <td class="hide-mobile"><div class="request-text" title="${r.request || ''}">${r.request || '-'}</div></td>
-        <td><button class="btn-del" onclick="deleteRes('${r._docId}')">삭제</button></td>
+        <td><button class="btn-del" onclick="deleteRes('${r.doc_id}')">삭제</button></td>
       </tr>`;
     }).join('');
   }
@@ -402,7 +383,8 @@
   async function deleteRes(docId) {
     if (!confirm('이 예약을 삭제하시겠습니까?')) return;
     try {
-      await db.collection('reservations').doc(docId).delete();
+      const { error } = await db.from('reservations').delete().eq('doc_id', docId);
+      if (error) throw error;
     } catch(err) {
       alert('삭제 중 오류가 발생했습니다.');
     }

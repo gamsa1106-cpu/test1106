@@ -6,9 +6,8 @@
   <title>☕ 카페 예약</title>
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --brown:  #6b4423;
@@ -318,18 +317,12 @@
 </div>
 
 <script>
-  // ── Firebase 설정 (콘솔에서 복사한 값으로 교체) ──────────────
-  const firebaseConfig = {
-    apiKey:            'AIzaSyB1AfPS5KqOukCMb-rTkNGqT7M0g_XVweY',
-    authDomain:        'test1106-8bba4.firebaseapp.com',
-    projectId:         'test1106-8bba4',
-    storageBucket:     'test1106-8bba4.firebasestorage.app',
-    messagingSenderId: '543280090989',
-    appId:             '1:543280090989:web:897c966075ba15c613d464',
-  };
-  // ─────────────────────────────────────────────────────────────
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  // ── Supabase ─────────────────────────────────────────────────
+  const { createClient } = supabase;
+  const db = createClient(
+    'https://eyjvwketdjrjmojndrie.supabase.co',
+    'sb_publishable_L_wFuKlrKGJlq1pzmuiKmA_uMx748lk'
+  );
 
   // ── EmailJS ──────────────────────────────────────────────────
   const EMAILJS_PUBLIC_KEY  = 'mzDgHqHANbLGmlIIN';
@@ -344,7 +337,6 @@
       guests: res.guests + '명', request: res.request || '없음',
     }).catch(() => {});
   }
-  // ─────────────────────────────────────────────────────────────
 
   const TIME_SLOTS = [
     '11:00','11:30','12:00','12:30',
@@ -373,12 +365,21 @@
   document.getElementById('phone').addEventListener('input', function() { this.value = formatPhone(this.value); });
   document.getElementById('searchPhone').addEventListener('input', function() { this.value = formatPhone(this.value); });
 
-  // 로컬 캐시 — Firestore onSnapshot으로 실시간 동기화
+  // 로컬 캐시 — Supabase 실시간 동기화
   let reservations = [];
-  db.collection('reservations').onSnapshot(snapshot => {
-    reservations = snapshot.docs.map(doc => ({ _docId: doc.id, ...doc.data() }));
+
+  async function fetchReservations() {
+    const { data } = await db.from('reservations').select('*');
+    reservations = data || [];
     renderTimeSlots();
-  });
+  }
+
+  db.channel('res-rt')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations' },
+      () => fetchReservations())
+    .subscribe();
+
+  fetchReservations();
 
   function slotCount(date, time) {
     return reservations.filter(r => r.date === date && r.time === time).length;
@@ -404,7 +405,7 @@
 
   function newId() { return 'RES-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
-  // 폼 제출 — Firestore에 저장
+  // 폼 제출 — Supabase에 저장
   document.getElementById('resForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const name   = document.getElementById('name').value.trim();
@@ -427,8 +428,9 @@
     btn.disabled = true; btn.textContent = '예약 중...';
 
     try {
-      const res = { id: newId(), name, phone, date, time, guests, request: req, createdAt: Date.now() };
-      await db.collection('reservations').add(res);
+      const res = { id: newId(), name, phone, date, time, guests, request: req, created_at: Date.now() };
+      const { error } = await db.from('reservations').insert(res);
+      if (error) throw error;
       sendAdminEmail(res);
 
       document.getElementById('resNum').textContent = res.id;
@@ -457,10 +459,10 @@
       return;
     }
     el.innerHTML = found.map(r => `
-      <div class="res-item" id="item-${r._docId}">
+      <div class="res-item" id="item-${r.doc_id}">
         <div class="res-item-header">
           <span class="res-id">${r.id}</span>
-          <button class="btn-cancel" onclick="cancelRes('${r._docId}')">취소</button>
+          <button class="btn-cancel" onclick="cancelRes('${r.doc_id}')">취소</button>
         </div>
         <div class="res-info">
           <span class="lbl">이름</span><span class="val">${r.name}</span>
@@ -472,11 +474,12 @@
       </div>`).join('');
   }
 
-  // 예약 취소 — Firestore에서 삭제
+  // 예약 취소 — Supabase에서 삭제
   async function cancelRes(docId) {
     if (!confirm('예약을 취소하시겠습니까?')) return;
     try {
-      await db.collection('reservations').doc(docId).delete();
+      const { error } = await db.from('reservations').delete().eq('doc_id', docId);
+      if (error) throw error;
       document.getElementById('item-' + docId)?.remove();
       const el = document.getElementById('resList');
       if (!el.querySelector('.res-item'))
