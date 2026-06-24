@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>☕ 카페 예약</title>
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     :root {
       --brown:  #6b4423;
@@ -366,6 +368,30 @@
     renderTimeSlots();
   }
 
+  // ── EmailJS 설정 ──────────────────────────────────────────────
+  // 아래 세 값을 EmailJS에서 발급받은 값으로 교체하세요
+  const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // EmailJS > Account > Public Key
+  const EMAILJS_SERVICE_ID  = 'YOUR_SERVICE_ID';   // EmailJS > Email Services > Service ID
+  const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';  // EmailJS > Email Templates > Template ID
+  // ────────────────────────────────────────────────────────────
+
+  if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  }
+
+  function sendAdminEmail(res) {
+    if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') return; // 설정 전이면 건너뜀
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      res_id:  res.id,
+      name:    res.name,
+      phone:   res.phone,
+      date:    res.date,
+      time:    res.time,
+      guests:  res.guests + '명',
+      request: res.request || '없음',
+    }).catch(() => {}); // 이메일 실패해도 예약은 정상 처리
+  }
+
   // 예약번호 생성
   function newId() { return 'RES-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
@@ -392,6 +418,8 @@
     const list = getList();
     list.push(res);
     saveList(list);
+
+    sendAdminEmail(res); // 관리자 이메일 발송
 
     document.getElementById('resNum').textContent = res.id;
     document.getElementById('successBox').classList.add('show');

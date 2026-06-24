@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 페이지</title>
+  <style>
+    :root {
+      --brown:  #6b4423;
+      --brown2: #8b5e3c;
+      --gold:   #d4a96a;
+      --cream:  #fdf6ec;
+      --cream2: #f5e6d3;
+      --text:   #2d1b0e;
+      --sub:    #8b6b52;
+      --border: #e8d5c0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+
+    /* ── 비밀번호 게이트 ── */
+    #gate {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, var(--brown), var(--brown2));
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+    }
+    .gate-box {
+      background: #fff;
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      width: 340px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+    }
+    .gate-icon { font-size: 48px; margin-bottom: 16px; }
+    .gate-box h2 { font-size: 1.3rem; font-weight: 800; color: var(--brown); margin-bottom: 8px; }
+    .gate-box p  { font-size: 0.85rem; color: var(--sub); margin-bottom: 24px; }
+    .gate-input {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid var(--border); border-radius: 10px;
+      font-size: 1rem; text-align: center; letter-spacing: 4px;
+      color: var(--text); background: var(--cream); outline: none;
+      transition: border-color 0.2s;
+    }
+    .gate-input:focus { border-color: var(--brown); }
+    .gate-btn {
+      width: 100%; margin-top: 12px; padding: 13px;
+      background: linear-gradient(135deg, var(--brown), var(--brown2));
+      color: #fff; border: none; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(107,68,35,0.4);
+    }
+    .gate-btn:hover { transform: translateY(-2px); }
+    .gate-error { color: #dc2626; font-size: 0.82rem; margin-top: 10px; display: none; }
+    .gate-error.show { display: block; }
+
+    /* ── 대시보드 ── */
+    #dashboard { display: none; }
+
+    header {
+      background: linear-gradient(135deg, var(--brown), var(--brown2));
+      color: #fff; padding: 0 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 64px;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .header-left h1 { font-size: 1.1rem; font-weight: 800; }
+    .header-left span { font-size: 0.8rem; opacity: 0.7; }
+    .btn-logout {
+      padding: 7px 16px; background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3); border-radius: 8px;
+      color: #fff; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.25); }
+
+    main { padding: 28px; max-width: 1100px; margin: 0 auto; }
+
+    /* ── 통계 카드 ── */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    @media (max-width: 700px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card {
+      background: #fff; border-radius: 16px; padding: 20px;
+      border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(107,68,35,0.06);
+    }
+    .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .stat-value { font-size: 2rem; font-weight: 900; color: var(--brown); }
+    .stat-icon  { font-size: 20px; float: right; margin-top: -28px; opacity: 0.6; }
+
+    /* ── 필터 ── */
+    .filter-bar {
+      background: #fff; border-radius: 14px; padding: 16px 20px;
+      border: 1px solid var(--border); display: flex; gap: 12px;
+      align-items: center; flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .filter-bar input, .filter-bar select {
+      padding: 9px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: 0.88rem; color: var(--text); background: var(--cream);
+      outline: none; font-family: inherit; transition: border-color 0.2s;
+    }
+    .filter-bar input:focus, .filter-bar select:focus { border-color: var(--brown); }
+    .filter-bar input[type="text"] { flex: 1; min-width: 160px; }
+    .filter-label { font-size: 0.8rem; font-weight: 700; color: var(--sub); white-space: nowrap; }
+    .btn-clear-filter {
+      padding: 9px 14px; background: transparent; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 0.82rem; color: var(--sub); cursor: pointer;
+      transition: all 0.2s; font-family: inherit;
+    }
+    .btn-clear-filter:hover { border-color: var(--brown); color: var(--brown); }
+
+    /* ── 테이블 ── */
+    .table-wrap {
+      background: #fff; border-radius: 16px; border: 1px solid var(--border);
+      overflow: hidden; box-shadow: 0 2px 8px rgba(107,68,35,0.06);
+    }
+    .table-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; border-bottom: 1px solid var(--border);
+    }
+    .table-head h3 { font-size: 0.95rem; font-weight: 800; color: var(--brown); }
+    .res-count { font-size: 0.82rem; color: var(--sub); }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--cream); }
+    th {
+      padding: 12px 14px; font-size: 0.75rem; font-weight: 700;
+      color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px;
+      text-align: left; border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 13px 14px; font-size: 0.88rem; border-bottom: 1px solid #f5ece0;
+      vertical-align: middle;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--cream); }
+
+    .badge-id {
+      font-size: 11px; font-weight: 700; color: var(--sub);
+      background: var(--cream2); padding: 3px 8px; border-radius: 6px;
+      letter-spacing: 1px;
+    }
+    .badge-new {
+      font-size: 10px; font-weight: 700; color: #fff;
+      background: #22c55e; padding: 2px 7px; border-radius: 6px;
+      margin-left: 4px;
+    }
+    .request-text {
+      max-width: 160px; overflow: hidden; text-overflow: ellipsis;
+      white-space: nowrap; color: var(--sub); font-size: 0.82rem;
+    }
+    .btn-del {
+      padding: 5px 12px; background: #fee2e2; color: #dc2626;
+      border: 1px solid #fca5a5; border-radius: 6px; font-size: 11px;
+      font-weight: 700; cursor: pointer; transition: all 0.15s; font-family: inherit;
+    }
+    .btn-del:hover { background: #dc2626; color: #fff; border-color: #dc2626; }
+
+    .empty-row td { text-align: center; padding: 48px; color: var(--sub); font-size: 0.9rem; }
+
+    /* ── 반응형 테이블 ── */
+    @media (max-width: 700px) {
+      .hide-mobile { display: none; }
+      td, th { padding: 10px 10px; }
+    }
+
+    .notice-box {
+      background: #fff8e1; border: 1px solid #fde68a;
+      border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+      font-size: 0.82rem; color: #92400e; line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── 비밀번호 게이트 ── -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-icon">🔐</div>
+    <h2>관리자 로그인</h2>
+    <p>카페 예약 관리 페이지입니다.<br>비밀번호를 입력하세요.</p>
+    <input class="gate-input" type="password" id="pwInput" placeholder="비밀번호"
+           onkeydown="if(event.key==='Enter') login()">
+    <button class="gate-btn" onclick="login()">로그인</button>
+    <div class="gate-error" id="gateError">비밀번호가 틀렸습니다.</div>
+  </div>
+</div>
+
+<!-- ── 대시보드 ── -->
+<div id="dashboard">
+  <header>
+    <div class="header-left">
+      <h1>☕ 카페 예약 관리</h1>
+      <span id="todayLabel"></span>
+    </div>
+    <button class="btn-logout" onclick="logout()">로그아웃</button>
+  </header>
+
+  <main>
+    <div class="notice-box">
+      ⚠️ 현재 예약 데이터는 <b>이 브라우저의 localStorage</b>에 저장됩니다.
+      다른 기기에서 예약된 내역을 보려면 이메일 알림을 확인하거나, Firebase 같은 데이터베이스 연동이 필요합니다.
+    </div>
+
+    <!-- 통계 -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">전체 예약</div>
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-icon">📋</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">오늘 예약</div>
+        <div class="stat-value" id="statToday">0</div>
+        <div class="stat-icon">📅</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">이번 주</div>
+        <div class="stat-value" id="statWeek">0</div>
+        <div class="stat-icon">📆</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">총 예약 인원</div>
+        <div class="stat-value" id="statGuests">0</div>
+        <div class="stat-icon">👥</div>
+      </div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="filter-bar">
+      <span class="filter-label">검색</span>
+      <input type="text" id="searchInput" placeholder="이름 또는 전화번호" oninput="renderTable()">
+      <span class="filter-label">날짜</span>
+      <input type="date" id="dateFilter" onchange="renderTable()">
+      <select id="sortSelect" onchange="renderTable()">
+        <option value="date-asc">날짜 오름차순</option>
+        <option value="date-desc">날짜 내림차순</option>
+        <option value="created-desc">최신 예약순</option>
+      </select>
+      <button class="btn-clear-filter" onclick="clearFilter()">초기화</button>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-wrap">
+      <div class="table-head">
+        <h3>예약 목록</h3>
+        <span class="res-count" id="resCount"></span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>예약번호</th>
+            <th>이름</th>
+            <th class="hide-mobile">전화번호</th>
+            <th>날짜</th>
+            <th>시간</th>
+            <th>인원</th>
+            <th class="hide-mobile">요청사항</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  const PASSWORD = 'cafe2025'; // 비밀번호 변경하려면 여기를 수정하세요
+  const SEEN_KEY = 'cafe_seen';
+
+  function login() {
+    const val = document.getElementById('pwInput').value;
+    if (val === PASSWORD) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      sessionStorage.setItem('admin_ok', '1');
+      init();
+    } else {
+      document.getElementById('gateError').classList.add('show');
+      document.getElementById('pwInput').value = '';
+    }
+  }
+
+  function logout() {
+    sessionStorage.removeItem('admin_ok');
+    location.reload();
+  }
+
+  // 세션 유지
+  if (sessionStorage.getItem('admin_ok') === '1') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    init();
+  }
+
+  function getList() { return JSON.parse(localStorage.getItem('cafe_res') || '[]'); }
+  function saveList(l) { localStorage.setItem('cafe_res', JSON.stringify(l)); }
+
+  function getSeenIds() { return JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'); }
+  function markSeen(id) {
+    const seen = getSeenIds();
+    if (!seen.includes(id)) { seen.push(id); localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); }
+  }
+
+  function init() {
+    // 오늘 날짜 표시
+    const today = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
+    document.getElementById('todayLabel').textContent = today;
+
+    updateStats();
+    renderTable();
+
+    // 새 예약 자동 새로고침 (30초마다)
+    setInterval(() => { updateStats(); renderTable(); }, 30000);
+  }
+
+  function updateStats() {
+    const list  = getList();
+    const today = new Date().toISOString().split('T')[0];
+
+    // 이번 주 월요일 계산
+    const now = new Date();
+    const day = now.getDay();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
+    const mondayStr = monday.toISOString().split('T')[0];
+
+    document.getElementById('statTotal').textContent  = list.length;
+    document.getElementById('statToday').textContent  = list.filter(r => r.date === today).length;
+    document.getElementById('statWeek').textContent   = list.filter(r => r.date >= mondayStr).length;
+    document.getElementById('statGuests').textContent = list.reduce((s, r) => s + (parseInt(r.guests) || 0), 0);
+  }
+
+  function renderTable() {
+    const search  = document.getElementById('searchInput').value.trim().toLowerCase();
+    const dateFil = document.getElementById('dateFilter').value;
+    const sort    = document.getElementById('sortSelect').value;
+    const seen    = getSeenIds();
+    const today   = new Date().toISOString().split('T')[0];
+
+    let list = getList().filter(r => {
+      const matchSearch = !search ||
+        r.name.toLowerCase().includes(search) ||
+        r.phone.includes(search);
+      const matchDate = !dateFil || r.date === dateFil;
+      return matchSearch && matchDate;
+    });
+
+    if (sort === 'date-asc')     list.sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+    if (sort === 'date-desc')    list.sort((a,b) => b.date.localeCompare(a.date) || a.time.localeCompare(b.time));
+    if (sort === 'created-desc') list.sort((a,b) => b.createdAt - a.createdAt);
+
+    document.getElementById('resCount').textContent = `총 ${list.length}건`;
+
+    const tbody = document.getElementById('tableBody');
+    if (!list.length) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="8">예약 내역이 없습니다 📋</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = list.map(r => {
+      const isNew = !seen.includes(r.id) && r.createdAt > Date.now() - 24*60*60*1000;
+      if (isNew) markSeen(r.id);
+      const isPast = r.date < today;
+      return `<tr style="${isPast ? 'opacity:0.55' : ''}">
+        <td>
+          <span class="badge-id">${r.id}</span>
+          ${isNew ? '<span class="badge-new">NEW</span>' : ''}
+        </td>
+        <td><b>${r.name}</b></td>
+        <td class="hide-mobile">${r.phone}</td>
+        <td>${r.date}</td>
+        <td><b>${r.time}</b></td>
+        <td>${r.guests}명</td>
+        <td class="hide-mobile"><div class="request-text" title="${r.request || ''}">${r.request || '-'}</div></td>
+        <td><button class="btn-del" onclick="deleteRes('${r.id}')">삭제</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function deleteRes(id) {
+    if (!confirm('이 예약을 삭제하시겠습니까?')) return;
+    saveList(getList().filter(r => r.id !== id));
+    updateStats();
+    renderTable();
+  }
+
+  function clearFilter() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('dateFilter').value  = '';
+    document.getElementById('sortSelect').value  = 'date-asc';
+    renderTable();
+  }
+</script>
+</body>
+</html>
