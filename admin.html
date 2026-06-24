@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>관리자 페이지</title>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --brown:  #6b4423;
@@ -199,10 +202,6 @@
   </header>
 
   <main>
-    <div class="notice-box">
-      ⚠️ 현재 예약 데이터는 <b>이 브라우저의 localStorage</b>에 저장됩니다.
-      다른 기기에서 예약된 내역을 보려면 이메일 알림을 확인하거나, Firebase 같은 데이터베이스 연동이 필요합니다.
-    </div>
 
     <!-- 통계 -->
     <div class="stats">
@@ -268,8 +267,24 @@
 </div>
 
 <script>
-  const PASSWORD = 'cafe2025'; // 비밀번호 변경하려면 여기를 수정하세요
-  const SEEN_KEY = 'cafe_seen';
+  // ── Firebase 설정 (예약 페이지와 동일한 값) ───────────────────
+  const firebaseConfig = {
+    apiKey:            'YOUR_API_KEY',
+    authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
+    projectId:         'YOUR_PROJECT_ID',
+    storageBucket:     'YOUR_PROJECT_ID.appspot.com',
+    messagingSenderId: 'YOUR_SENDER_ID',
+    appId:             'YOUR_APP_ID',
+  };
+  // ─────────────────────────────────────────────────────────────
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  const PASSWORD = 'cafe2025';
+
+  // 전체 예약 캐시
+  let allReservations = [];
+  let unsubscribe = null;
 
   function login() {
     const val = document.getElementById('pwInput').value;
@@ -285,67 +300,55 @@
   }
 
   function logout() {
+    if (unsubscribe) unsubscribe();
     sessionStorage.removeItem('admin_ok');
     location.reload();
   }
 
-  // 세션 유지
   if (sessionStorage.getItem('admin_ok') === '1') {
     document.getElementById('gate').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
     init();
   }
 
-  function getList() { return JSON.parse(localStorage.getItem('cafe_res') || '[]'); }
-  function saveList(l) { localStorage.setItem('cafe_res', JSON.stringify(l)); }
-
-  function getSeenIds() { return JSON.parse(localStorage.getItem(SEEN_KEY) || '[]'); }
-  function markSeen(id) {
-    const seen = getSeenIds();
-    if (!seen.includes(id)) { seen.push(id); localStorage.setItem(SEEN_KEY, JSON.stringify(seen)); }
-  }
-
   function init() {
-    // 오늘 날짜 표시
-    const today = new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
-    document.getElementById('todayLabel').textContent = today;
+    document.getElementById('todayLabel').textContent =
+      new Date().toLocaleDateString('ko-KR', { year:'numeric', month:'long', day:'numeric', weekday:'short' });
 
-    updateStats();
-    renderTable();
-
-    // 새 예약 자동 새로고침 (30초마다)
-    setInterval(() => { updateStats(); renderTable(); }, 30000);
+    // Firestore 실시간 리스너
+    unsubscribe = db.collection('reservations')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(snapshot => {
+        allReservations = snapshot.docs.map(doc => ({ _docId: doc.id, ...doc.data() }));
+        updateStats();
+        renderTable();
+      });
   }
 
   function updateStats() {
-    const list  = getList();
     const today = new Date().toISOString().split('T')[0];
-
-    // 이번 주 월요일 계산
-    const now = new Date();
-    const day = now.getDay();
+    const now   = new Date();
+    const day   = now.getDay();
     const monday = new Date(now);
     monday.setDate(now.getDate() - (day === 0 ? 6 : day - 1));
     const mondayStr = monday.toISOString().split('T')[0];
 
-    document.getElementById('statTotal').textContent  = list.length;
-    document.getElementById('statToday').textContent  = list.filter(r => r.date === today).length;
-    document.getElementById('statWeek').textContent   = list.filter(r => r.date >= mondayStr).length;
-    document.getElementById('statGuests').textContent = list.reduce((s, r) => s + (parseInt(r.guests) || 0), 0);
+    document.getElementById('statTotal').textContent  = allReservations.length;
+    document.getElementById('statToday').textContent  = allReservations.filter(r => r.date === today).length;
+    document.getElementById('statWeek').textContent   = allReservations.filter(r => r.date >= mondayStr).length;
+    document.getElementById('statGuests').textContent = allReservations.reduce((s, r) => s + (parseInt(r.guests) || 0), 0);
   }
 
   function renderTable() {
     const search  = document.getElementById('searchInput').value.trim().toLowerCase();
     const dateFil = document.getElementById('dateFilter').value;
     const sort    = document.getElementById('sortSelect').value;
-    const seen    = getSeenIds();
     const today   = new Date().toISOString().split('T')[0];
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
 
-    let list = getList().filter(r => {
-      const matchSearch = !search ||
-        r.name.toLowerCase().includes(search) ||
-        r.phone.includes(search);
-      const matchDate = !dateFil || r.date === dateFil;
+    let list = allReservations.filter(r => {
+      const matchSearch = !search || r.name.toLowerCase().includes(search) || r.phone.includes(search);
+      const matchDate   = !dateFil || r.date === dateFil;
       return matchSearch && matchDate;
     });
 
@@ -362,8 +365,7 @@
     }
 
     tbody.innerHTML = list.map(r => {
-      const isNew = !seen.includes(r.id) && r.createdAt > Date.now() - 24*60*60*1000;
-      if (isNew) markSeen(r.id);
+      const isNew  = r.createdAt > oneDayAgo;
       const isPast = r.date < today;
       return `<tr style="${isPast ? 'opacity:0.55' : ''}">
         <td>
@@ -376,16 +378,18 @@
         <td><b>${r.time}</b></td>
         <td>${r.guests}명</td>
         <td class="hide-mobile"><div class="request-text" title="${r.request || ''}">${r.request || '-'}</div></td>
-        <td><button class="btn-del" onclick="deleteRes('${r.id}')">삭제</button></td>
+        <td><button class="btn-del" onclick="deleteRes('${r._docId}')">삭제</button></td>
       </tr>`;
     }).join('');
   }
 
-  function deleteRes(id) {
+  async function deleteRes(docId) {
     if (!confirm('이 예약을 삭제하시겠습니까?')) return;
-    saveList(getList().filter(r => r.id !== id));
-    updateStats();
-    renderTable();
+    try {
+      await db.collection('reservations').doc(docId).delete();
+    } catch(err) {
+      alert('삭제 중 오류가 발생했습니다.');
+    }
   }
 
   function clearFilter() {

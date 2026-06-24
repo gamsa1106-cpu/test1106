@@ -6,6 +6,9 @@
   <title>☕ 카페 예약</title>
   <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
       --brown:  #6b4423;
@@ -315,6 +318,34 @@
 </div>
 
 <script>
+  // ── Firebase 설정 (콘솔에서 복사한 값으로 교체) ──────────────
+  const firebaseConfig = {
+    apiKey:            'YOUR_API_KEY',
+    authDomain:        'YOUR_PROJECT_ID.firebaseapp.com',
+    projectId:         'YOUR_PROJECT_ID',
+    storageBucket:     'YOUR_PROJECT_ID.appspot.com',
+    messagingSenderId: 'YOUR_SENDER_ID',
+    appId:             'YOUR_APP_ID',
+  };
+  // ─────────────────────────────────────────────────────────────
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // ── EmailJS ──────────────────────────────────────────────────
+  const EMAILJS_PUBLIC_KEY  = 'mzDgHqHANbLGmlIIN';
+  const EMAILJS_SERVICE_ID  = 'service_svug626';
+  const EMAILJS_TEMPLATE_ID = 'template_rt28cvn';
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+  function sendAdminEmail(res) {
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      res_id: res.id, name: res.name, phone: res.phone,
+      date: res.date, time: res.time,
+      guests: res.guests + '명', request: res.request || '없음',
+    }).catch(() => {});
+  }
+  // ─────────────────────────────────────────────────────────────
+
   const TIME_SLOTS = [
     '11:00','11:30','12:00','12:30',
     '13:00','13:30','14:00','14:30',
@@ -324,7 +355,6 @@
   ];
   const MAX_PER_SLOT = 5;
 
-  // 오늘 날짜 기본값
   const dateInput = document.getElementById('date');
   const today = new Date().toISOString().split('T')[0];
   dateInput.min = today;
@@ -334,7 +364,6 @@
     renderTimeSlots();
   });
 
-  // 전화번호 자동 하이픈
   function formatPhone(val) {
     const n = val.replace(/\D/g, '').slice(0, 11);
     if (n.length <= 3) return n;
@@ -344,12 +373,17 @@
   document.getElementById('phone').addEventListener('input', function() { this.value = formatPhone(this.value); });
   document.getElementById('searchPhone').addEventListener('input', function() { this.value = formatPhone(this.value); });
 
-  // 예약 데이터
-  function getList() { return JSON.parse(localStorage.getItem('cafe_res') || '[]'); }
-  function saveList(l) { localStorage.setItem('cafe_res', JSON.stringify(l)); }
-  function slotCount(date, time) { return getList().filter(r => r.date === date && r.time === time).length; }
+  // 로컬 캐시 — Firestore onSnapshot으로 실시간 동기화
+  let reservations = [];
+  db.collection('reservations').onSnapshot(snapshot => {
+    reservations = snapshot.docs.map(doc => ({ _docId: doc.id, ...doc.data() }));
+    renderTimeSlots();
+  });
 
-  // 시간 슬롯 렌더링
+  function slotCount(date, time) {
+    return reservations.filter(r => r.date === date && r.time === time).length;
+  }
+
   function renderTimeSlots() {
     const date = dateInput.value;
     const sel  = document.getElementById('selectedTime').value;
@@ -368,42 +402,17 @@
     renderTimeSlots();
   }
 
-  // ── EmailJS 설정 ──────────────────────────────────────────────
-  // 아래 세 값을 EmailJS에서 발급받은 값으로 교체하세요
-  const EMAILJS_PUBLIC_KEY  = 'mzDgHqHANbLGmlIIN';
-  const EMAILJS_SERVICE_ID  = 'service_svug626';
-  const EMAILJS_TEMPLATE_ID = 'template_rt28cvn';
-  // ────────────────────────────────────────────────────────────
-
-  if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-  }
-
-  function sendAdminEmail(res) {
-    if (EMAILJS_PUBLIC_KEY === 'YOUR_PUBLIC_KEY') return; // 설정 전이면 건너뜀
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-      res_id:  res.id,
-      name:    res.name,
-      phone:   res.phone,
-      date:    res.date,
-      time:    res.time,
-      guests:  res.guests + '명',
-      request: res.request || '없음',
-    }).catch(() => {}); // 이메일 실패해도 예약은 정상 처리
-  }
-
-  // 예약번호 생성
   function newId() { return 'RES-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
-  // 폼 제출
-  document.getElementById('resForm').addEventListener('submit', function(e) {
+  // 폼 제출 — Firestore에 저장
+  document.getElementById('resForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const name  = document.getElementById('name').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const date  = dateInput.value;
-    const time  = document.getElementById('selectedTime').value;
-    const guests= document.getElementById('guests').value;
-    const req   = document.getElementById('request').value.trim();
+    const name   = document.getElementById('name').value.trim();
+    const phone  = document.getElementById('phone').value.trim();
+    const date   = dateInput.value;
+    const time   = document.getElementById('selectedTime').value;
+    const guests = document.getElementById('guests').value;
+    const req    = document.getElementById('request').value.trim();
 
     if (!name)  return alert('이름을 입력해주세요.');
     if (!phone) return alert('전화번호를 입력해주세요.');
@@ -414,27 +423,33 @@
       return renderTimeSlots();
     }
 
-    const res = { id: newId(), name, phone, date, time, guests, request: req, createdAt: Date.now() };
-    const list = getList();
-    list.push(res);
-    saveList(list);
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = '예약 중...';
 
-    sendAdminEmail(res); // 관리자 이메일 발송
+    try {
+      const res = { id: newId(), name, phone, date, time, guests, request: req, createdAt: Date.now() };
+      await db.collection('reservations').add(res);
+      sendAdminEmail(res);
 
-    document.getElementById('resNum').textContent = res.id;
-    document.getElementById('successBox').classList.add('show');
-    this.reset();
-    dateInput.value = today;
-    document.getElementById('selectedTime').value = '';
-    renderTimeSlots();
-    setTimeout(() => document.getElementById('successBox').classList.remove('show'), 7000);
+      document.getElementById('resNum').textContent = res.id;
+      document.getElementById('successBox').classList.add('show');
+      this.reset();
+      dateInput.value = today;
+      document.getElementById('selectedTime').value = '';
+      renderTimeSlots();
+      setTimeout(() => document.getElementById('successBox').classList.remove('show'), 7000);
+    } catch(err) {
+      alert('예약 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      btn.disabled = false; btn.textContent = '☕ 예약하기';
+    }
   });
 
-  // 예약 조회
+  // 예약 조회 — 캐시에서 검색
   function searchReservations() {
     const phone = document.getElementById('searchPhone').value.trim();
     if (!phone) return alert('전화번호를 입력해주세요.');
-    const found = getList().filter(r => r.phone === phone)
+    const found = reservations.filter(r => r.phone === phone)
       .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
     const el = document.getElementById('resList');
     if (!found.length) {
@@ -442,10 +457,10 @@
       return;
     }
     el.innerHTML = found.map(r => `
-      <div class="res-item" id="item-${r.id}">
+      <div class="res-item" id="item-${r._docId}">
         <div class="res-item-header">
           <span class="res-id">${r.id}</span>
-          <button class="btn-cancel" onclick="cancelRes('${r.id}')">취소</button>
+          <button class="btn-cancel" onclick="cancelRes('${r._docId}')">취소</button>
         </div>
         <div class="res-info">
           <span class="lbl">이름</span><span class="val">${r.name}</span>
@@ -457,15 +472,18 @@
       </div>`).join('');
   }
 
-  // 예약 취소
-  function cancelRes(id) {
+  // 예약 취소 — Firestore에서 삭제
+  async function cancelRes(docId) {
     if (!confirm('예약을 취소하시겠습니까?')) return;
-    saveList(getList().filter(r => r.id !== id));
-    document.getElementById('item-' + id)?.remove();
-    renderTimeSlots();
-    const el = document.getElementById('resList');
-    if (!el.querySelector('.res-item'))
-      el.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
+    try {
+      await db.collection('reservations').doc(docId).delete();
+      document.getElementById('item-' + docId)?.remove();
+      const el = document.getElementById('resList');
+      if (!el.querySelector('.res-item'))
+        el.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
+    } catch(err) {
+      alert('취소 중 오류가 발생했습니다.');
+    }
   }
 
   renderTimeSlots();
