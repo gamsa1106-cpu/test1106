@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>☕ 카페 예약</title>
+  <style>
+    :root {
+      --brown:  #6b4423;
+      --brown2: #8b5e3c;
+      --gold:   #d4a96a;
+      --cream:  #fdf6ec;
+      --cream2: #f5e6d3;
+      --text:   #2d1b0e;
+      --sub:    #8b6b52;
+      --border: #e8d5c0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, var(--brown), var(--brown2));
+      color: #fff;
+      text-align: center;
+      padding: 48px 20px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 240px; height: 240px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 50%;
+    }
+    .cafe-icon { font-size: 52px; margin-bottom: 14px; }
+    header h1  { font-size: 2rem; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; }
+    header p   { color: rgba(255,255,255,0.75); font-size: 0.95rem; }
+
+    /* ── 레이아웃 ── */
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 36px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 700px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    /* ── 카드 ── */
+    .card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(107,68,35,0.08);
+      border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--brown);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── 폼 ── */
+    .form-group { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--sub);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--cream);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--brown);
+      box-shadow: 0 0 0 3px rgba(107,68,35,0.1);
+      background: #fff;
+    }
+    textarea { resize: none; height: 76px; }
+
+    /* ── 시간 슬롯 ── */
+    .time-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+    .time-slot {
+      padding: 9px 2px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      background: var(--cream);
+      color: var(--text);
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .time-slot:hover:not(.full) { border-color: var(--brown); background: var(--cream2); }
+    .time-slot.selected         { background: var(--brown); border-color: var(--brown); color: #fff; }
+    .time-slot.full             { background: #f0ebe5; border-color: #ddd; color: #bbb; cursor: not-allowed; text-decoration: line-through; }
+
+    /* ── 예약 버튼 ── */
+    .btn-reserve {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--brown), var(--brown2));
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 14px rgba(107,68,35,0.35);
+      font-family: inherit;
+    }
+    .btn-reserve:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(107,68,35,0.45); }
+
+    /* ── 성공 메시지 ── */
+    .success-box {
+      display: none;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 1.5px solid #86efac;
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 16px;
+      animation: fadeIn 0.4s ease;
+    }
+    .success-box.show { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .success-box h3 { color: #15803d; font-size: 1rem; margin-bottom: 10px; }
+    .res-num {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #15803d;
+      background: #fff;
+      border-radius: 8px;
+      padding: 6px 18px;
+      display: inline-block;
+      margin-bottom: 8px;
+      letter-spacing: 3px;
+      border: 1px solid #86efac;
+    }
+    .success-box p { font-size: 0.82rem; color: #166534; }
+
+    /* ── 조회 ── */
+    .search-row { display: flex; gap: 8px; }
+    .search-row input { flex: 1; }
+    .btn-search {
+      padding: 11px 16px;
+      background: var(--gold);
+      color: var(--brown);
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+    .btn-search:hover { background: #c49656; color: #fff; }
+
+    /* ── 예약 목록 ── */
+    .res-list { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+    .res-item {
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      animation: fadeIn 0.3s ease;
+    }
+    .res-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .res-id { font-size: 11px; font-weight: 700; color: var(--sub); letter-spacing: 1px; }
+    .btn-cancel {
+      padding: 4px 10px;
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fca5a5;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .btn-cancel:hover { background: #dc2626; color: #fff; border-color: #dc2626; }
+
+    .res-info { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 0.85rem; align-items: center; }
+    .res-info .lbl { color: var(--sub); white-space: nowrap; }
+    .res-info .val { font-weight: 600; color: var(--text); }
+
+    .empty-state { text-align: center; color: var(--sub); font-size: 0.88rem; padding: 24px 0; }
+
+    .notice { font-size: 11px; color: var(--sub); margin-top: 12px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="cafe-icon">☕</div>
+  <h1>카페 예약</h1>
+  <p>편안한 공간에서의 특별한 시간을 미리 예약하세요</p>
+</header>
+
+<div class="container">
+
+  <!-- ── 예약 폼 ── -->
+  <div class="card">
+    <div class="card-title">📅 예약하기</div>
+    <form id="resForm">
+      <div class="form-group">
+        <label>이름</label>
+        <input type="text" id="name" placeholder="이름을 입력하세요">
+      </div>
+      <div class="form-group">
+        <label>전화번호</label>
+        <input type="tel" id="phone" placeholder="010-0000-0000" maxlength="13">
+      </div>
+      <div class="form-group">
+        <label>날짜</label>
+        <input type="date" id="date">
+      </div>
+      <div class="form-group">
+        <label>시간 선택</label>
+        <div class="time-grid" id="timeGrid"></div>
+        <input type="hidden" id="selectedTime">
+      </div>
+      <div class="form-group">
+        <label>인원</label>
+        <select id="guests">
+          <option value="1">1명</option>
+          <option value="2" selected>2명</option>
+          <option value="3">3명</option>
+          <option value="4">4명</option>
+          <option value="5">5명</option>
+          <option value="6">6명 이상</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>요청사항 <span style="font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
+        <textarea id="request" placeholder="창가 자리, 생일 케이크 준비 등 요청사항을 적어주세요"></textarea>
+      </div>
+      <button type="submit" class="btn-reserve">☕ 예약하기</button>
+    </form>
+
+    <div class="success-box" id="successBox">
+      <h3>✅ 예약이 완료되었습니다!</h3>
+      <div class="res-num" id="resNum"></div>
+      <p>예약번호를 메모해두세요.<br>전화번호로 예약 조회·취소가 가능합니다.</p>
+    </div>
+
+    <p class="notice">※ 시간대당 최대 5팀까지 예약 가능합니다.<br>※ 만석인 시간대는 선택할 수 없습니다.</p>
+  </div>
+
+  <!-- ── 예약 조회 / 취소 ── -->
+  <div class="card">
+    <div class="card-title">🔍 예약 조회 / 취소</div>
+    <div class="search-row">
+      <input type="tel" id="searchPhone" placeholder="전화번호로 조회" maxlength="13">
+      <button class="btn-search" onclick="searchReservations()">조회</button>
+    </div>
+    <div class="res-list" id="resList">
+      <div class="empty-state">전화번호를 입력하고 조회하세요 📋</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TIME_SLOTS = [
+    '11:00','11:30','12:00','12:30',
+    '13:00','13:30','14:00','14:30',
+    '15:00','15:30','16:00','16:30',
+    '17:00','17:30','18:00','18:30',
+    '19:00','19:30','20:00','20:30',
+  ];
+  const MAX_PER_SLOT = 5;
+
+  // 오늘 날짜 기본값
+  const dateInput = document.getElementById('date');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.min = today;
+  dateInput.value = today;
+  dateInput.addEventListener('change', () => {
+    document.getElementById('selectedTime').value = '';
+    renderTimeSlots();
+  });
+
+  // 전화번호 자동 하이픈
+  function formatPhone(val) {
+    const n = val.replace(/\D/g, '').slice(0, 11);
+    if (n.length <= 3) return n;
+    if (n.length <= 7) return n.slice(0,3) + '-' + n.slice(3);
+    return n.slice(0,3) + '-' + n.slice(3,7) + '-' + n.slice(7);
+  }
+  document.getElementById('phone').addEventListener('input', function() { this.value = formatPhone(this.value); });
+  document.getElementById('searchPhone').addEventListener('input', function() { this.value = formatPhone(this.value); });
+
+  // 예약 데이터
+  function getList() { return JSON.parse(localStorage.getItem('cafe_res') || '[]'); }
+  function saveList(l) { localStorage.setItem('cafe_res', JSON.stringify(l)); }
+  function slotCount(date, time) { return getList().filter(r => r.date === date && r.time === time).length; }
+
+  // 시간 슬롯 렌더링
+  function renderTimeSlots() {
+    const date = dateInput.value;
+    const sel  = document.getElementById('selectedTime').value;
+    document.getElementById('timeGrid').innerHTML = TIME_SLOTS.map(t => {
+      const cnt    = slotCount(date, t);
+      const isFull = cnt >= MAX_PER_SLOT;
+      const cls    = isFull ? 'full' : t === sel ? 'selected' : '';
+      return `<div class="time-slot ${cls}"
+                onclick="${isFull ? '' : `pickTime('${t}')`}"
+                title="${isFull ? '만석' : `잔여 ${MAX_PER_SLOT - cnt}팀`}">${t}</div>`;
+    }).join('');
+  }
+
+  function pickTime(t) {
+    document.getElementById('selectedTime').value = t;
+    renderTimeSlots();
+  }
+
+  // 예약번호 생성
+  function newId() { return 'RES-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
+
+  // 폼 제출
+  document.getElementById('resForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name  = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const date  = dateInput.value;
+    const time  = document.getElementById('selectedTime').value;
+    const guests= document.getElementById('guests').value;
+    const req   = document.getElementById('request').value.trim();
+
+    if (!name)  return alert('이름을 입력해주세요.');
+    if (!phone) return alert('전화번호를 입력해주세요.');
+    if (!date)  return alert('날짜를 선택해주세요.');
+    if (!time)  return alert('시간을 선택해주세요.');
+    if (slotCount(date, time) >= MAX_PER_SLOT) {
+      alert('해당 시간대가 만석입니다. 다른 시간을 선택해주세요.');
+      return renderTimeSlots();
+    }
+
+    const res = { id: newId(), name, phone, date, time, guests, request: req, createdAt: Date.now() };
+    const list = getList();
+    list.push(res);
+    saveList(list);
+
+    document.getElementById('resNum').textContent = res.id;
+    document.getElementById('successBox').classList.add('show');
+    this.reset();
+    dateInput.value = today;
+    document.getElementById('selectedTime').value = '';
+    renderTimeSlots();
+    setTimeout(() => document.getElementById('successBox').classList.remove('show'), 7000);
+  });
+
+  // 예약 조회
+  function searchReservations() {
+    const phone = document.getElementById('searchPhone').value.trim();
+    if (!phone) return alert('전화번호를 입력해주세요.');
+    const found = getList().filter(r => r.phone === phone)
+      .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
+    const el = document.getElementById('resList');
+    if (!found.length) {
+      el.innerHTML = '<div class="empty-state">해당 전화번호로 예약된 내역이 없습니다.</div>';
+      return;
+    }
+    el.innerHTML = found.map(r => `
+      <div class="res-item" id="item-${r.id}">
+        <div class="res-item-header">
+          <span class="res-id">${r.id}</span>
+          <button class="btn-cancel" onclick="cancelRes('${r.id}')">취소</button>
+        </div>
+        <div class="res-info">
+          <span class="lbl">이름</span><span class="val">${r.name}</span>
+          <span class="lbl">날짜</span><span class="val">${r.date}</span>
+          <span class="lbl">시간</span><span class="val">${r.time}</span>
+          <span class="lbl">인원</span><span class="val">${r.guests}명</span>
+          ${r.request ? `<span class="lbl">요청</span><span class="val">${r.request}</span>` : ''}
+        </div>
+      </div>`).join('');
+  }
+
+  // 예약 취소
+  function cancelRes(id) {
+    if (!confirm('예약을 취소하시겠습니까?')) return;
+    saveList(getList().filter(r => r.id !== id));
+    document.getElementById('item-' + id)?.remove();
+    renderTimeSlots();
+    const el = document.getElementById('resList');
+    if (!el.querySelector('.res-item'))
+      el.innerHTML = '<div class="empty-state">예약 내역이 없습니다.</div>';
+  }
+
+  renderTimeSlots();
+</script>
+</body>
+</html>

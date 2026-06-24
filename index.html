@@ -584,7 +584,7 @@
       </p>
       <div class="about-stats">
         <div class="stat-box">
-          <div class="stat-num">3+</div>
+          <div class="stat-num">4+</div>
           <div class="stat-lbl">완성한 프로젝트</div>
         </div>
         <div class="stat-box">
@@ -687,6 +687,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#fdf6ec,#f5e6d3)">☕</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">localStorage</span>
+        </div>
+        <div class="project-name">카페 예약 시스템</div>
+        <div class="project-desc">날짜·시간·인원 선택, 실시간 만석 표시, 전화번호로 예약 조회·취소 기능</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('reservation')">자세히 보기</button>
+          <a class="project-link" href="js_reservation/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -782,6 +800,25 @@
       ],
       liveUrl: 'js_weather/index.html',
       liveLabel: '🚀 실행해보기',
+    },
+    reservation: {
+      emoji: '☕',
+      bg: 'linear-gradient(135deg,#fdf6ec,#f5e6d3)',
+      tags: ['HTML', 'CSS', 'JavaScript', 'localStorage'],
+      title: '카페 예약 시스템',
+      desc: '실제 서비스처럼 동작하는 카페 예약 웹앱입니다. 날짜·시간·인원을 선택해 예약하고, 시간대별 만석 여부를 실시간으로 확인할 수 있습니다. 서버 없이 localStorage만으로 데이터를 저장·조회·취소하는 구조를 직접 설계했습니다.',
+      features: [
+        '날짜 선택 시 시간 슬롯 동적 업데이트',
+        '시간대별 잔여 예약 수 실시간 표시 (최대 5팀)',
+        '만석인 시간대 자동 비활성화',
+        '예약 완료 시 고유 예약번호 발급',
+        '전화번호로 내 예약 조회 기능',
+        '예약 취소 기능',
+        '전화번호 자동 하이픈 포맷팅',
+        'localStorage로 브라우저에 데이터 저장',
+      ],
+      liveUrl: 'js_reservation/index.html',
+      liveLabel: '🚀 예약해보기',
     },
     next: {
       emoji: '🚀',
