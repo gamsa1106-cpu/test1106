@@ -8,6 +8,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <!-- Supabase SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- 토스페이먼츠 SDK -->
+  <script src="https://js.tosspayments.com/v1/payment"></script>
   <style>
     :root {
       --brown:  #6b4423;
@@ -242,6 +244,33 @@
     .empty-state { text-align: center; color: var(--sub); font-size: 0.88rem; padding: 24px 0; }
 
     .notice { font-size: 11px; color: var(--sub); margin-top: 12px; line-height: 1.6; }
+
+    /* ── 결제 금액 ── */
+    .price-summary {
+      background: linear-gradient(135deg, #fff8ee, #fff3e0);
+      border: 1.5px solid var(--gold);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .price-label { font-size: 0.82rem; color: var(--sub); font-weight: 600; }
+    .price-amount { font-size: 1.25rem; font-weight: 900; color: var(--brown); }
+    .price-hint { font-size: 0.72rem; color: var(--sub); margin-top: 2px; }
+
+    /* ── 결제 방법 선택 ── */
+    .pay-methods { display: flex; gap: 8px; margin-bottom: 14px; }
+    .pay-method-btn {
+      flex: 1; padding: 10px 6px;
+      border: 2px solid var(--border); border-radius: 10px;
+      background: var(--cream); color: var(--text);
+      font-size: 0.78rem; font-weight: 700; cursor: pointer;
+      transition: all 0.15s; text-align: center; font-family: inherit;
+    }
+    .pay-method-btn:hover { border-color: var(--brown); }
+    .pay-method-btn.selected { border-color: var(--brown); background: var(--brown); color: #fff; }
   </style>
 </head>
 <body>
@@ -290,7 +319,27 @@
         <label>요청사항 <span style="font-weight:400;text-transform:none;letter-spacing:0">(선택)</span></label>
         <textarea id="request" placeholder="창가 자리, 생일 케이크 준비 등 요청사항을 적어주세요"></textarea>
       </div>
-      <button type="submit" class="btn-reserve">☕ 예약하기</button>
+      <!-- 결제 방법 선택 -->
+      <div class="form-group">
+        <label>결제 방법</label>
+        <div class="pay-methods">
+          <button type="button" class="pay-method-btn selected" onclick="selectPay(this,'카드')">💳 카드</button>
+          <button type="button" class="pay-method-btn" onclick="selectPay(this,'네이버페이')">🟢 네이버페이</button>
+          <button type="button" class="pay-method-btn" onclick="selectPay(this,'카카오페이')">🟡 카카오페이</button>
+        </div>
+        <input type="hidden" id="payMethod" value="카드">
+      </div>
+
+      <!-- 결제 금액 -->
+      <div class="price-summary">
+        <div>
+          <div class="price-label">💳 결제 금액 (인원 × 5,000원)</div>
+          <div class="price-hint">테스트 결제 · 실제 청구 없음</div>
+        </div>
+        <div class="price-amount" id="priceAmount">10,000원</div>
+      </div>
+
+      <button type="submit" class="btn-reserve">💳 결제하고 예약하기</button>
     </form>
 
     <div class="success-box" id="successBox">
@@ -324,14 +373,14 @@
     'sb_publishable_L_wFuKlrKGJlq1pzmuiKmA_uMx748lk'
   );
 
-  // ── EmailJS ──────────────────────────────────────────────────
-  const EMAILJS_PUBLIC_KEY  = 'mzDgHqHANbLGmlIIN';
-  const EMAILJS_SERVICE_ID  = 'service_svug626';
-  const EMAILJS_TEMPLATE_ID = 'template_rt28cvn';
-  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  // ── 토스페이먼츠 ─────────────────────────────────────────────
+  const TOSS_CLIENT_KEY  = 'test_ck_XZYkKL4Mrjj749OOKZpBr0zJwlEW';
+  const PRICE_PER_PERSON = 5000;
 
+  // ── EmailJS ──────────────────────────────────────────────────
+  emailjs.init({ publicKey: 'mzDgHqHANbLGmlIIN' });
   function sendAdminEmail(res) {
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    emailjs.send('service_svug626', 'template_rt28cvn', {
       res_id: res.id, name: res.name, phone: res.phone,
       date: res.date, time: res.time,
       guests: res.guests + '명', request: res.request || '없음',
@@ -365,7 +414,22 @@
   document.getElementById('phone').addEventListener('input', function() { this.value = formatPhone(this.value); });
   document.getElementById('searchPhone').addEventListener('input', function() { this.value = formatPhone(this.value); });
 
-  // 로컬 캐시 — Supabase 실시간 동기화
+  // 인원 변경 → 금액 업데이트
+  function updatePrice() {
+    const g = parseInt(document.getElementById('guests').value) || 1;
+    document.getElementById('priceAmount').textContent = (g * PRICE_PER_PERSON).toLocaleString() + '원';
+  }
+  document.getElementById('guests').addEventListener('change', updatePrice);
+  updatePrice();
+
+  // 결제 방법 선택
+  function selectPay(btn, method) {
+    document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('payMethod').value = method;
+  }
+
+  // 로컬 캐시 — 실시간 동기화
   let reservations = [];
 
   async function fetchReservations() {
@@ -405,7 +469,18 @@
 
   function newId() { return 'RES-' + Math.random().toString(36).substr(2,6).toUpperCase(); }
 
-  // 폼 제출 — Supabase에 저장
+  // 결제 완료 후 예약 저장
+  async function completeReservation(pending) {
+    const { amount: _, ...resData } = pending;
+    const { error } = await db.from('reservations').insert(resData);
+    if (error) throw error;
+    sendAdminEmail(resData);
+    document.getElementById('resNum').textContent = resData.id;
+    document.getElementById('successBox').classList.add('show');
+    setTimeout(() => document.getElementById('successBox').classList.remove('show'), 8000);
+  }
+
+  // 폼 제출 → 토스페이먼츠 결제
   document.getElementById('resForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     const name   = document.getElementById('name').value.trim();
@@ -414,6 +489,7 @@
     const time   = document.getElementById('selectedTime').value;
     const guests = document.getElementById('guests').value;
     const req    = document.getElementById('request').value.trim();
+    const method = document.getElementById('payMethod').value;
 
     if (!name)  return alert('이름을 입력해주세요.');
     if (!phone) return alert('전화번호를 입력해주세요.');
@@ -424,30 +500,35 @@
       return renderTimeSlots();
     }
 
-    const btn = this.querySelector('button[type="submit"]');
-    btn.disabled = true; btn.textContent = '예약 중...';
+    const resId  = newId();
+    const amount = parseInt(guests) * PRICE_PER_PERSON;
+
+    // 결제 완료 후 돌아올 때를 위해 저장
+    sessionStorage.setItem('pendingRes', JSON.stringify({
+      id: resId, name, phone, date, time, guests,
+      request: req, created_at: Date.now(), amount,
+    }));
+
+    // 토스페이먼츠 결제 요청
+    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    const baseUrl = window.location.href.split('?')[0];
 
     try {
-      const res = { id: newId(), name, phone, date, time, guests, request: req, created_at: Date.now() };
-      const { error } = await db.from('reservations').insert(res);
-      if (error) throw error;
-      sendAdminEmail(res);
-
-      document.getElementById('resNum').textContent = res.id;
-      document.getElementById('successBox').classList.add('show');
-      this.reset();
-      dateInput.value = today;
-      document.getElementById('selectedTime').value = '';
-      renderTimeSlots();
-      setTimeout(() => document.getElementById('successBox').classList.remove('show'), 7000);
+      await tossPayments.requestPayment(method, {
+        amount,
+        orderId: resId,
+        orderName: `카페 예약 (${date} ${time} · ${guests}명)`,
+        customerName: name,
+        successUrl: baseUrl + '?payment=success',
+        failUrl:    baseUrl + '?payment=fail',
+      });
     } catch(err) {
-      alert('예약 중 오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      btn.disabled = false; btn.textContent = '☕ 예약하기';
+      sessionStorage.removeItem('pendingRes');
+      if (err.code !== 'USER_CANCEL') alert('결제 오류: ' + err.message);
     }
   });
 
-  // 예약 조회 — 캐시에서 검색
+  // 예약 조회
   function searchReservations() {
     const phone = document.getElementById('searchPhone').value.trim();
     if (!phone) return alert('전화번호를 입력해주세요.');
@@ -474,7 +555,7 @@
       </div>`).join('');
   }
 
-  // 예약 취소 — Supabase에서 삭제
+  // 예약 취소
   async function cancelRes(docId) {
     if (!confirm('예약을 취소하시겠습니까?')) return;
     try {
@@ -490,6 +571,28 @@
   }
 
   renderTimeSlots();
+
+  // ── 결제 결과 처리 (토스 리다이렉트 후) ──────────────────────
+  (async function() {
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has('payment')) return;
+    window.history.replaceState({}, '', window.location.pathname);
+
+    if (params.get('payment') === 'success') {
+      const pending = JSON.parse(sessionStorage.getItem('pendingRes') || 'null');
+      sessionStorage.removeItem('pendingRes');
+      if (pending) {
+        try {
+          await completeReservation(pending);
+        } catch(err) {
+          alert('예약 저장 오류가 발생했습니다.\n예약번호 ' + pending.id + ' 를 관리자에게 문의하세요.');
+        }
+      }
+    } else {
+      sessionStorage.removeItem('pendingRes');
+      alert('결제가 취소되었거나 실패했습니다. 다시 시도해주세요.');
+    }
+  })();
 </script>
 </body>
 </html>
