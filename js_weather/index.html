@@ -410,7 +410,8 @@ const VIEWS = {
 // ==============================================
 // API Key 관리
 // ==============================================
-let apiKey = localStorage.getItem('owm_key') || '';
+const DEFAULT_KEY = 'a625f37dd3e754cc401a70257227575f';
+let apiKey = localStorage.getItem('owm_key') || DEFAULT_KEY;
 if (apiKey) {
   document.getElementById('api-input').value = apiKey;
   document.getElementById('demo-badge').style.display = 'none';
