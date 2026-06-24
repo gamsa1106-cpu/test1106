@@ -271,6 +271,18 @@
     }
     .pay-method-btn:hover { border-color: var(--brown); }
     .pay-method-btn.selected { border-color: var(--brown); background: var(--brown); color: #fff; }
+
+    /* ── 후불결제 버튼 ── */
+    .btn-deferred {
+      width: 100%; padding: 12px;
+      background: transparent;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      color: var(--sub);
+      font-size: 0.9rem; font-weight: 600; cursor: pointer;
+      margin-top: 8px; transition: all 0.2s; font-family: inherit;
+    }
+    .btn-deferred:hover { border-color: var(--brown); color: var(--brown); background: var(--cream2); }
   </style>
 </head>
 <body>
@@ -340,6 +352,7 @@
       </div>
 
       <button type="submit" class="btn-reserve">💳 결제하고 예약하기</button>
+      <button type="button" class="btn-deferred" id="deferredBtn" onclick="submitDeferred()">🕐 후불결제로 예약하기 (현장 결제)</button>
     </form>
 
     <div class="success-box" id="successBox">
@@ -527,6 +540,47 @@
       if (err.code !== 'USER_CANCEL') alert('결제 오류: ' + err.message);
     }
   });
+
+  // 후불결제 예약 — 결제 없이 바로 저장
+  async function submitDeferred() {
+    const name   = document.getElementById('name').value.trim();
+    const phone  = document.getElementById('phone').value.trim();
+    const date   = dateInput.value;
+    const time   = document.getElementById('selectedTime').value;
+    const guests = document.getElementById('guests').value;
+    const req    = document.getElementById('request').value.trim();
+
+    if (!name)  return alert('이름을 입력해주세요.');
+    if (!phone) return alert('전화번호를 입력해주세요.');
+    if (!date)  return alert('날짜를 선택해주세요.');
+    if (!time)  return alert('시간을 선택해주세요.');
+    if (slotCount(date, time) >= MAX_PER_SLOT) {
+      alert('해당 시간대가 만석입니다. 다른 시간을 선택해주세요.');
+      return renderTimeSlots();
+    }
+
+    const btn = document.getElementById('deferredBtn');
+    btn.disabled = true; btn.textContent = '예약 중...';
+
+    try {
+      const res = { id: newId(), name, phone, date, time, guests, request: req, created_at: Date.now() };
+      const { error } = await db.from('reservations').insert(res);
+      if (error) throw error;
+      sendAdminEmail(res);
+      document.getElementById('resNum').textContent = res.id;
+      document.getElementById('successBox').classList.add('show');
+      document.getElementById('resForm').reset();
+      dateInput.value = today;
+      document.getElementById('selectedTime').value = '';
+      updatePrice();
+      renderTimeSlots();
+      setTimeout(() => document.getElementById('successBox').classList.remove('show'), 8000);
+    } catch(err) {
+      alert('예약 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      btn.disabled = false; btn.textContent = '🕐 후불결제로 예약하기 (현장 결제)';
+    }
+  }
 
   // 예약 조회
   function searchReservations() {
