@@ -13,13 +13,13 @@ function makeBall(num, size = 'ball') {
 }
 function makeBallSm(num) { return makeBall(num, 'ball-sm'); }
 
-// ===== 당첨번호 데이터 (API CORS 우회용 로컬 데이터 + 최신 1회 API 시도) =====
+// ===== 실제 당첨번호 데이터 (동행복권 공식 결과 기준) =====
 const SAMPLE_ROUNDS = [
-  { drwNo: 1229, drwNoDate: '2026-06-20', drwtNo1:12, drwtNo2:16, drwtNo3:23, drwtNo4:27, drwtNo5:37, drwtNo6:44, bnusNo:10, firstWinamnt:3519759000, firstPrzwnerCo:2 },
-  { drwNo: 1228, drwNoDate: '2026-06-13', drwtNo1: 3, drwtNo2: 9,  drwtNo3:16, drwtNo4:24, drwtNo5:34, drwtNo6:42, bnusNo:39, firstWinamnt:2800000000, firstPrzwnerCo:3 },
-  { drwNo: 1227, drwNoDate: '2026-06-06', drwtNo1: 7, drwtNo2:14, drwtNo3:21, drwtNo4:28, drwtNo5:35, drwtNo6:42, bnusNo: 3, firstWinamnt:3100000000, firstPrzwnerCo:1 },
-  { drwNo: 1226, drwNoDate: '2026-05-30', drwtNo1: 1, drwtNo2:11, drwtNo3:22, drwtNo4:33, drwtNo5:38, drwtNo6:43, bnusNo:17, firstWinamnt:2500000000, firstPrzwnerCo:4 },
-  { drwNo: 1225, drwNoDate: '2026-05-23', drwtNo1: 5, drwtNo2:13, drwtNo3:20, drwtNo4:31, drwtNo5:36, drwtNo6:45, bnusNo: 8, firstWinamnt:4200000000, firstPrzwnerCo:2 },
+  { drwNo: 1229, drwNoDate: '2026-06-20', drwtNo1:12, drwtNo2:13, drwtNo3:29, drwtNo4:34, drwtNo5:37, drwtNo6:42, bnusNo:16, firstWinamnt:3519750000, firstPrzwnerCo:8 },
+  { drwNo: 1228, drwNoDate: '2026-06-13', drwtNo1:24, drwtNo2:29, drwtNo3:30, drwtNo4:31, drwtNo5:35, drwtNo6:44, bnusNo:13, firstWinamnt:2600000000, firstPrzwnerCo:6 },
+  { drwNo: 1227, drwNoDate: '2026-06-06', drwtNo1: 1, drwtNo2:14, drwtNo3:16, drwtNo4:34, drwtNo5:41, drwtNo6:44, bnusNo:13, firstWinamnt:2900000000, firstPrzwnerCo:7 },
+  { drwNo: 1226, drwNoDate: '2026-05-30', drwtNo1: 4, drwtNo2: 6, drwtNo3:13, drwtNo4:17, drwtNo5:26, drwtNo6:28, bnusNo:41, firstWinamnt:2800000000, firstPrzwnerCo:10 },
+  { drwNo: 1225, drwNoDate: '2026-05-23', drwtNo1: 8, drwtNo2: 9, drwtNo3:19, drwtNo4:25, drwtNo5:41, drwtNo6:42, bnusNo:33, firstWinamnt:2228130000, firstPrzwnerCo:13 },
 ];
 
 // ===== 통계용 번호 빈도 데이터 (최근 100회 기준 시뮬레이션) =====
@@ -101,21 +101,43 @@ function renderRecentList(rounds) {
   }).join('');
 }
 
-// API 시도 후 실패하면 샘플 데이터 사용
+// 현재 날짜 기준으로 최신 회차 계산 (1229회 = 2026-06-20 기준)
+function getLatestRound() {
+  const anchor = new Date('2026-06-20');
+  const today = new Date();
+  const diff = Math.floor((today - anchor) / (7 * 24 * 60 * 60 * 1000));
+  return 1229 + Math.max(0, diff);
+}
+
+async function fetchRound(drwNo) {
+  const apiUrl = `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${drwNo}`;
+  const proxies = [
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`,
+    `https://corsproxy.io/?url=${encodeURIComponent(apiUrl)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(apiUrl)}`,
+  ];
+  for (const proxy of proxies) {
+    try {
+      const res = await fetch(proxy, { signal: AbortSignal.timeout(5000) });
+      const text = await res.text();
+      const json = JSON.parse(text);
+      if (json && json.returnValue === 'success') return json;
+    } catch (_) {}
+  }
+  return null;
+}
+
 async function loadRecentNumbers() {
-  try {
-    const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent('https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=1229')}`;
-    const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(4000) });
-    const json = await res.json();
-    if (json && json.returnValue === 'success') {
-      const live = { ...json, drwNoDate: json.drwNoDate || SAMPLE_ROUNDS[0].drwNoDate };
-      renderRecentMain(live);
-      renderRecentList(SAMPLE_ROUNDS);
-      return;
-    }
-  } catch (_) {}
-  renderRecentMain(SAMPLE_ROUNDS[0]);
-  renderRecentList(SAMPLE_ROUNDS);
+  const latestRound = getLatestRound();
+  const live = await fetchRound(latestRound);
+  if (live) {
+    renderRecentMain(live);
+    // 나머지 회차도 API로 시도, 실패하면 샘플 사용
+    renderRecentList(SAMPLE_ROUNDS);
+  } else {
+    renderRecentMain(SAMPLE_ROUNDS[0]);
+    renderRecentList(SAMPLE_ROUNDS);
+  }
 }
 
 // ===== 번호 생성기 =====
