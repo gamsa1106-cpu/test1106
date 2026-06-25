@@ -584,7 +584,7 @@
       </p>
       <div class="about-stats">
         <div class="stat-box">
-          <div class="stat-num">4+</div>
+          <div class="stat-num">5+</div>
           <div class="stat-lbl">완성한 프로젝트</div>
         </div>
         <div class="stat-box">
@@ -723,6 +723,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#1e1b4b,#312e81)">📖</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">Web Speech API</span>
+        </div>
+        <div class="project-name">성경 언어 학습</div>
+        <div class="project-desc">헬라어·히브리어 단어 플래시카드, TTS 발음, OX 퀴즈, 학습 진도 트래킹</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('language')">자세히 보기</button>
+          <a class="project-link" href="js_language/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -856,6 +874,24 @@
       ],
       liveUrl: 'lotto-site/index.html',
       liveLabel: '🍀 실행해보기',
+    },
+    language: {
+      emoji: '📖',
+      bg: 'linear-gradient(135deg,#1e1b4b,#312e81)',
+      tags: ['HTML', 'CSS', 'JavaScript', 'Web Speech API'],
+      title: '성경 언어 학습',
+      desc: '헬라어(Biblical Greek)와 히브리어(Biblical Hebrew) 성경 핵심 단어 20개씩을 플래시카드와 퀴즈로 학습하는 웹앱입니다. 브라우저 내장 Web Speech API를 활용해 발음을 직접 들을 수 있고, 학습 진도와 정답 연속 기록을 실시간으로 확인할 수 있습니다.',
+      features: [
+        '헬라어 / 히브리어 탭 전환',
+        '플래시카드 — 앞면(원어) 클릭 시 뜻 확인',
+        'Web Speech API TTS 발음 듣기 (el-GR / he-IL)',
+        '4지 선다 OX 퀴즈 (정답·오답 즉시 피드백)',
+        '학습 진도 바, 정답 수, 연속 정답 스트릭 표시',
+        '단어 목록 보기 — 클릭 시 해당 카드로 이동',
+        '세션 완료 시 별점 & 정답률 결과 화면',
+      ],
+      liveUrl: 'js_language/index.html',
+      liveLabel: '📖 학습하기',
     },
     next: {
       emoji: '🚀',

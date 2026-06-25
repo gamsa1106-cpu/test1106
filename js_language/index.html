@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>성경 언어 학습 | 헬라어 · 히브리어</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:  #4f46e5;
+      --primary2: #7c3aed;
+      --gold:     #d97706;
+      --gold2:    #92400e;
+      --text:     #1e293b;
+      --sub:      #64748b;
+      --bg:       #f8fafc;
+      --card:     #ffffff;
+      --border:   #e2e8f0;
+      --green:    #16a34a;
+      --red:      #dc2626;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── 헤더 ── */
+    header {
+      background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
+      color: #fff;
+      padding: 20px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-icon { font-size: 32px; }
+    .header-title { font-size: 1.3rem; font-weight: 800; }
+    .header-sub { font-size: 0.8rem; opacity: 0.7; margin-top: 2px; }
+    .back-link {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 6px 14px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .back-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ── 메인 컨테이너 ── */
+    .container { max-width: 760px; margin: 0 auto; padding: 32px 20px 60px; }
+
+    /* ── 언어 탭 ── */
+    .lang-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 6px;
+    }
+    .lang-tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: transparent;
+      color: var(--sub);
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .lang-tab.active {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(79,70,229,0.35);
+    }
+    .lang-tab .lang-flag { font-size: 20px; }
+
+    /* ── 모드 탭 ── */
+    .mode-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+    .mode-tab {
+      padding: 9px 20px;
+      border: 1.5px solid var(--border);
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: #fff;
+      color: var(--sub);
+      transition: all 0.2s;
+    }
+    .mode-tab.active {
+      border-color: var(--primary);
+      background: #ede9fe;
+      color: var(--primary);
+    }
+
+    /* ── 진도 표시 ── */
+    .progress-bar-wrap {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .progress-stats { display: flex; gap: 20px; flex-shrink: 0; }
+    .stat { text-align: center; }
+    .stat-val { font-size: 1.2rem; font-weight: 800; color: var(--primary); }
+    .stat-lbl { font-size: 10px; color: var(--sub); margin-top: 1px; }
+    .progress-right { flex: 1; }
+    .progress-label { font-size: 0.8rem; color: var(--sub); margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary2));
+      border-radius: 6px;
+      transition: width 0.5s ease;
+    }
+
+    /* ── 플래시카드 ── */
+    .flashcard-area { perspective: 1200px; margin-bottom: 24px; }
+    .flashcard {
+      width: 100%;
+      height: 280px;
+      cursor: pointer;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .flashcard.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      gap: 12px;
+      padding: 24px;
+    }
+    .card-front {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      color: #fff;
+    }
+    .card-back {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      transform: rotateY(180deg);
+    }
+    .card-lang-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+    .card-back .card-lang-badge {
+      background: rgba(22,163,74,0.15);
+      color: var(--green);
+    }
+    .card-word {
+      font-size: clamp(2.2rem, 7vw, 3rem);
+      font-weight: 800;
+      text-align: center;
+      line-height: 1.2;
+      letter-spacing: 2px;
+    }
+    .card-transliteration {
+      font-size: 1rem;
+      opacity: 0.7;
+      font-style: italic;
+      letter-spacing: 1px;
+    }
+    .card-meaning {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--green);
+    }
+    .card-meaning-sub {
+      font-size: 0.9rem;
+      color: var(--sub);
+      text-align: center;
+    }
+    .card-hint {
+      font-size: 0.78rem;
+      opacity: 0.5;
+      position: absolute;
+      bottom: 16px;
+      right: 18px;
+    }
+    .card-num-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── 카드 하단 버튼 ── */
+    .card-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      padding: 11px 22px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ctrl-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .ctrl-btn.primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(79,70,229,0.3);
+    }
+    .ctrl-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(79,70,229,0.4); }
+    .ctrl-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+    .tts-btn {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 4px 12px rgba(14,165,233,0.3);
+    }
+    .tts-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(14,165,233,0.4); border-color: transparent; color: #fff; }
+
+    /* ── OX 퀴즈 ── */
+    .quiz-area { display: none; }
+    .quiz-word-card {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      color: #fff;
+      border-radius: 20px;
+      padding: 48px 32px;
+      text-align: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      position: relative;
+    }
+    .quiz-word { font-size: clamp(2rem, 6vw, 2.8rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 8px; }
+    .quiz-transliteration { font-size: 1rem; opacity: 0.65; font-style: italic; }
+    .quiz-q-num {
+      position: absolute;
+      top: 16px; right: 18px;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+      font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
+    }
+    .quiz-choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .choice-btn {
+      padding: 18px 14px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #ede9fe;
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .choice-btn.correct {
+      border-color: var(--green);
+      background: #f0fdf4;
+      color: var(--green);
+    }
+    .choice-btn.wrong {
+      border-color: var(--red);
+      background: #fef2f2;
+      color: var(--red);
+    }
+    .choice-btn:disabled { cursor: not-allowed; }
+
+    /* ── 퀴즈 결과 피드백 ── */
+    .quiz-feedback {
+      text-align: center;
+      padding: 16px;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      display: none;
+    }
+    .quiz-feedback.correct { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+    .quiz-feedback.wrong   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
+
+    /* ── 완료 화면 ── */
+    .complete-screen {
+      display: none;
+      text-align: center;
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 32px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    }
+    .complete-emoji { font-size: 64px; margin-bottom: 16px; }
+    .complete-title { font-size: 1.8rem; font-weight: 900; margin-bottom: 8px; }
+    .complete-score { font-size: 3rem; font-weight: 900; color: var(--primary); margin: 20px 0 8px; }
+    .complete-score-sub { color: var(--sub); margin-bottom: 28px; }
+    .complete-stars { font-size: 2rem; margin-bottom: 24px; }
+
+    /* ── 단어 목록 ── */
+    .word-list-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--sub);
+      margin-bottom: 12px;
+    }
+    .word-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .word-chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .word-chip:hover { border-color: var(--primary); background: #f5f3ff; }
+    .word-chip .w-orig { font-weight: 700; font-size: 1rem; }
+    .word-chip .w-mean { color: var(--sub); font-size: 0.8rem; }
+
+    /* ── 반응형 ── */
+    @media (max-width: 500px) {
+      .progress-stats { gap: 12px; }
+      .quiz-choices { grid-template-columns: 1fr; }
+      .card-word { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-icon">📖</div>
+    <div>
+      <div class="header-title">성경 언어 학습</div>
+      <div class="header-sub">Biblical Greek · Biblical Hebrew</div>
+    </div>
+  </div>
+  <a href="../index.html" class="back-link">← 포트폴리오로</a>
+</header>
+
+<div class="container">
+
+  <!-- 언어 선택 탭 -->
+  <div class="lang-tabs">
+    <button class="lang-tab active" id="tab-greek" onclick="setLang('greek')">
+      <span class="lang-flag">🏛️</span> 헬라어 (Greek)
+    </button>
+    <button class="lang-tab" id="tab-hebrew" onclick="setLang('hebrew')">
+      <span class="lang-flag">✡️</span> 히브리어 (Hebrew)
+    </button>
+  </div>
+
+  <!-- 모드 탭 -->
+  <div class="mode-tabs">
+    <button class="mode-tab active" id="mode-flash" onclick="setMode('flash')">📇 플래시카드</button>
+    <button class="mode-tab" id="mode-quiz" onclick="setMode('quiz')">❓ OX 퀴즈</button>
+    <button class="mode-tab" id="mode-list" onclick="setMode('list')">📋 단어 목록</button>
+  </div>
+
+  <!-- 진도 표시 -->
+  <div class="progress-bar-wrap" id="progressBar">
+    <div class="progress-stats">
+      <div class="stat"><div class="stat-val" id="statCard">1</div><div class="stat-lbl">현재 카드</div></div>
+      <div class="stat"><div class="stat-val" id="statTotal">20</div><div class="stat-lbl">전체</div></div>
+      <div class="stat"><div class="stat-val" id="statScore">0</div><div class="stat-lbl">정답</div></div>
+      <div class="stat"><div class="stat-val" id="statStreak">0</div><div class="stat-lbl">연속</div></div>
+    </div>
+    <div class="progress-right">
+      <div class="progress-label">
+        <span>학습 진도</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 플래시카드 영역 ── -->
+  <div id="flashArea">
+    <div class="flashcard-area">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="card-face card-front">
+          <div class="card-lang-badge" id="cardLangBadge">Greek</div>
+          <div class="card-num-badge" id="cardNumBadge">1 / 20</div>
+          <div class="card-word" id="cardWord">λόγος</div>
+          <div class="card-transliteration" id="cardTranslit">logos</div>
+          <div class="card-hint">탭하여 뜻 확인</div>
+        </div>
+        <div class="card-face card-back">
+          <div class="card-lang-badge">뜻</div>
+          <div class="card-meaning" id="cardMeaning">말씀</div>
+          <div class="card-meaning-sub" id="cardMeaningSub">로고스 — 하나님의 말씀, 이성</div>
+          <div class="card-hint">탭하여 뒤집기</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-controls">
+      <button class="ctrl-btn" id="prevBtn" onclick="prevCard()" disabled>← 이전</button>
+      <button class="ctrl-btn tts-btn" onclick="speakWord()">🔊 발음 듣기</button>
+      <button class="ctrl-btn primary" id="nextBtn" onclick="nextCard()">다음 →</button>
+    </div>
+  </div>
+
+  <!-- ── OX 퀴즈 영역 ── -->
+  <div id="quizArea" class="quiz-area">
+    <div class="quiz-word-card">
+      <div class="quiz-q-num" id="quizQNum">1 / 20</div>
+      <div class="quiz-word" id="quizWord">λόγος</div>
+      <div class="quiz-transliteration" id="quizTranslit">logos</div>
+    </div>
+    <div class="quiz-feedback" id="quizFeedback"></div>
+    <div class="quiz-choices" id="quizChoices"></div>
+    <div style="text-align:center">
+      <button class="ctrl-btn tts-btn" onclick="speakWord()" style="margin:0 auto 8px">🔊 발음 듣기</button>
+    </div>
+  </div>
+
+  <!-- ── 단어 목록 영역 ── -->
+  <div id="listArea" style="display:none">
+    <div class="word-list-title" id="listTitle">헬라어 단어 목록</div>
+    <div class="word-grid" id="wordGrid"></div>
+  </div>
+
+  <!-- ── 완료 화면 ── -->
+  <div class="complete-screen" id="completeScreen">
+    <div class="complete-emoji">🎉</div>
+    <div class="complete-title">학습 완료!</div>
+    <div class="complete-stars" id="completeStars"></div>
+    <div class="complete-score" id="completeScore"></div>
+    <div class="complete-score-sub" id="completeScoreSub"></div>
+    <button class="ctrl-btn primary" onclick="restartCurrent()" style="margin: 0 auto; display:inline-flex">
+      🔄 다시 학습하기
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // ── 단어 데이터 ──
+  const vocab = {
+    greek: [
+      { word: 'λόγος',       translit: 'logos',      meaning: '말씀',   sub: '하나님의 말씀, 이성, 로고스' },
+      { word: 'ἀγάπη',       translit: 'agapē',      meaning: '사랑',   sub: '희생적이고 무조건적인 사랑' },
+      { word: 'πίστις',      translit: 'pistis',     meaning: '믿음',   sub: '신뢰, 확신, 충성' },
+      { word: 'χάρις',       translit: 'charis',     meaning: '은혜',   sub: '값없이 주시는 은총, 감사' },
+      { word: 'εἰρήνη',      translit: 'eirēnē',     meaning: '평화',   sub: '평강, 화목, 안녕' },
+      { word: 'ζωή',         translit: 'zōē',        meaning: '생명',   sub: '영적 생명, 영생' },
+      { word: 'θεός',        translit: 'theos',      meaning: '하나님', sub: '신, 하나님' },
+      { word: 'κύριος',      translit: 'kyrios',     meaning: '주님',   sub: '주인, 권위자, 주님' },
+      { word: 'ἄνθρωπος',    translit: 'anthrōpos',  meaning: '사람',   sub: '인간, 인류' },
+      { word: 'κόσμος',      translit: 'kosmos',     meaning: '세상',   sub: '우주, 세계, 질서' },
+      { word: 'ἀλήθεια',     translit: 'alētheia',   meaning: '진리',   sub: '진실, 참됨' },
+      { word: 'πνεῦμα',      translit: 'pneuma',     meaning: '성령',   sub: '영, 바람, 숨결' },
+      { word: 'ἐκκλησία',    translit: 'ekklēsia',   meaning: '교회',   sub: '불러모인 무리, 회중' },
+      { word: 'καρδία',      translit: 'kardia',     meaning: '마음',   sub: '심장, 내면, 의지' },
+      { word: 'νόμος',       translit: 'nomos',      meaning: '율법',   sub: '법, 토라, 규례' },
+      { word: 'ἁμαρτία',     translit: 'hamartia',   meaning: '죄',     sub: '과녁을 빗나감, 불법' },
+      { word: 'δόξα',        translit: 'doxa',       meaning: '영광',   sub: '찬양, 명예, 빛남' },
+      { word: 'βασιλεία',    translit: 'basileia',   meaning: '나라',   sub: '왕국, 하나님의 나라' },
+      { word: 'Χριστός',     translit: 'Christos',   meaning: '그리스도', sub: '기름 부음 받은 자, 메시아' },
+      { word: 'Ἰησοῦς',     translit: 'Iēsous',     meaning: '예수',   sub: '구원자, 여호수아' },
+    ],
+    hebrew: [
+      { word: 'שָׁלוֹם',     translit: 'shalom',    meaning: '평화',    sub: '평강, 온전함, 안녕' },
+      { word: 'אֱלֹהִים',    translit: 'Elohim',    meaning: '하나님',  sub: '창조주 하나님 (복수형)' },
+      { word: 'יְהוָה',      translit: 'YHWH',      meaning: '주님',    sub: '야훼, 스스로 있는 자' },
+      { word: 'אַהֲבָה',     translit: 'ahavah',    meaning: '사랑',    sub: '깊은 애정, 사랑의 행위' },
+      { word: 'אֱמוּנָה',    translit: 'emunah',    meaning: '믿음',    sub: '신실함, 충성, 확신' },
+      { word: 'חֶסֶד',       translit: 'hesed',     meaning: '인자',    sub: '언약적 사랑, 자비, 인자함' },
+      { word: 'תּוֹרָה',     translit: 'Torah',     meaning: '율법',    sub: '가르침, 교훈, 모세오경' },
+      { word: 'בְּרִית',     translit: 'berit',     meaning: '언약',    sub: '계약, 하나님과의 약속' },
+      { word: 'נֶפֶשׁ',      translit: 'nefesh',    meaning: '영혼',    sub: '생명, 사람 자체, 욕구' },
+      { word: 'רוּחַ',       translit: 'ruach',     meaning: '영',      sub: '바람, 숨, 하나님의 영' },
+      { word: 'קֹדֶשׁ',      translit: 'kodesh',    meaning: '거룩',    sub: '구별됨, 신성함' },
+      { word: 'מֶלֶךְ',      translit: 'melech',    meaning: '왕',      sub: '왕, 통치자' },
+      { word: 'עָם',         translit: 'am',        meaning: '백성',    sub: '민족, 하나님의 백성' },
+      { word: 'אֶרֶץ',       translit: 'eretz',     meaning: '땅',      sub: '땅, 지구, 가나안 땅' },
+      { word: 'חַיִּים',     translit: 'chayyim',   meaning: '생명',    sub: '삶, 생명 (복수형)' },
+      { word: 'לֵב',         translit: 'lev',       meaning: '마음',    sub: '심장, 중심, 내면' },
+      { word: 'שָׁמַיִם',    translit: 'shamayim',  meaning: '하늘',    sub: '하늘들, 천국 (복수형)' },
+      { word: 'מַיִם',       translit: 'mayim',     meaning: '물',      sub: '물들, 생수 (복수형)' },
+      { word: 'אָדָם',       translit: 'adam',      meaning: '사람',    sub: '인간, 아담, 흙에서 온 자' },
+      { word: 'אֵשׁ',        translit: 'esh',       meaning: '불',      sub: '불, 하나님의 임재' },
+    ],
+  };
+
+  // ── 상태 ──
+  let currentLang = 'greek';
+  let currentMode = 'flash';
+  let cardIndex = 0;
+  let isFlipped = false;
+  let quizIndex = 0;
+  let quizScore = 0;
+  let quizStreak = 0;
+  let quizOrder = [];
+  let quizAnswered = false;
+  let flashVisited = new Set();
+
+  // ── 언어 설정 ──
+  function setLang(lang) {
+    currentLang = lang;
+    document.getElementById('tab-greek').classList.toggle('active', lang === 'greek');
+    document.getElementById('tab-hebrew').classList.toggle('active', lang === 'hebrew');
+    resetAll();
+    renderMode();
+  }
+
+  // ── 모드 설정 ──
+  function setMode(mode) {
+    currentMode = mode;
+    document.getElementById('mode-flash').classList.toggle('active', mode === 'flash');
+    document.getElementById('mode-quiz').classList.toggle('active', mode === 'quiz');
+    document.getElementById('mode-list').classList.toggle('active', mode === 'list');
+    resetAll();
+    renderMode();
+  }
+
+  function resetAll() {
+    cardIndex = 0;
+    isFlipped = false;
+    quizIndex = 0;
+    quizScore = 0;
+    quizStreak = 0;
+    quizAnswered = false;
+    flashVisited = new Set();
+    quizOrder = shuffleArray([...Array(words().length).keys()]);
+    updateProgress(0, words().length, 0, 0);
+  }
+
+  function words() { return vocab[currentLang]; }
+
+  function renderMode() {
+    const isFlash = currentMode === 'flash';
+    const isQuiz  = currentMode === 'quiz';
+    const isList  = currentMode === 'list';
+
+    document.getElementById('flashArea').style.display  = isFlash ? '' : 'none';
+    document.getElementById('quizArea').style.display   = isQuiz  ? '' : 'none';
+    document.getElementById('listArea').style.display   = isList  ? '' : 'none';
+    document.getElementById('progressBar').style.display = isList  ? 'none' : '';
+    document.getElementById('completeScreen').style.display = 'none';
+
+    if (isFlash) renderFlashcard();
+    if (isQuiz)  renderQuiz();
+    if (isList)  renderList();
+  }
+
+  // ── 플래시카드 ──
+  function renderFlashcard() {
+    const w = words()[cardIndex];
+    const isGreek = currentLang === 'greek';
+    document.getElementById('cardLangBadge').textContent = isGreek ? 'Greek' : 'Hebrew';
+    document.getElementById('cardWord').textContent      = w.word;
+    document.getElementById('cardTranslit').textContent  = w.translit;
+    document.getElementById('cardMeaning').textContent   = w.meaning;
+    document.getElementById('cardMeaningSub').textContent = `${w.translit} — ${w.sub}`;
+    document.getElementById('cardNumBadge').textContent  = `${cardIndex + 1} / ${words().length}`;
+
+    // Hebrew card: RTL
+    document.getElementById('cardWord').style.direction = !isGreek ? 'rtl' : 'ltr';
+
+    const card = document.getElementById('flashcard');
+    card.classList.remove('flipped');
+    isFlipped = false;
+
+    flashVisited.add(cardIndex);
+    updateProgress(flashVisited.size, words().length, quizScore, quizStreak);
+    document.getElementById('statCard').textContent = cardIndex + 1;
+
+    document.getElementById('prevBtn').disabled = cardIndex === 0;
+    document.getElementById('nextBtn').disabled = cardIndex === words().length - 1;
+  }
+
+  function flipCard() {
+    const card = document.getElementById('flashcard');
+    isFlipped = !isFlipped;
+    card.classList.toggle('flipped', isFlipped);
+  }
+
+  function prevCard() {
+    if (cardIndex > 0) { cardIndex--; renderFlashcard(); }
+  }
+
+  function nextCard() {
+    if (cardIndex < words().length - 1) { cardIndex++; renderFlashcard(); }
+    else showComplete(flashVisited.size, words().length);
+  }
+
+  // ── OX 퀴즈 ──
+  function renderQuiz() {
+    if (quizIndex >= words().length) {
+      showComplete(quizScore, words().length);
+      return;
+    }
+    const wIdx = quizOrder[quizIndex];
+    const w = words()[wIdx];
+    document.getElementById('quizWord').textContent    = w.word;
+    document.getElementById('quizTranslit').textContent = w.translit;
+    document.getElementById('quizQNum').textContent    = `${quizIndex + 1} / ${words().length}`;
+    document.getElementById('quizWord').style.direction = currentLang === 'hebrew' ? 'rtl' : 'ltr';
+
+    const feedback = document.getElementById('quizFeedback');
+    feedback.style.display = 'none';
+    feedback.className = 'quiz-feedback';
+
+    // 보기 생성 (정답 1 + 오답 3)
+    const choices = generateChoices(wIdx);
+    const choicesEl = document.getElementById('quizChoices');
+    choicesEl.innerHTML = '';
+    quizAnswered = false;
+    choices.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = c.meaning;
+      btn.onclick = () => answerQuiz(c.correct, btn, wIdx);
+      choicesEl.appendChild(btn);
+    });
+
+    updateProgress(quizIndex, words().length, quizScore, quizStreak);
+  }
+
+  function generateChoices(correctIdx) {
+    const allWords = words();
+    const correct = allWords[correctIdx];
+    const wrong = allWords.filter((_, i) => i !== correctIdx);
+    const picked = shuffleArray(wrong).slice(0, 3).map(w => ({ meaning: w.meaning, correct: false }));
+    const result = [...picked, { meaning: correct.meaning, correct: true }];
+    return shuffleArray(result);
+  }
+
+  function answerQuiz(isCorrect, clickedBtn, wIdx) {
+    if (quizAnswered) return;
+    quizAnswered = true;
+    const correct = words()[wIdx];
+    const allBtns = document.querySelectorAll('.choice-btn');
+    allBtns.forEach(b => {
+      b.disabled = true;
+      if (b.textContent === correct.meaning) b.classList.add('correct');
+    });
+    if (!isCorrect) {
+      clickedBtn.classList.add('wrong');
+      quizStreak = 0;
+    } else {
+      quizScore++;
+      quizStreak++;
+    }
+    const fb = document.getElementById('quizFeedback');
+    fb.className = 'quiz-feedback ' + (isCorrect ? 'correct' : 'wrong');
+    fb.textContent = isCorrect
+      ? `정답! "${correct.word}" (${correct.translit}) = ${correct.meaning}`
+      : `틀렸어요. "${correct.word}" (${correct.translit}) = ${correct.meaning}`;
+    fb.style.display = 'block';
+
+    quizIndex++;
+    setTimeout(() => renderQuiz(), 1600);
+  }
+
+  // ── 단어 목록 ──
+  function renderList() {
+    const isGreek = currentLang === 'greek';
+    document.getElementById('listTitle').textContent = isGreek ? '헬라어 단어 목록 (20개)' : '히브리어 단어 목록 (20개)';
+    const grid = document.getElementById('wordGrid');
+    grid.innerHTML = '';
+    words().forEach((w, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'word-chip';
+      chip.innerHTML = `
+        <div>
+          <div class="w-orig" style="direction:${isGreek ? 'ltr' : 'rtl'}">${w.word}</div>
+          <div class="w-mean">${w.translit}</div>
+        </div>
+        <div class="w-mean" style="font-size:1rem;font-weight:700;color:var(--text)">${w.meaning}</div>`;
+      chip.onclick = () => { setMode('flash'); cardIndex = i; renderFlashcard(); };
+      grid.appendChild(chip);
+    });
+  }
+
+  // ── TTS ──
+  function speakWord() {
+    const w = currentMode === 'quiz'
+      ? words()[quizOrder[Math.min(quizIndex, words().length - 1)]]
+      : words()[cardIndex];
+    if (!w) return;
+
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(w.word);
+      utter.lang = currentLang === 'greek' ? 'el-GR' : 'he-IL';
+      utter.rate = 0.85;
+      window.speechSynthesis.speak(utter);
+    } else {
+      alert('이 브라우저는 TTS를 지원하지 않습니다.');
+    }
+  }
+
+  // ── 완료 화면 ──
+  function showComplete(score, total) {
+    document.getElementById('flashArea').style.display = 'none';
+    document.getElementById('quizArea').style.display  = 'none';
+    document.getElementById('progressBar').style.display = 'none';
+    const el = document.getElementById('completeScreen');
+    el.style.display = 'block';
+
+    const pct = Math.round((score / total) * 100);
+    let stars = '⭐⭐⭐';
+    if (pct < 50) stars = '⭐';
+    else if (pct < 80) stars = '⭐⭐';
+    document.getElementById('completeStars').textContent = stars;
+    document.getElementById('completeScore').textContent = `${score} / ${total}`;
+    document.getElementById('completeScoreSub').textContent = `정답률 ${pct}% — ${pct >= 80 ? '훌륭해요!' : pct >= 50 ? '잘했어요!' : '계속 연습해 보세요!'}`;
+  }
+
+  function restartCurrent() {
+    resetAll();
+    document.getElementById('completeScreen').style.display = 'none';
+    document.getElementById('progressBar').style.display = '';
+    renderMode();
+  }
+
+  // ── 진도 업데이트 ──
+  function updateProgress(current, total, score, streak) {
+    const pct = total > 0 ? Math.round((current / total) * 100) : 0;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressPct').textContent  = pct + '%';
+    document.getElementById('statTotal').textContent    = total;
+    document.getElementById('statScore').textContent    = score;
+    document.getElementById('statStreak').textContent   = streak;
+  }
+
+  // ── 배열 셔플 ──
+  function shuffleArray(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ── 초기화 ──
+  resetAll();
+  renderMode();
+</script>
+
+</body>
+</html>
