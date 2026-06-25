@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>성경 언어 학습 | 헬라어 · 히브리어 · 라틴어</title>
+  <title>성경 언어 학습 | 헬라어 · 히브리어 · 라틴어 · 영어</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,30 +13,21 @@
       --text:     #1e293b;
       --sub:      #64748b;
       --bg:       #f8fafc;
-      --card:     #ffffff;
       --border:   #e2e8f0;
       --green:    #16a34a;
       --red:      #dc2626;
     }
 
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
     header {
       background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
-      color: #fff;
-      padding: 18px 5%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      color: #fff; padding: 18px 5%;
+      display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
     .header-left { display: flex; align-items: center; gap: 14px; }
-    .header-icon { font-size: 30px; }
+    .header-icon  { font-size: 30px; }
     .header-title { font-size: 1.2rem; font-weight: 800; }
     .header-sub   { font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
     .back-link {
@@ -50,15 +41,15 @@
 
     /* 언어 탭 */
     .lang-tabs {
-      display: flex; gap: 6px; margin-bottom: 20px;
+      display: flex; gap: 5px; margin-bottom: 18px;
       background: #fff; border: 1px solid var(--border);
       border-radius: 14px; padding: 5px;
     }
     .lang-tab {
-      flex: 1; padding: 11px 6px; border: none; border-radius: 10px;
-      font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      flex: 1; padding: 10px 4px; border: none; border-radius: 10px;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer;
       background: transparent; color: var(--sub); transition: all 0.25s;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
     }
     .lang-tab.active {
       background: linear-gradient(135deg, var(--primary), var(--primary2));
@@ -66,10 +57,10 @@
     }
 
     /* 모드 탭 */
-    .mode-tabs { display: flex; gap: 6px; margin-bottom: 20px; }
+    .mode-tabs { display: flex; gap: 6px; margin-bottom: 18px; }
     .mode-tab {
-      padding: 8px 18px; border: 1.5px solid var(--border);
-      border-radius: 30px; font-size: 0.85rem; font-weight: 600;
+      padding: 8px 16px; border: 1.5px solid var(--border);
+      border-radius: 30px; font-size: 0.84rem; font-weight: 600;
       cursor: pointer; background: #fff; color: var(--sub); transition: all 0.2s;
     }
     .mode-tab.active { border-color: var(--primary); background: #ede9fe; color: var(--primary); }
@@ -77,20 +68,20 @@
     /* 진도 */
     .progress-bar-wrap {
       background: #fff; border: 1px solid var(--border);
-      border-radius: 14px; padding: 14px 18px; margin-bottom: 20px;
-      display: flex; align-items: center; gap: 18px;
+      border-radius: 14px; padding: 13px 16px; margin-bottom: 18px;
+      display: flex; align-items: center; gap: 16px;
     }
-    .progress-stats { display: flex; gap: 16px; flex-shrink: 0; }
+    .progress-stats { display: flex; gap: 14px; flex-shrink: 0; }
     .stat { text-align: center; }
-    .stat-val { font-size: 1.15rem; font-weight: 800; color: var(--primary); }
+    .stat-val { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
     .stat-lbl { font-size: 10px; color: var(--sub); margin-top: 1px; }
     .progress-right { flex: 1; }
-    .progress-label { font-size: 0.78rem; color: var(--sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
+    .progress-label { font-size: 0.76rem; color: var(--sub); margin-bottom: 5px; display: flex; justify-content: space-between; }
     .progress-track { height: 7px; background: var(--border); border-radius: 6px; overflow: hidden; }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary2)); border-radius: 6px; transition: width 0.5s ease; }
+    .progress-fill  { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary2)); border-radius: 6px; transition: width 0.5s ease; }
 
     /* 플래시카드 */
-    .flashcard-area { perspective: 1200px; margin-bottom: 20px; }
+    .flashcard-area { perspective: 1200px; margin-bottom: 16px; }
     .flashcard {
       width: 100%; min-height: 320px; cursor: pointer;
       position: relative; transform-style: preserve-3d;
@@ -117,115 +108,98 @@
       background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9);
       font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px;
     }
-    .card-word {
-      font-size: clamp(2rem, 6.5vw, 2.8rem); font-weight: 800;
-      text-align: center; line-height: 1.2; letter-spacing: 2px;
-    }
-    .card-transliteration { font-size: 0.95rem; opacity: 0.65; font-style: italic; }
-    .card-meaning     { font-size: 1.7rem; font-weight: 800; color: var(--green); }
-    .card-meaning-sub { font-size: 0.82rem; color: var(--sub); text-align: center; }
-    .card-verse {
-      margin-top: 6px; padding-top: 10px;
-      border-top: 1px solid rgba(22,163,74,0.25);
-      text-align: center; width: 100%;
-    }
+    .card-word { font-size: clamp(1.9rem, 6vw, 2.8rem); font-weight: 800; text-align: center; line-height: 1.2; letter-spacing: 2px; }
+    .card-transliteration { font-size: 0.92rem; opacity: 0.65; font-style: italic; }
+    .card-meaning     { font-size: 1.65rem; font-weight: 800; color: var(--green); }
+    .card-meaning-sub { font-size: 0.8rem; color: var(--sub); text-align: center; }
+    .card-verse { margin-top: 6px; padding-top: 10px; border-top: 1px solid rgba(22,163,74,0.25); text-align: center; width: 100%; }
     .card-verse-ref  { font-size: 0.72rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
-    .card-verse-text { font-size: 0.78rem; color: var(--sub); font-style: italic; line-height: 1.5; }
-    .card-hint {
-      font-size: 0.72rem; opacity: 0.45; position: absolute;
-      bottom: 12px; right: 16px;
-    }
+    .card-verse-text { font-size: 0.76rem; color: var(--sub); font-style: italic; line-height: 1.5; }
+    .card-hint { font-size: 0.7rem; opacity: 0.4; position: absolute; bottom: 12px; right: 16px; }
 
-    /* 카드 컨트롤 */
-    .card-controls {
-      display: flex; align-items: center; justify-content: center;
-      gap: 10px; margin-bottom: 18px; flex-wrap: wrap;
-    }
+    /* 버튼 */
+    .card-controls { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+    .tts-note { text-align: center; font-size: 0.72rem; color: var(--sub); margin-top: 6px; margin-bottom: 14px; min-height: 1em; }
     .ctrl-btn {
       padding: 10px 20px; border-radius: 12px; border: 1.5px solid var(--border);
-      background: #fff; color: var(--text); font-size: 0.85rem; font-weight: 600;
+      background: #fff; color: var(--text); font-size: 0.84rem; font-weight: 600;
       cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 5px;
     }
     .ctrl-btn:hover { border-color: var(--primary); color: var(--primary); }
     .ctrl-btn.primary {
       background: linear-gradient(135deg, var(--primary), var(--primary2));
-      color: #fff; border-color: transparent;
-      box-shadow: 0 4px 14px rgba(79,70,229,0.3);
+      color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(79,70,229,0.3);
     }
     .ctrl-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(79,70,229,0.4); }
     .ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none !important; }
     .tts-btn {
       background: linear-gradient(135deg, #0ea5e9, #0284c7);
-      color: #fff; border-color: transparent;
-      box-shadow: 0 4px 12px rgba(14,165,233,0.3);
+      color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(14,165,233,0.3);
     }
     .tts-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(14,165,233,0.4); border-color: transparent; color: #fff; }
     .tts-btn.speaking { animation: tts-pulse 0.8s infinite alternate; }
-    @keyframes tts-pulse { from { box-shadow: 0 4px 12px rgba(14,165,233,0.3); } to { box-shadow: 0 4px 20px rgba(14,165,233,0.7); } }
+    @keyframes tts-pulse { from { box-shadow: 0 4px 12px rgba(14,165,233,0.3); } to { box-shadow: 0 4px 22px rgba(14,165,233,0.75); } }
 
     /* OX 퀴즈 */
     .quiz-word-card {
-      background: linear-gradient(135deg, #1e1b4b, #312e81);
-      color: #fff; border-radius: 20px; padding: 44px 32px;
-      text-align: center; margin-bottom: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15); position: relative;
+      background: linear-gradient(135deg, #1e1b4b, #312e81); color: #fff;
+      border-radius: 20px; padding: 42px 28px; text-align: center;
+      margin-bottom: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.15); position: relative;
     }
-    .quiz-word        { font-size: clamp(1.8rem, 5.5vw, 2.6rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 6px; }
-    .quiz-transliteration { font-size: 0.95rem; opacity: 0.62; font-style: italic; }
+    .quiz-word           { font-size: clamp(1.7rem, 5vw, 2.5rem); font-weight: 800; letter-spacing: 2px; margin-bottom: 6px; }
+    .quiz-transliteration{ font-size: 0.92rem; opacity: 0.62; font-style: italic; }
     .quiz-q-num {
       position: absolute; top: 14px; right: 16px;
       background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9);
       font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px;
     }
-    .quiz-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .quiz-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 12px; }
     .choice-btn {
-      padding: 16px 12px; border-radius: 14px; border: 2px solid var(--border);
-      background: #fff; color: var(--text); font-size: 1rem; font-weight: 700;
+      padding: 15px 10px; border-radius: 14px; border: 2px solid var(--border);
+      background: #fff; color: var(--text); font-size: 0.98rem; font-weight: 700;
       cursor: pointer; transition: all 0.2s; text-align: center;
     }
     .choice-btn:hover:not(:disabled) { border-color: var(--primary); background: #ede9fe; color: var(--primary); transform: translateY(-2px); }
     .choice-btn.correct { border-color: var(--green); background: #f0fdf4; color: var(--green); }
     .choice-btn.wrong   { border-color: var(--red);   background: #fef2f2; color: var(--red); }
     .choice-btn:disabled { cursor: not-allowed; }
-
     .quiz-feedback {
-      padding: 12px 16px; border-radius: 14px; margin-bottom: 12px;
-      font-size: 0.88rem; font-weight: 600; display: none; line-height: 1.5;
+      padding: 11px 14px; border-radius: 14px; margin-bottom: 10px;
+      font-size: 0.86rem; font-weight: 600; display: none; line-height: 1.5;
     }
     .quiz-feedback.correct { background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
     .quiz-feedback.wrong   { background: #fef2f2; color: var(--red);   border: 1px solid #fecaca; }
-    .quiz-feedback .fb-verse { margin-top: 6px; font-size: 0.8rem; font-weight: 400; font-style: italic; opacity: 0.85; }
+    .quiz-feedback .fb-verse { margin-top: 5px; font-size: 0.78rem; font-weight: 400; font-style: italic; opacity: 0.85; }
 
-    /* 완료 화면 */
+    /* 완료 */
     .complete-screen {
       display: none; text-align: center; background: #fff;
       border-radius: 20px; padding: 44px 28px;
       border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     }
-    .complete-emoji  { font-size: 60px; margin-bottom: 14px; }
+    .complete-emoji  { font-size: 58px; margin-bottom: 14px; }
     .complete-title  { font-size: 1.7rem; font-weight: 900; margin-bottom: 6px; }
-    .complete-stars  { font-size: 1.8rem; margin: 16px 0 6px; }
-    .complete-score  { font-size: 2.8rem; font-weight: 900; color: var(--primary); margin-bottom: 6px; }
+    .complete-stars  { font-size: 1.8rem; margin: 14px 0 6px; }
+    .complete-score  { font-size: 2.6rem; font-weight: 900; color: var(--primary); margin-bottom: 6px; }
     .complete-score-sub { color: var(--sub); margin-bottom: 24px; }
 
     /* 단어 목록 */
     .word-list-title { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--sub); margin-bottom: 10px; }
-    .word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(195px, 1fr)); gap: 8px; }
+    .word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 7px; }
     .word-chip {
       background: #fff; border: 1px solid var(--border); border-radius: 10px;
-      padding: 10px 13px; display: flex; justify-content: space-between;
+      padding: 9px 12px; display: flex; justify-content: space-between;
       align-items: center; cursor: pointer; transition: all 0.2s;
     }
     .word-chip:hover { border-color: var(--primary); background: #f5f3ff; }
-    .w-orig { font-weight: 700; font-size: 0.95rem; }
-    .w-mean { color: var(--sub); font-size: 0.75rem; margin-top: 1px; }
-    .w-kr   { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+    .w-orig { font-weight: 700; font-size: 0.92rem; }
+    .w-mean { color: var(--sub); font-size: 0.73rem; margin-top: 1px; }
+    .w-kr   { font-size: 0.92rem; font-weight: 700; }
 
     @media (max-width: 520px) {
       .progress-stats { gap: 10px; }
       .quiz-choices { grid-template-columns: 1fr; }
-      .card-word { font-size: 1.8rem; }
-      .lang-tab { font-size: 0.78rem; }
+      .lang-tab { font-size: 0.72rem; gap: 3px; }
     }
   </style>
 </head>
@@ -236,7 +210,7 @@
     <div class="header-icon">📖</div>
     <div>
       <div class="header-title">성경 언어 학습</div>
-      <div class="header-sub">Biblical Greek · Hebrew · Latin</div>
+      <div class="header-sub">Greek · Hebrew · Latin · English</div>
     </div>
   </div>
   <a href="../index.html" class="back-link">← 포트폴리오로</a>
@@ -246,9 +220,10 @@
 
   <!-- 언어 탭 -->
   <div class="lang-tabs">
-    <button class="lang-tab active" id="tab-greek"  onclick="setLang('greek')">🏛️ 헬라어</button>
-    <button class="lang-tab"        id="tab-hebrew" onclick="setLang('hebrew')">✡️ 히브리어</button>
-    <button class="lang-tab"        id="tab-latin"  onclick="setLang('latin')">✝️ 라틴어</button>
+    <button class="lang-tab active" id="tab-greek"   onclick="setLang('greek')">🏛️ 헬라어</button>
+    <button class="lang-tab"        id="tab-hebrew"  onclick="setLang('hebrew')">✡️ 히브리어</button>
+    <button class="lang-tab"        id="tab-latin"   onclick="setLang('latin')">✝️ 라틴어</button>
+    <button class="lang-tab"        id="tab-english" onclick="setLang('english')">🔤 영어</button>
   </div>
 
   <!-- 모드 탭 -->
@@ -286,10 +261,10 @@
         <div class="card-face card-back">
           <div class="card-lang-badge">뜻</div>
           <div class="card-meaning"     id="cardMeaning">말씀</div>
-          <div class="card-meaning-sub" id="cardMeaningSub">logos — 하나님의 말씀, 이성</div>
+          <div class="card-meaning-sub" id="cardMeaningSub">logos — 하느님의 말씀, 이성</div>
           <div class="card-verse">
-            <div class="card-verse-ref"  id="cardVerseRef">요한복음 1:1</div>
-            <div class="card-verse-text" id="cardVerseText">"태초에 말씀이 계시니라"</div>
+            <div class="card-verse-ref"  id="cardVerseRef">요한 복음서 1:1</div>
+            <div class="card-verse-text" id="cardVerseText">"한처음에 말씀이 계셨다"</div>
           </div>
           <div class="card-hint">탭하여 뒤집기</div>
         </div>
@@ -298,23 +273,24 @@
     <div class="card-controls">
       <button class="ctrl-btn" id="prevBtn" onclick="prevCard()" disabled>← 이전</button>
       <button class="ctrl-btn tts-btn" id="ttsBtn" onclick="speakWord()">🔊 발음 듣기</button>
-      <div id="ttsNote" style="font-size:0.72rem;color:var(--sub);text-align:center;margin-top:4px"></div>
       <button class="ctrl-btn primary" id="nextBtn" onclick="nextCard()">다음 →</button>
     </div>
+    <div class="tts-note" id="ttsNote"></div>
   </div>
 
   <!-- OX 퀴즈 -->
   <div id="quizArea" style="display:none">
     <div class="quiz-word-card">
       <div class="quiz-q-num" id="quizQNum">1 / 20</div>
-      <div class="quiz-word"          id="quizWord">λόγος</div>
+      <div class="quiz-word"           id="quizWord">λόγος</div>
       <div class="quiz-transliteration" id="quizTranslit">logos</div>
     </div>
     <div class="quiz-feedback" id="quizFeedback"></div>
     <div class="quiz-choices"  id="quizChoices"></div>
-    <div style="text-align:center">
-      <button class="ctrl-btn tts-btn" id="ttsBtnQuiz" onclick="speakWord()" style="display:inline-flex;margin:0 auto 4px">🔊 발음 듣기</button>
+    <div style="text-align:center;margin-bottom:6px">
+      <button class="ctrl-btn tts-btn" id="ttsBtnQuiz" onclick="speakWord()" style="display:inline-flex;margin:0 auto">🔊 발음 듣기</button>
     </div>
+    <div class="tts-note" id="ttsNoteQuiz"></div>
   </div>
 
   <!-- 단어 목록 -->
@@ -327,8 +303,8 @@
   <div class="complete-screen" id="completeScreen">
     <div class="complete-emoji">🎉</div>
     <div class="complete-title">학습 완료!</div>
-    <div class="complete-stars"    id="completeStars"></div>
-    <div class="complete-score"    id="completeScore"></div>
+    <div class="complete-stars"     id="completeStars"></div>
+    <div class="complete-score"     id="completeScore"></div>
     <div class="complete-score-sub" id="completeScoreSub"></div>
     <button class="ctrl-btn primary" onclick="restartCurrent()" style="margin:0 auto;display:inline-flex">
       🔄 다시 학습하기
@@ -338,73 +314,95 @@
 </div>
 
 <script>
-// ── 단어 데이터 ──
+// ── 단어 데이터 (가톨릭 성경) ──
 const vocab = {
   greek: [
-    { word:'λόγος',     translit:'logos',      meaning:'말씀',    sub:'하나님의 말씀, 이성, 로고스',         verse:'"태초에 말씀이 계시니라 이 말씀이 하나님과 함께 계셨으니"',                     verseRef:'요한복음 1:1' },
-    { word:'ἀγάπη',     translit:'agapē',      meaning:'사랑',    sub:'희생적이고 무조건적인 사랑',           verse:'"하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니"',                            verseRef:'요한복음 3:16' },
-    { word:'πίστις',    translit:'pistis',     meaning:'믿음',    sub:'신뢰, 확신, 충성',                   verse:'"믿음은 바라는 것들의 실상이요 보이지 않는 것들의 증거니"',                       verseRef:'히브리서 11:1' },
-    { word:'χάρις',     translit:'charis',     meaning:'은혜',    sub:'값없이 주시는 은총, 감사',            verse:'"너희는 그 은혜에 의하여 믿음으로 말미암아 구원을 받았으니"',                      verseRef:'에베소서 2:8' },
-    { word:'εἰρήνη',    translit:'eirēnē',     meaning:'평화',    sub:'평강, 화목, 안녕',                   verse:'"평안을 너희에게 끼치노니 곧 나의 평안을 너희에게 주노라"',                        verseRef:'요한복음 14:27' },
-    { word:'ζωή',       translit:'zōē',        meaning:'생명',    sub:'영적 생명, 영생',                    verse:'"나는 길이요 진리요 생명이니"',                                                verseRef:'요한복음 14:6' },
-    { word:'θεός',      translit:'theos',      meaning:'하나님',  sub:'신, 하나님',                        verse:'"하나님은 사랑이심이라"',                                                      verseRef:'요한일서 4:8' },
-    { word:'κύριος',    translit:'kyrios',     meaning:'주님',    sub:'주인, 권위자, 주님',                 verse:'"예수는 주시라 시인하면 구원을 받으리라"',                                       verseRef:'로마서 10:9' },
-    { word:'ἄνθρωπος',  translit:'anthrōpos',  meaning:'사람',    sub:'인간, 인류',                        verse:'"하나님이 자기 형상대로 사람을 창조하시되"',                                     verseRef:'창세기 1:27' },
-    { word:'κόσμος',    translit:'kosmos',     meaning:'세상',    sub:'우주, 세계, 질서',                   verse:'"하나님이 세상을 이처럼 사랑하사"',                                             verseRef:'요한복음 3:16' },
-    { word:'ἀλήθεια',   translit:'alētheia',   meaning:'진리',    sub:'진실, 참됨',                        verse:'"진리를 알지니 진리가 너희를 자유롭게 하리라"',                                  verseRef:'요한복음 8:32' },
-    { word:'πνεῦμα',    translit:'pneuma',     meaning:'성령',    sub:'영, 바람, 숨결',                    verse:'"하나님은 영이시니 예배하는 자가 영과 진리로 예배할지니라"',                       verseRef:'요한복음 4:24' },
-    { word:'ἐκκλησία',  translit:'ekklēsia',   meaning:'교회',    sub:'불러모인 무리, 회중',                verse:'"이 반석 위에 내 교회를 세우리니 음부의 권세가 이기지 못하리라"',                   verseRef:'마태복음 16:18' },
-    { word:'καρδία',    translit:'kardia',     meaning:'마음',    sub:'심장, 내면, 의지',                  verse:'"마음이 청결한 자는 복이 있나니 그들이 하나님을 볼 것임이요"',                     verseRef:'마태복음 5:8' },
-    { word:'νόμος',     translit:'nomos',      meaning:'율법',    sub:'법, 토라, 규례',                    verse:'"내가 율법이나 선지자를 폐하러 온 것이 아니요 완전하게 하려 함이라"',               verseRef:'마태복음 5:17' },
-    { word:'ἁμαρτία',   translit:'hamartia',   meaning:'죄',      sub:'과녁을 빗나감, 불법',                verse:'"죄의 삯은 사망이요 하나님의 은사는 영생이니라"',                                verseRef:'로마서 6:23' },
-    { word:'δόξα',      translit:'doxa',       meaning:'영광',    sub:'찬양, 명예, 빛남',                  verse:'"지극히 높은 곳에서는 하나님께 영광이요 땅에서는 평화로다"',                       verseRef:'누가복음 2:14' },
-    { word:'βασιλεία',  translit:'basileia',   meaning:'나라',    sub:'왕국, 하나님의 나라',                verse:'"하나님의 나라와 그의 의를 먼저 구하라"',                                       verseRef:'마태복음 6:33' },
-    { word:'Χριστός',   translit:'Christos',   meaning:'그리스도', sub:'기름 부음 받은 자, 메시아',          verse:'"예수께서 그리스도이심을 믿게 하려 함이요"',                                    verseRef:'요한복음 20:31' },
-    { word:'Ἰησοῦς',   translit:'Iēsous',     meaning:'예수',    sub:'구원자, 여호수아',                  verse:'"이름을 예수라 하라 이는 그가 자기 백성을 그들의 죄에서 구원할 자임이라"',           verseRef:'마태복음 1:21' },
+    { word:'λόγος',    translit:'logos',     meaning:'말씀',    sub:'하느님의 말씀, 이성, 로고스',        verse:'"한처음에 말씀이 계셨다. 말씀은 하느님과 함께 계셨는데 말씀은 하느님이셨다."', verseRef:'요한 복음서 1:1' },
+    { word:'ἀγάπη',    translit:'agapē',     meaning:'사랑',    sub:'희생적이고 무조건적인 사랑',          verse:'"하느님께서는 세상을 너무나 사랑하신 나머지 외아들을 내주셨다."',              verseRef:'요한 복음서 3:16' },
+    { word:'πίστις',   translit:'pistis',    meaning:'믿음',    sub:'신뢰, 확신, 충성',                  verse:'"믿음은 희망하는 것들의 보증이며, 보이지 않는 실재들의 확증입니다."',         verseRef:'히브리서 11:1' },
+    { word:'χάρις',    translit:'charis',    meaning:'은총',    sub:'값없이 주시는 은총, 감사',           verse:'"여러분은 믿음을 통하여 은총으로 구원을 받았습니다."',                       verseRef:'에페소서 2:8' },
+    { word:'εἰρήνη',   translit:'eirēnē',    meaning:'평화',    sub:'평강, 화목, 안녕',                  verse:'"나는 너희에게 평화를 남기고 간다. 내 평화를 너희에게 준다."',               verseRef:'요한 복음서 14:27' },
+    { word:'ζωή',      translit:'zōē',       meaning:'생명',    sub:'영적 생명, 영생',                   verse:'"나는 길이요 진리요 생명이다."',                                          verseRef:'요한 복음서 14:6' },
+    { word:'θεός',     translit:'theos',     meaning:'하느님',  sub:'신, 하느님',                       verse:'"하느님은 사랑이십니다."',                                                verseRef:'요한 1서 4:8' },
+    { word:'κύριος',   translit:'kyrios',    meaning:'주님',    sub:'주인, 권위자, 주님',                verse:'"예수님은 주님이시라고 입으로 고백하고"',                                   verseRef:'로마서 10:9' },
+    { word:'ἄνθρωπος', translit:'anthrōpos', meaning:'사람',    sub:'인간, 인류',                       verse:'"하느님께서는 당신의 모습으로 사람을 창조하셨다."',                          verseRef:'창세기 1:27' },
+    { word:'κόσμος',   translit:'kosmos',    meaning:'세상',    sub:'우주, 세계, 질서',                  verse:'"하느님께서는 세상을 너무나 사랑하신 나머지"',                               verseRef:'요한 복음서 3:16' },
+    { word:'ἀλήθεια',  translit:'alētheia',  meaning:'진리',    sub:'진실, 참됨',                       verse:'"진리가 너희를 자유롭게 할 것이다."',                                      verseRef:'요한 복음서 8:32' },
+    { word:'πνεῦμα',   translit:'pneuma',    meaning:'성령',    sub:'영, 바람, 숨결',                   verse:'"하느님은 영이시다."',                                                    verseRef:'요한 복음서 4:24' },
+    { word:'ἐκκλησία', translit:'ekklēsia',  meaning:'교회',    sub:'불러모인 무리, 회중',               verse:'"나는 이 반석 위에 내 교회를 세울 것이다."',                               verseRef:'마태오 복음서 16:18' },
+    { word:'καρδία',   translit:'kardia',    meaning:'마음',    sub:'심장, 내면, 의지',                 verse:'"행복하여라, 마음이 깨끗한 사람들! 그들은 하느님을 볼 것이다."',              verseRef:'마태오 복음서 5:8' },
+    { word:'νόμος',    translit:'nomos',     meaning:'율법',    sub:'법, 토라, 규례',                   verse:'"나는 율법이나 예언서를 폐지하러 온 것이 아니라 완성하러 왔다."',             verseRef:'마태오 복음서 5:17' },
+    { word:'ἁμαρτία',  translit:'hamartia',  meaning:'죄',      sub:'과녁을 빗나감, 불법',               verse:'"죄의 삯은 죽음입니다."',                                                 verseRef:'로마서 6:23' },
+    { word:'δόξα',     translit:'doxa',      meaning:'영광',    sub:'찬양, 명예, 빛남',                 verse:'"지극히 높은 곳에서는 하느님께 영광, 땅에서는 그분 마음에 드는 사람들에게 평화!"', verseRef:'루카 복음서 2:14' },
+    { word:'βασιλεία', translit:'basileia',  meaning:'나라',    sub:'왕국, 하느님의 나라',               verse:'"너희는 먼저 하느님의 나라와 그분의 의로움을 찾아라."',                      verseRef:'마태오 복음서 6:33' },
+    { word:'Χριστός',  translit:'Christos',  meaning:'그리스도', sub:'기름 부음 받은 자, 메시아',         verse:'"예수님께서 하느님의 아드님 그리스도이심을 믿게 하려는 것"',                  verseRef:'요한 복음서 20:31' },
+    { word:'Ἰησοῦς',  translit:'Iēsous',    meaning:'예수',    sub:'구원자, 여호수아',                 verse:'"그 이름을 예수라 하여라. 그가 자기 백성을 죄에서 구원할 것이다."',           verseRef:'마태오 복음서 1:21' },
   ],
   hebrew: [
-    { word:'שָׁלוֹם',   translit:'shalom',   meaning:'평화',   sub:'평강, 온전함, 안녕',          verse:'"여호와는 네게 은혜를 베푸사 너를 지키시기를 원하며 너에게 평강 주시기를 원하노라"',   verseRef:'민수기 6:24,26' },
-    { word:'אֱלֹהִים',  translit:'Elohim',   meaning:'하나님', sub:'창조주 하나님 (복수형)',       verse:'"태초에 하나님이 천지를 창조하시니라"',                                            verseRef:'창세기 1:1' },
-    { word:'יְהוָה',    translit:'YHWH',     meaning:'주님',   sub:'야훼, 스스로 있는 자',        verse:'"나는 스스로 있는 자이니라"',                                                     verseRef:'출애굽기 3:14' },
-    { word:'אַהֲבָה',   translit:'ahavah',   meaning:'사랑',   sub:'깊은 애정, 사랑의 행위',      verse:'"네 마음을 다하고 뜻을 다하고 힘을 다하여 네 하나님 여호와를 사랑하라"',              verseRef:'신명기 6:5' },
-    { word:'אֱמוּנָה',  translit:'emunah',   meaning:'믿음',   sub:'신실함, 충성, 확신',          verse:'"오직 의인은 그의 믿음으로 말미암아 살리라"',                                       verseRef:'하박국 2:4' },
-    { word:'חֶסֶד',     translit:'hesed',    meaning:'인자',   sub:'언약적 사랑, 자비, 인자함',   verse:'"그 인자하심이 영원함이로다"',                                                     verseRef:'시편 136:1' },
-    { word:'תּוֹרָה',   translit:'Torah',    meaning:'율법',   sub:'가르침, 교훈, 모세오경',      verse:'"주의 말씀은 내 발에 등이요 내 길에 빛이니이다"',                                  verseRef:'시편 119:105' },
-    { word:'בְּרִית',   translit:'berit',    meaning:'언약',   sub:'계약, 하나님과의 약속',       verse:'"내가 내 무지개를 구름 속에 두었나니 이것이 나와 세상 사이의 언약의 증거니라"',        verseRef:'창세기 9:13' },
-    { word:'נֶפֶשׁ',    translit:'nefesh',   meaning:'영혼',   sub:'생명, 사람 자체, 욕구',       verse:'"내 영혼을 소생시키시고 자기 이름을 위하여 의의 길로 인도하시는도다"',               verseRef:'시편 23:3' },
-    { word:'רוּחַ',     translit:'ruach',    meaning:'영',     sub:'바람, 숨, 하나님의 영',       verse:'"하나님의 영은 수면 위에 운행하시니라"',                                           verseRef:'창세기 1:2' },
-    { word:'קֹדֶשׁ',    translit:'kodesh',   meaning:'거룩',   sub:'구별됨, 신성함',              verse:'"거룩하다 거룩하다 거룩하다 만군의 여호와여 그의 영광이 온 땅에 충만하도다"',          verseRef:'이사야 6:3' },
-    { word:'מֶלֶךְ',    translit:'melech',   meaning:'왕',     sub:'왕, 통치자',                 verse:'"하나님은 온 땅의 왕이심이라"',                                                   verseRef:'시편 47:7' },
-    { word:'עָם',       translit:'am',       meaning:'백성',   sub:'민족, 하나님의 백성',         verse:'"나는 너희 하나님이 되고 너희는 내 백성이 되리라"',                                 verseRef:'레위기 26:12' },
-    { word:'אֶרֶץ',     translit:'eretz',    meaning:'땅',     sub:'땅, 지구, 가나안 땅',         verse:'"태초에 하나님이 천지를 창조하시니라"',                                            verseRef:'창세기 1:1' },
-    { word:'חַיִּים',   translit:'chayyim',  meaning:'생명',   sub:'삶, 생명 (복수형)',           verse:'"진실로 생명의 원천이 주께 있사오니"',                                             verseRef:'시편 36:9' },
-    { word:'לֵב',       translit:'lev',      meaning:'마음',   sub:'심장, 중심, 내면',            verse:'"너는 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라"',                     verseRef:'잠언 3:5' },
-    { word:'שָׁמַיִם',  translit:'shamayim', meaning:'하늘',   sub:'하늘들, 천국 (복수형)',       verse:'"하늘이 하나님의 영광을 선포하고 궁창이 그의 손으로 하신 일을 나타내는도다"',           verseRef:'시편 19:1' },
-    { word:'מַיִם',     translit:'mayim',    meaning:'물',     sub:'물들, 생수 (복수형)',         verse:'"그가 나를 푸른 풀밭에 누이시며 쉴 만한 물 가로 인도하시는도다"',                    verseRef:'시편 23:2' },
-    { word:'אָדָם',     translit:'adam',     meaning:'사람',   sub:'인간, 아담, 흙에서 온 자',    verse:'"여호와 하나님이 땅의 흙으로 사람을 지으시고 생기를 그 코에 불어넣으시니"',            verseRef:'창세기 2:7' },
-    { word:'אֵשׁ',      translit:'esh',      meaning:'불',     sub:'불, 하나님의 임재',           verse:'"불꽃 안에서 그에게 나타나시니라 떨기나무에 불이 붙었으나 사라지지 아니하는지라"',      verseRef:'출애굽기 3:2' },
+    { word:'שָׁלוֹם',  translit:'shalom',   meaning:'평화',   sub:'평강, 온전함, 안녕',          verse:'"주님께서 너에게 복을 내리시고 너를 지켜 주시기를... 너에게 평화를 베풀어 주시기를."', verseRef:'민수기 6:24,26' },
+    { word:'אֱלֹהִים', translit:'Elohim',   meaning:'하느님', sub:'창조주 하느님 (복수형)',       verse:'"한처음에 하느님께서 하늘과 땅을 창조하셨다."',                                verseRef:'창세기 1:1' },
+    { word:'יְהוָה',   translit:'YHWH',     meaning:'주님',   sub:'야훼, 스스로 있는 자',        verse:'"나는 있는 나다."',                                                           verseRef:'탈출기 3:14' },
+    { word:'אַהֲבָה',  translit:'ahavah',   meaning:'사랑',   sub:'깊은 애정, 사랑의 행위',      verse:'"너희는 마음을 다하고 목숨을 다하고 힘을 다하여 주 너희 하느님을 사랑해야 한다."', verseRef:'신명기 6:5' },
+    { word:'אֱמוּנָה', translit:'emunah',   meaning:'믿음',   sub:'신실함, 충성, 확신',          verse:'"의인은 자기 신의로 살아남는다."',                                             verseRef:'하바쿡 2:4' },
+    { word:'חֶסֶד',    translit:'hesed',    meaning:'인자',   sub:'언약적 사랑, 자비, 인자함',   verse:'"그 자애가 영원하시도다."',                                                    verseRef:'시편 136:1' },
+    { word:'תּוֹרָה',  translit:'Torah',    meaning:'율법',   sub:'가르침, 교훈, 모세오경',      verse:'"당신 말씀은 제 발의 등불, 저의 길에 빛입니다."',                              verseRef:'시편 119:105' },
+    { word:'בְּרִית',  translit:'berit',    meaning:'언약',   sub:'계약, 하느님과의 약속',       verse:'"나는 구름 속에 내 무지개를 놓아 두었다. 이것이 나와 땅 사이의 계약의 표징이 될 것이다."', verseRef:'창세기 9:13' },
+    { word:'נֶפֶשׁ',   translit:'nefesh',   meaning:'영혼',   sub:'생명, 사람 자체, 욕구',       verse:'"그분은 내 영혼을 소생시키시고"',                                              verseRef:'시편 23:3' },
+    { word:'רוּחַ',    translit:'ruach',    meaning:'영',     sub:'바람, 숨, 하느님의 영',       verse:'"하느님의 영이 그 물 위를 감돌고 있었다."',                                    verseRef:'창세기 1:2' },
+    { word:'קֹדֶשׁ',   translit:'kodesh',   meaning:'거룩',   sub:'구별됨, 신성함',              verse:'"거룩하시다, 거룩하시다, 거룩하시다, 만군의 주님!"',                           verseRef:'이사야 6:3' },
+    { word:'מֶלֶךְ',   translit:'melech',   meaning:'왕',     sub:'왕, 통치자',                 verse:'"하느님은 온 땅의 임금이시다."',                                               verseRef:'시편 47:8' },
+    { word:'עָם',      translit:'am',       meaning:'백성',   sub:'민족, 하느님의 백성',         verse:'"나는 너희 가운데서 걸으며 너희의 하느님이 되고 너희는 나의 백성이 될 것이다."',  verseRef:'레위기 26:12' },
+    { word:'אֶרֶץ',    translit:'eretz',    meaning:'땅',     sub:'땅, 지구, 가나안 땅',         verse:'"한처음에 하느님께서 하늘과 땅을 창조하셨다."',                                verseRef:'창세기 1:1' },
+    { word:'חַיִּים',  translit:'chayyim',  meaning:'생명',   sub:'삶, 생명 (복수형)',           verse:'"당신께 생명의 샘이 있고"',                                                    verseRef:'시편 36:10' },
+    { word:'לֵב',      translit:'lev',      meaning:'마음',   sub:'심장, 중심, 내면',            verse:'"마음을 다하여 주님을 신뢰하여라. 네 슬기를 믿지 마라."',                      verseRef:'잠언 3:5' },
+    { word:'שָׁמַיִם', translit:'shamayim', meaning:'하늘',   sub:'하늘들, 천국 (복수형)',       verse:'"하늘은 하느님의 영광을 이야기하고"',                                          verseRef:'시편 19:2' },
+    { word:'מַיִם',    translit:'mayim',    meaning:'물',     sub:'물들, 생수 (복수형)',         verse:'"잔잔한 물가로 나를 이끄시니"',                                                verseRef:'시편 23:2' },
+    { word:'אָדָם',    translit:'adam',     meaning:'사람',   sub:'인간, 아담, 흙에서 온 자',    verse:'"주 하느님께서 흙의 먼지로 사람을 빚으시고 그 코에 생명의 숨을 불어 넣으시니"', verseRef:'창세기 2:7' },
+    { word:'אֵשׁ',     translit:'esh',      meaning:'불',     sub:'불, 하느님의 임재',           verse:'"주님의 천사가 떨기나무 한가운데에서 타오르는 불꽃으로 그에게 나타났다."',       verseRef:'탈출기 3:2' },
   ],
   latin: [
-    { word:'verbum',   translit:'VER-bum',    meaning:'말씀',    sub:'단어, 말씀, 이성',          verse:'"In principio erat Verbum — 태초에 말씀이 계시니라"',                            verseRef:'요한복음 1:1' },
-    { word:'amor',     translit:'A-mor',      meaning:'사랑',    sub:'사랑, 애정',                verse:'"Deus caritas est — 하나님은 사랑이심이라"',                                    verseRef:'요한일서 4:8' },
-    { word:'fides',    translit:'FI-des',     meaning:'믿음',    sub:'신앙, 신뢰, 충성',          verse:'"Iustus ex fide vivit — 오직 의인은 믿음으로 살리라"',                           verseRef:'로마서 1:17' },
-    { word:'gratia',   translit:'GRA-ti-a',   meaning:'은혜',    sub:'은총, 감사, 은혜',          verse:'"gratia Dei salvati estis — 너희는 은혜로 구원을 받았으니"',                     verseRef:'에베소서 2:8' },
-    { word:'pax',      translit:'paks',       meaning:'평화',    sub:'평화, 평강, 안녕',          verse:'"pacem meam do vobis — 나의 평안을 너희에게 주노라"',                           verseRef:'요한복음 14:27' },
-    { word:'vita',     translit:'VI-ta',      meaning:'생명',    sub:'삶, 생명',                  verse:'"ego sum via veritas et vita — 나는 길이요 진리요 생명이니"',                   verseRef:'요한복음 14:6' },
-    { word:'Deus',     translit:'DE-us',      meaning:'하나님',  sub:'신, 하나님',                verse:'"Deus caritas est — 하나님은 사랑이심이라"',                                    verseRef:'요한일서 4:8' },
-    { word:'Dominus',  translit:'DO-mi-nus',  meaning:'주님',    sub:'주인, 주님, 통치자',        verse:'"Dominus pascit me — 여호와는 나의 목자시니"',                                  verseRef:'시편 23:1' },
-    { word:'homo',     translit:'HO-mo',      meaning:'사람',    sub:'인간, 사람',                verse:'"Deus creavit hominem — 하나님이 사람을 창조하시되"',                           verseRef:'창세기 1:27' },
-    { word:'mundus',   translit:'MUN-dus',    meaning:'세상',    sub:'세계, 우주, 세상',          verse:'"sic Deus dilexit mundum — 하나님이 세상을 이처럼 사랑하사"',                   verseRef:'요한복음 3:16' },
-    { word:'veritas',  translit:'VE-ri-tas',  meaning:'진리',    sub:'진실, 진리',                verse:'"veritas liberabit vos — 진리가 너희를 자유롭게 하리라"',                       verseRef:'요한복음 8:32' },
-    { word:'spiritus', translit:'SPI-ri-tus', meaning:'성령',    sub:'영, 바람, 숨결',            verse:'"Spiritus Dei ferebatur super aquas — 하나님의 영은 수면 위에 운행하시니라"',   verseRef:'창세기 1:2' },
-    { word:'ecclesia', translit:'ec-CLE-si-a',meaning:'교회',    sub:'불러모인 무리, 교회',       verse:'"aedificabo ecclesiam meam — 내 교회를 세우리니"',                              verseRef:'마태복음 16:18' },
-    { word:'cor',      translit:'kor',        meaning:'마음',    sub:'심장, 마음, 내면',          verse:'"beati mundo corde — 마음이 청결한 자는 복이 있나니"',                          verseRef:'마태복음 5:8' },
-    { word:'lex',      translit:'leks',       meaning:'율법',    sub:'법, 율법, 규례',            verse:'"non veni solvere legem sed adimplere — 율법을 폐하러 온 것이 아니요 완전케 하려 함이라"', verseRef:'마태복음 5:17' },
-    { word:'peccatum', translit:'pec-CA-tum', meaning:'죄',      sub:'죄, 잘못',                  verse:'"stipendia peccati mors — 죄의 삯은 사망이요"',                                 verseRef:'로마서 6:23' },
-    { word:'gloria',   translit:'GLO-ri-a',   meaning:'영광',    sub:'영광, 찬양, 명예',          verse:'"Gloria in excelsis Deo — 지극히 높은 곳에서는 하나님께 영광"',                 verseRef:'누가복음 2:14' },
-    { word:'regnum',   translit:'REG-num',    meaning:'나라',    sub:'왕국, 나라',                verse:'"quaerite primum regnum Dei — 하나님의 나라를 먼저 구하라"',                    verseRef:'마태복음 6:33' },
-    { word:'lux',      translit:'luks',       meaning:'빛',      sub:'빛, 광채',                  verse:'"ego sum lux mundi — 나는 세상의 빛이라"',                                     verseRef:'요한복음 8:12' },
-    { word:'salus',    translit:'SA-lus',     meaning:'구원',    sub:'구원, 안전, 건강',          verse:'"salus autem iustorum a Domino — 의인의 구원은 여호와로부터 오는도다"',          verseRef:'시편 37:39' },
+    { word:'verbum',   translit:'VER-bum',    meaning:'말씀',   sub:'단어, 말씀, 이성',            verse:'"In principio erat Verbum — 한처음에 말씀이 계셨다"',                       verseRef:'요한 복음서 1:1' },
+    { word:'amor',     translit:'A-mor',      meaning:'사랑',   sub:'사랑, 애정',                  verse:'"Deus caritas est — 하느님은 사랑이십니다"',                                verseRef:'요한 1서 4:8' },
+    { word:'fides',    translit:'FI-des',     meaning:'믿음',   sub:'신앙, 신뢰, 충성',            verse:'"Iustus ex fide vivit — 의인은 믿음으로 살아남는다"',                       verseRef:'로마서 1:17' },
+    { word:'gratia',   translit:'GRA-ti-a',   meaning:'은총',   sub:'은총, 감사, 은혜',            verse:'"gratia Dei salvati estis — 은총으로 구원을 받았습니다"',                   verseRef:'에페소서 2:8' },
+    { word:'pax',      translit:'paks',       meaning:'평화',   sub:'평화, 평강, 안녕',            verse:'"pacem meam do vobis — 내 평화를 너희에게 준다"',                          verseRef:'요한 복음서 14:27' },
+    { word:'vita',     translit:'VI-ta',      meaning:'생명',   sub:'삶, 생명',                    verse:'"ego sum via veritas et vita — 나는 길이요 진리요 생명이다"',              verseRef:'요한 복음서 14:6' },
+    { word:'Deus',     translit:'DE-us',      meaning:'하느님', sub:'신, 하느님',                  verse:'"Deus caritas est — 하느님은 사랑이십니다"',                                verseRef:'요한 1서 4:8' },
+    { word:'Dominus',  translit:'DO-mi-nus',  meaning:'주님',   sub:'주인, 주님, 통치자',          verse:'"Dominus pascit me — 주님은 나의 목자"',                                   verseRef:'시편 23:1' },
+    { word:'homo',     translit:'HO-mo',      meaning:'사람',   sub:'인간, 사람',                  verse:'"Deus creavit hominem — 하느님께서 사람을 창조하셨다"',                     verseRef:'창세기 1:27' },
+    { word:'mundus',   translit:'MUN-dus',    meaning:'세상',   sub:'세계, 우주, 세상',            verse:'"sic Deus dilexit mundum — 하느님께서 세상을 너무나 사랑하신 나머지"',       verseRef:'요한 복음서 3:16' },
+    { word:'veritas',  translit:'VE-ri-tas',  meaning:'진리',   sub:'진실, 진리',                  verse:'"veritas liberabit vos — 진리가 너희를 자유롭게 할 것이다"',               verseRef:'요한 복음서 8:32' },
+    { word:'spiritus', translit:'SPI-ri-tus', meaning:'성령',   sub:'영, 바람, 숨결',              verse:'"Spiritus Dei ferebatur super aquas — 하느님의 영이 물 위를 감돌고 있었다"', verseRef:'창세기 1:2' },
+    { word:'ecclesia', translit:'ec-CLE-si-a',meaning:'교회',   sub:'불러모인 무리, 교회',         verse:'"aedificabo ecclesiam meam — 내 교회를 세울 것이다"',                       verseRef:'마태오 복음서 16:18' },
+    { word:'cor',      translit:'kor',        meaning:'마음',   sub:'심장, 마음, 내면',            verse:'"beati mundo corde — 행복하여라, 마음이 깨끗한 사람들!"',                   verseRef:'마태오 복음서 5:8' },
+    { word:'lex',      translit:'leks',       meaning:'율법',   sub:'법, 율법, 규례',              verse:'"non veni solvere legem sed adimplere — 율법을 완성하러 왔다"',             verseRef:'마태오 복음서 5:17' },
+    { word:'peccatum', translit:'pec-CA-tum', meaning:'죄',     sub:'죄, 잘못',                    verse:'"stipendia peccati mors — 죄의 삯은 죽음입니다"',                          verseRef:'로마서 6:23' },
+    { word:'gloria',   translit:'GLO-ri-a',   meaning:'영광',   sub:'영광, 찬양, 명예',            verse:'"Gloria in excelsis Deo — 지극히 높은 곳에서는 하느님께 영광"',             verseRef:'루카 복음서 2:14' },
+    { word:'regnum',   translit:'REG-num',    meaning:'나라',   sub:'왕국, 나라',                  verse:'"quaerite primum regnum Dei — 먼저 하느님의 나라를 찾아라"',               verseRef:'마태오 복음서 6:33' },
+    { word:'lux',      translit:'luks',       meaning:'빛',     sub:'빛, 광채',                    verse:'"ego sum lux mundi — 나는 세상의 빛이다"',                                 verseRef:'요한 복음서 8:12' },
+    { word:'salus',    translit:'SA-lus',     meaning:'구원',   sub:'구원, 안전, 건강',            verse:'"salus autem iustorum a Domino — 의인의 구원은 주님께로부터"',              verseRef:'시편 37:39' },
+  ],
+  english: [
+    { word:'word',         translit:'word',         meaning:'말씀',    sub:'하느님의 말씀 (cf. λόγος / verbum)',      verse:'"In the beginning was the Word, and the Word was with God."',   verseRef:'요한 복음서 1:1' },
+    { word:'love',         translit:'love',         meaning:'사랑',    sub:'희생적 사랑 (cf. ἀγάπη / amor)',          verse:'"For God so loved the world that he gave his only Son."',        verseRef:'요한 복음서 3:16' },
+    { word:'faith',        translit:'faith',        meaning:'믿음',    sub:'믿음, 신뢰 (cf. πίστις / fides)',         verse:'"Faith is the assurance of things hoped for."',                 verseRef:'히브리서 11:1' },
+    { word:'grace',        translit:'grace',        meaning:'은총',    sub:'값없이 주시는 은총 (cf. χάρις / gratia)', verse:'"By grace you have been saved through faith."',                 verseRef:'에페소서 2:8' },
+    { word:'peace',        translit:'peace',        meaning:'평화',    sub:'평강, 화목 (cf. εἰρήνη / שָׁלוֹם)',      verse:'"Peace I leave with you; my peace I give to you."',             verseRef:'요한 복음서 14:27' },
+    { word:'life',         translit:'life',         meaning:'생명',    sub:'영생, 생명 (cf. ζωή / vita)',             verse:'"I am the way, and the truth, and the life."',                  verseRef:'요한 복음서 14:6' },
+    { word:'God',          translit:'God',          meaning:'하느님',  sub:'창조주 하느님 (cf. θεός / Deus)',         verse:'"God is love."',                                                verseRef:'요한 1서 4:8' },
+    { word:'Lord',         translit:'Lord',         meaning:'주님',    sub:'주인, 주님 (cf. κύριος / יְהוָה)',        verse:'"Jesus is Lord."',                                              verseRef:'로마서 10:9' },
+    { word:'truth',        translit:'truth',        meaning:'진리',    sub:'진실, 참됨 (cf. ἀλήθεια / veritas)',      verse:'"The truth will make you free."',                               verseRef:'요한 복음서 8:32' },
+    { word:'spirit',       translit:'spirit',       meaning:'성령',    sub:'영, 바람 (cf. πνεῦμα / רוּחַ)',          verse:'"God is spirit."',                                              verseRef:'요한 복음서 4:24' },
+    { word:'church',       translit:'church',       meaning:'교회',    sub:'불러모인 무리 (cf. ἐκκλησία / ecclesia)', verse:'"I will build my church."',                                     verseRef:'마태오 복음서 16:18' },
+    { word:'heart',        translit:'heart',        meaning:'마음',    sub:'심장, 내면 (cf. καρδία / לֵב / cor)',    verse:'"Blessed are the pure in heart."',                              verseRef:'마태오 복음서 5:8' },
+    { word:'law',          translit:'law',          meaning:'율법',    sub:'법, 규례 (cf. νόμος / תּוֹרָה / lex)',   verse:'"I have come not to abolish but to fulfill."',                  verseRef:'마태오 복음서 5:17' },
+    { word:'sin',          translit:'sin',          meaning:'죄',      sub:'과녁을 빗나감 (cf. ἁμαρτία / peccatum)', verse:'"The wages of sin is death."',                                  verseRef:'로마서 6:23' },
+    { word:'glory',        translit:'glory',        meaning:'영광',    sub:'찬양, 명예 (cf. δόξα / gloria)',          verse:'"Glory to God in the highest heaven."',                         verseRef:'루카 복음서 2:14' },
+    { word:'kingdom',      translit:'kingdom',      meaning:'나라',    sub:'왕국, 하느님 나라 (cf. βασιλεία)',        verse:'"Strive first for the kingdom of God."',                        verseRef:'마태오 복음서 6:33' },
+    { word:'salvation',    translit:'salvation',    meaning:'구원',    sub:'구원, 해방 (cf. salus / שָׁלוֹם)',        verse:'"There is salvation in no one else."',                          verseRef:'사도행전 4:12' },
+    { word:'covenant',     translit:'covenant',     meaning:'언약',    sub:'계약, 약속 (cf. בְּרִית / foedus)',       verse:'"I have set my bow in the clouds."',                            verseRef:'창세기 9:13' },
+    { word:'light',        translit:'light',        meaning:'빛',      sub:'빛, 광채 (cf. lux / φῶς)',               verse:'"I am the light of the world."',                                verseRef:'요한 복음서 8:12' },
+    { word:'soul',         translit:'soul',         meaning:'영혼',    sub:'영혼, 생명 (cf. נֶפֶשׁ / ψυχή)',         verse:'"He restores my soul."',                                        verseRef:'시편 23:3' },
   ],
 };
 
@@ -420,22 +418,31 @@ let quizOrder   = [];
 let quizAnswered = false;
 let flashVisited = new Set();
 
-// ── 언어 설정 ──
+// ── TTS 안내 문구 ──
 const ttsNotes = {
-  greek:  '※ 헬라어(코이네)는 전용 TTS 없음 — 발음기호를 영어로 읽습니다',
-  hebrew: '※ 현대 히브리어 발음 (Google TTS)',
-  latin:  '※ 라틴어 발음 (Google TTS)',
+  greek:   '※ 코이네 헬라어 전용 TTS 없음 — 발음기호를 영어로 읽습니다',
+  hebrew:  '※ 히브리어 발음 (Web Speech API)',
+  latin:   '※ 라틴어 발음 — 이탈리아어 음성 근사 (Web Speech API)',
+  english: '※ 영어 발음 (Web Speech API)',
 };
 
+// ── 언어 설정 ──
 function setLang(lang) {
   currentLang = lang;
-  ['greek','hebrew','latin'].forEach(l =>
+  ['greek','hebrew','latin','english'].forEach(l =>
     document.getElementById('tab-' + l).classList.toggle('active', l === lang)
   );
-  const note = document.getElementById('ttsNote');
-  if (note) note.textContent = ttsNotes[lang] || '';
+  setTtsNote(lang);
   resetAll();
   renderMode();
+}
+
+function setTtsNote(lang) {
+  const note = ttsNotes[lang] || '';
+  ['ttsNote','ttsNoteQuiz'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = note;
+  });
 }
 
 // ── 모드 설정 ──
@@ -462,10 +469,10 @@ function renderMode() {
   const isFlash = currentMode === 'flash';
   const isQuiz  = currentMode === 'quiz';
   const isList  = currentMode === 'list';
-  document.getElementById('flashArea').style.display     = isFlash ? '' : 'none';
-  document.getElementById('quizArea').style.display      = isQuiz  ? '' : 'none';
-  document.getElementById('listArea').style.display      = isList  ? '' : 'none';
-  document.getElementById('progressBar').style.display   = isList  ? 'none' : '';
+  document.getElementById('flashArea').style.display      = isFlash ? '' : 'none';
+  document.getElementById('quizArea').style.display       = isQuiz  ? '' : 'none';
+  document.getElementById('listArea').style.display       = isList  ? '' : 'none';
+  document.getElementById('progressBar').style.display    = isList  ? 'none' : '';
   document.getElementById('completeScreen').style.display = 'none';
   if (isFlash) renderFlashcard();
   if (isQuiz)  renderQuiz();
@@ -475,24 +482,22 @@ function renderMode() {
 // ── 플래시카드 ──
 function renderFlashcard() {
   const w = words()[cardIndex];
-  const isHebrew = currentLang === 'hebrew';
-  const langLabel = { greek:'Greek', hebrew:'Hebrew', latin:'Latin' }[currentLang];
-
-  document.getElementById('cardLangBadge').textContent = langLabel;
-  document.getElementById('cardNumBadge').textContent  = `${cardIndex + 1} / ${words().length}`;
-  document.getElementById('cardWord').textContent      = w.word;
-  document.getElementById('cardWord').style.direction  = isHebrew ? 'rtl' : 'ltr';
-  document.getElementById('cardTranslit').textContent  = w.translit;
-  document.getElementById('cardMeaning').textContent   = w.meaning;
+  const labels = { greek:'Greek', hebrew:'Hebrew', latin:'Latin', english:'English' };
+  document.getElementById('cardLangBadge').textContent  = labels[currentLang];
+  document.getElementById('cardNumBadge').textContent   = `${cardIndex + 1} / ${words().length}`;
+  document.getElementById('cardWord').textContent       = w.word;
+  document.getElementById('cardWord').style.direction   = currentLang === 'hebrew' ? 'rtl' : 'ltr';
+  document.getElementById('cardTranslit').textContent   = w.translit;
+  document.getElementById('cardMeaning').textContent    = w.meaning;
   document.getElementById('cardMeaningSub').textContent = `${w.translit} — ${w.sub}`;
-  document.getElementById('cardVerseRef').textContent  = w.verseRef;
-  document.getElementById('cardVerseText').textContent = w.verse;
+  document.getElementById('cardVerseRef').textContent   = w.verseRef;
+  document.getElementById('cardVerseText').textContent  = w.verse;
 
   document.getElementById('flashcard').classList.remove('flipped');
   isFlipped = false;
   flashVisited.add(cardIndex);
   updateProgress(flashVisited.size, words().length, quizScore, quizStreak);
-  document.getElementById('statCard').textContent  = cardIndex + 1;
+  document.getElementById('statCard').textContent = cardIndex + 1;
   document.getElementById('prevBtn').disabled = cardIndex === 0;
   document.getElementById('nextBtn').disabled = cardIndex === words().length - 1;
 }
@@ -515,23 +520,22 @@ function renderQuiz() {
   if (quizIndex >= words().length) { showComplete(quizScore, words().length); return; }
 
   const w = words()[quizOrder[quizIndex]];
-  document.getElementById('quizWord').textContent     = w.word;
-  document.getElementById('quizWord').style.direction = currentLang === 'hebrew' ? 'rtl' : 'ltr';
-  document.getElementById('quizTranslit').textContent = w.translit;
-  document.getElementById('quizQNum').textContent     = `${quizIndex + 1} / ${words().length}`;
+  document.getElementById('quizWord').textContent      = w.word;
+  document.getElementById('quizWord').style.direction  = currentLang === 'hebrew' ? 'rtl' : 'ltr';
+  document.getElementById('quizTranslit').textContent  = w.translit;
+  document.getElementById('quizQNum').textContent      = `${quizIndex + 1} / ${words().length}`;
 
   const fb = document.getElementById('quizFeedback');
   fb.style.display = 'none'; fb.className = 'quiz-feedback';
 
-  const choices = generateChoices(quizOrder[quizIndex]);
   const el = document.getElementById('quizChoices');
   el.innerHTML = '';
   quizAnswered = false;
-  choices.forEach(c => {
+  generateChoices(quizOrder[quizIndex]).forEach(c => {
     const btn = document.createElement('button');
-    btn.className = 'choice-btn';
+    btn.className   = 'choice-btn';
     btn.textContent = c.meaning;
-    btn.onclick = () => answerQuiz(c.correct, btn, quizOrder[quizIndex]);
+    btn.onclick     = () => answerQuiz(c.correct, btn, quizOrder[quizIndex]);
     el.appendChild(btn);
   });
 
@@ -570,7 +574,7 @@ function answerQuiz(isCorrect, clickedBtn, wIdx) {
 
 // ── 단어 목록 ──
 function renderList() {
-  const labels = { greek:'헬라어', hebrew:'히브리어', latin:'라틴어' };
+  const labels = { greek:'헬라어', hebrew:'히브리어', latin:'라틴어', english:'영어' };
   document.getElementById('listTitle').textContent = `${labels[currentLang]} 단어 목록 (20개)`;
   const grid = document.getElementById('wordGrid');
   grid.innerHTML = '';
@@ -588,65 +592,52 @@ function renderList() {
   });
 }
 
-// ── TTS 발음 듣기 (Google Translate TTS) ──
-let currentAudio = null;
-
+// ── TTS (Web Speech API) ──
 function speakWord() {
-  const w = currentWord();
-  if (!w) return;
-
-  const btn = document.getElementById(currentMode === 'quiz' ? 'ttsBtnQuiz' : 'ttsBtn');
-  const stopAnim = () => { if (btn) btn.classList.remove('speaking'); };
-
-  // 이전 재생 중단
-  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-  if (btn) btn.classList.add('speaking');
-
-  // 헬라어(코이네)는 전용 TTS 없음 → 발음기호를 영어로 읽기
-  if (currentLang === 'greek') {
-    if (!('speechSynthesis' in window)) { stopAnim(); return; }
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(w.translit);
-    utter.lang  = 'en-US';
-    utter.rate  = 0.72;
-    utter.onend = stopAnim;
-    utter.onerror = stopAnim;
-    window.speechSynthesis.speak(utter);
+  if (!('speechSynthesis' in window)) {
+    alert('브라우저가 TTS를 지원하지 않습니다.');
     return;
   }
 
-  const langCode = { hebrew: 'he', latin: 'la' }[currentLang] || 'en';
-  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w.word)}&tl=${langCode}&client=tw-ob&ttsspeed=0.7`;
+  const w = currentWord();
+  if (!w) return;
 
-  currentAudio = new Audio(url);
-  currentAudio.onended = stopAnim;
-  currentAudio.onerror = () => {
-    stopAnim();
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(w.word);
-      utter.lang  = { hebrew: 'he-IL', latin: 'la' }[currentLang] || 'en-US';
-      utter.rate  = 0.78;
-      utter.onend = stopAnim;
-      window.speechSynthesis.speak(utter);
-    }
-  };
-  currentAudio.play().catch(() => currentAudio.onerror());
+  const btnId = currentMode === 'quiz' ? 'ttsBtnQuiz' : 'ttsBtn';
+  const btn = document.getElementById(btnId);
+  const stopAnim = () => { if (btn) btn.classList.remove('speaking'); };
+  if (btn) btn.classList.add('speaking');
+
+  window.speechSynthesis.cancel();
+
+  const utter = new SpeechSynthesisUtterance();
+  utter.rate  = 0.78;
+  utter.pitch = 1;
+
+  if (currentLang === 'greek') {
+    // 코이네 헬라어 전용 TTS 없음 → 발음기호를 영어로 읽기
+    utter.text = w.translit;
+    utter.lang = 'en-US';
+  } else {
+    const langMap = { hebrew: 'he-IL', latin: 'it-IT', english: 'en-US' };
+    utter.text = w.word;
+    utter.lang = langMap[currentLang] || 'en-US';
+  }
+
+  utter.onend   = stopAnim;
+  utter.onerror = stopAnim;
+  window.speechSynthesis.speak(utter);
 }
 
 function currentWord() {
-  if (currentMode === 'quiz') {
-    const idx = Math.min(quizIndex, words().length - 1);
-    return words()[quizOrder[idx]];
-  }
+  if (currentMode === 'quiz') return words()[quizOrder[Math.min(quizIndex, words().length - 1)]];
   return words()[cardIndex];
 }
 
 // ── 완료 화면 ──
 function showComplete(score, total) {
-  document.getElementById('flashArea').style.display   = 'none';
-  document.getElementById('quizArea').style.display    = 'none';
-  document.getElementById('progressBar').style.display = 'none';
+  document.getElementById('flashArea').style.display      = 'none';
+  document.getElementById('quizArea').style.display       = 'none';
+  document.getElementById('progressBar').style.display    = 'none';
   const el = document.getElementById('completeScreen');
   el.style.display = 'block';
   const pct = Math.round((score / total) * 100);
@@ -664,11 +655,11 @@ function restartCurrent() {
 
 function updateProgress(current, total, score, streak) {
   const pct = total > 0 ? Math.round((current / total) * 100) : 0;
-  document.getElementById('progressFill').style.width   = pct + '%';
-  document.getElementById('progressPct').textContent    = pct + '%';
-  document.getElementById('statTotal').textContent      = total;
-  document.getElementById('statScore').textContent      = score;
-  document.getElementById('statStreak').textContent     = streak;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent  = pct + '%';
+  document.getElementById('statTotal').textContent    = total;
+  document.getElementById('statScore').textContent    = score;
+  document.getElementById('statStreak').textContent   = streak;
 }
 
 function shuffleArray(arr) {
@@ -683,8 +674,7 @@ function shuffleArray(arr) {
 // 초기화
 resetAll();
 renderMode();
-const initNote = document.getElementById('ttsNote');
-if (initNote) initNote.textContent = ttsNotes[currentLang] || '';
+setTtsNote(currentLang);
 </script>
 </body>
 </html>
