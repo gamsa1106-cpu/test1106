@@ -419,33 +419,6 @@ let quizOrder   = [];
 let quizAnswered = false;
 let flashVisited = new Set();
 
-// ── TTS 음성 로드 ──
-let cachedVoices = [];
-function loadVoices() {
-  const v = window.speechSynthesis.getVoices();
-  if (v.length > 0) cachedVoices = v;
-}
-if ('speechSynthesis' in window) {
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices;
-}
-
-function getVoicesAsync() {
-  return new Promise(resolve => {
-    if (cachedVoices.length > 0) { resolve(cachedVoices); return; }
-    const v = window.speechSynthesis.getVoices();
-    if (v.length > 0) { cachedVoices = v; resolve(v); return; }
-    // 최대 2초 대기
-    let tries = 0;
-    const id = setInterval(() => {
-      const vv = window.speechSynthesis.getVoices();
-      if (vv.length > 0 || ++tries > 20) {
-        cachedVoices = vv; clearInterval(id); resolve(vv);
-      }
-    }, 100);
-  });
-}
-
 // ── 언어 설정 ──
 function setLang(lang) {
   currentLang = lang;
@@ -606,57 +579,38 @@ function renderList() {
   });
 }
 
-// ── TTS 발음 듣기 ──
-async function speakWord() {
-  if (!('speechSynthesis' in window)) {
-    alert('이 브라우저는 TTS를 지원하지 않습니다.');
-    return;
-  }
+// ── TTS 발음 듣기 (Google Translate TTS) ──
+let currentAudio = null;
 
+function speakWord() {
   const w = currentWord();
   if (!w) return;
 
   const btn = document.getElementById(currentMode === 'quiz' ? 'ttsBtnQuiz' : 'ttsBtn');
+  const stopAnim = () => { if (btn) btn.classList.remove('speaking'); };
+
+  // 이전 재생 중단
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   if (btn) btn.classList.add('speaking');
 
-  window.speechSynthesis.cancel();
+  const langCode = { greek: 'el', hebrew: 'he', latin: 'la' }[currentLang] || 'en';
+  const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w.word)}&tl=${langCode}&client=tw-ob&ttsspeed=0.7`;
 
-  const voices = await getVoicesAsync();
-
-  // 언어별 선호 음성 코드 (순서대로 시도)
-  const preferred = {
-    greek:  ['el-GR', 'el'],
-    hebrew: ['he-IL', 'he'],
-    latin:  ['la', 'it-IT', 'it', 'es-ES', 'es', 'pt-PT'],
-  }[currentLang] || [];
-
-  let voice = null;
-  for (const code of preferred) {
-    voice = voices.find(v => v.lang === code)
-         || voices.find(v => v.lang.toLowerCase().startsWith(code.toLowerCase().split('-')[0]));
-    if (voice) break;
-  }
-
-  const utter = new SpeechSynthesisUtterance();
-
-  if (voice) {
-    utter.voice = voice;
-    utter.text  = w.word;
-    utter.lang  = voice.lang;
-  } else {
-    // 대상 언어 음성 없음 → 발음기호(translit)를 영어로 읽기
-    const enVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang.startsWith('en'));
-    if (enVoice) utter.voice = enVoice;
-    utter.text = w.translit;
-    utter.lang = 'en-US';
-  }
-
-  utter.rate  = 0.78;
-  utter.pitch = 1;
-  utter.onend = () => { if (btn) btn.classList.remove('speaking'); };
-  utter.onerror = () => { if (btn) btn.classList.remove('speaking'); };
-
-  window.speechSynthesis.speak(utter);
+  currentAudio = new Audio(url);
+  currentAudio.onended = stopAnim;
+  currentAudio.onerror = () => {
+    stopAnim();
+    // Google TTS 실패 시 브라우저 Web Speech API로 폴백
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(w.word);
+      utter.lang  = { greek: 'el-GR', hebrew: 'he-IL', latin: 'la' }[currentLang] || 'en-US';
+      utter.rate  = 0.78;
+      utter.onend = stopAnim;
+      window.speechSynthesis.speak(utter);
+    }
+  };
+  currentAudio.play().catch(() => currentAudio.onerror());
 }
 
 function currentWord() {
