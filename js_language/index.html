@@ -298,6 +298,7 @@
     <div class="card-controls">
       <button class="ctrl-btn" id="prevBtn" onclick="prevCard()" disabled>← 이전</button>
       <button class="ctrl-btn tts-btn" id="ttsBtn" onclick="speakWord()">🔊 발음 듣기</button>
+      <div id="ttsNote" style="font-size:0.72rem;color:var(--sub);text-align:center;margin-top:4px"></div>
       <button class="ctrl-btn primary" id="nextBtn" onclick="nextCard()">다음 →</button>
     </div>
   </div>
@@ -420,11 +421,19 @@ let quizAnswered = false;
 let flashVisited = new Set();
 
 // ── 언어 설정 ──
+const ttsNotes = {
+  greek:  '※ 헬라어(코이네)는 전용 TTS 없음 — 발음기호를 영어로 읽습니다',
+  hebrew: '※ 현대 히브리어 발음 (Google TTS)',
+  latin:  '※ 라틴어 발음 (Google TTS)',
+};
+
 function setLang(lang) {
   currentLang = lang;
   ['greek','hebrew','latin'].forEach(l =>
     document.getElementById('tab-' + l).classList.toggle('active', l === lang)
   );
+  const note = document.getElementById('ttsNote');
+  if (note) note.textContent = ttsNotes[lang] || '';
   resetAll();
   renderMode();
 }
@@ -593,18 +602,30 @@ function speakWord() {
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
   if (btn) btn.classList.add('speaking');
 
-  const langCode = { greek: 'el', hebrew: 'he', latin: 'la' }[currentLang] || 'en';
+  // 헬라어(코이네)는 전용 TTS 없음 → 발음기호를 영어로 읽기
+  if (currentLang === 'greek') {
+    if (!('speechSynthesis' in window)) { stopAnim(); return; }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(w.translit);
+    utter.lang  = 'en-US';
+    utter.rate  = 0.72;
+    utter.onend = stopAnim;
+    utter.onerror = stopAnim;
+    window.speechSynthesis.speak(utter);
+    return;
+  }
+
+  const langCode = { hebrew: 'he', latin: 'la' }[currentLang] || 'en';
   const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(w.word)}&tl=${langCode}&client=tw-ob&ttsspeed=0.7`;
 
   currentAudio = new Audio(url);
   currentAudio.onended = stopAnim;
   currentAudio.onerror = () => {
     stopAnim();
-    // Google TTS 실패 시 브라우저 Web Speech API로 폴백
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(w.word);
-      utter.lang  = { greek: 'el-GR', hebrew: 'he-IL', latin: 'la' }[currentLang] || 'en-US';
+      utter.lang  = { hebrew: 'he-IL', latin: 'la' }[currentLang] || 'en-US';
       utter.rate  = 0.78;
       utter.onend = stopAnim;
       window.speechSynthesis.speak(utter);
@@ -662,6 +683,8 @@ function shuffleArray(arr) {
 // 초기화
 resetAll();
 renderMode();
+const initNote = document.getElementById('ttsNote');
+if (initNote) initNote.textContent = ttsNotes[currentLang] || '';
 </script>
 </body>
 </html>
