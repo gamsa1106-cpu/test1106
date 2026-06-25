@@ -196,10 +196,69 @@
     .w-mean { color: var(--sub); font-size: 0.73rem; margin-top: 1px; }
     .w-kr   { font-size: 0.92rem; font-weight: 700; }
 
+    /* ── 대조 성경 ── */
+    .compare-filters { display: flex; gap: 7px; margin-bottom: 16px; flex-wrap: wrap; }
+    .cf-btn {
+      padding: 6px 15px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: #fff; color: var(--sub); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .cf-btn.active { border-color: var(--primary); background: #ede9fe; color: var(--primary); }
+
+    .compare-card {
+      background: #fff; border: 1px solid var(--border); border-radius: 16px;
+      overflow: hidden; margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s;
+    }
+    .compare-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.1); }
+    .compare-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 11px 16px; border-bottom: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .compare-ref   { font-weight: 800; font-size: 0.88rem; }
+    .compare-topic {
+      background: #ede9fe; color: var(--primary);
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    }
+    .compare-type {
+      margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    }
+    .type-ot { background: #fef3c7; color: #92400e; }
+    .type-nt { background: #dbeafe; color: #1e40af; }
+
+    .compare-pair { display: grid; grid-template-columns: 1fr 1fr; }
+    .compare-latin {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      color: #fff; padding: 18px 16px;
+    }
+    .compare-korean {
+      background: linear-gradient(135deg, #f0fdf4, #e0fdf0);
+      padding: 18px 16px; border-left: 1px solid var(--border);
+    }
+    .cp-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 5px;
+    }
+    .compare-latin  .cp-label { color: rgba(255,255,255,0.55); }
+    .compare-korean .cp-label { color: var(--sub); }
+    .cp-text { font-size: 0.85rem; line-height: 1.75; }
+    .compare-latin  .cp-text { color: rgba(255,255,255,0.92); font-style: italic; }
+    .compare-korean .cp-text { color: var(--text); }
+
+    .compare-note {
+      padding: 9px 16px; background: #f8fafc;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem; color: var(--sub); line-height: 1.5;
+    }
+
     @media (max-width: 520px) {
       .progress-stats { gap: 10px; }
       .quiz-choices { grid-template-columns: 1fr; }
       .lang-tab { font-size: 0.72rem; gap: 3px; }
+      .compare-pair { grid-template-columns: 1fr; }
+      .compare-korean { border-left: none; border-top: 1px solid var(--border); }
     }
   </style>
 </head>
@@ -228,9 +287,10 @@
 
   <!-- 모드 탭 -->
   <div class="mode-tabs">
-    <button class="mode-tab active" id="mode-flash" onclick="setMode('flash')">📇 플래시카드</button>
-    <button class="mode-tab"        id="mode-quiz"  onclick="setMode('quiz')">❓ OX 퀴즈</button>
-    <button class="mode-tab"        id="mode-list"  onclick="setMode('list')">📋 단어 목록</button>
+    <button class="mode-tab active" id="mode-flash"   onclick="setMode('flash')">📇 플래시카드</button>
+    <button class="mode-tab"        id="mode-quiz"    onclick="setMode('quiz')">❓ OX 퀴즈</button>
+    <button class="mode-tab"        id="mode-list"    onclick="setMode('list')">📋 단어 목록</button>
+    <button class="mode-tab"        id="mode-compare" onclick="setMode('compare')">📜 성경 대조</button>
   </div>
 
   <!-- 진도 -->
@@ -297,6 +357,16 @@
   <div id="listArea" style="display:none">
     <div class="word-list-title" id="listTitle">헬라어 단어 목록</div>
     <div class="word-grid" id="wordGrid"></div>
+  </div>
+
+  <!-- 대조 성경 -->
+  <div id="compareArea" style="display:none">
+    <div class="compare-filters">
+      <button class="cf-btn active" id="cf-all" onclick="filterCompare('all')">전체 (20)</button>
+      <button class="cf-btn"        id="cf-ot"  onclick="filterCompare('ot')">구약</button>
+      <button class="cf-btn"        id="cf-nt"  onclick="filterCompare('nt')">신약</button>
+    </div>
+    <div id="compareList"></div>
   </div>
 
   <!-- 완료 화면 -->
@@ -448,7 +518,7 @@ function setTtsNote(lang) {
 // ── 모드 설정 ──
 function setMode(mode) {
   currentMode = mode;
-  ['flash','quiz','list'].forEach(m =>
+  ['flash','quiz','list','compare'].forEach(m =>
     document.getElementById('mode-' + m).classList.toggle('active', m === mode)
   );
   resetAll();
@@ -466,17 +536,20 @@ function resetAll() {
 function words() { return vocab[currentLang]; }
 
 function renderMode() {
-  const isFlash = currentMode === 'flash';
-  const isQuiz  = currentMode === 'quiz';
-  const isList  = currentMode === 'list';
-  document.getElementById('flashArea').style.display      = isFlash ? '' : 'none';
-  document.getElementById('quizArea').style.display       = isQuiz  ? '' : 'none';
-  document.getElementById('listArea').style.display       = isList  ? '' : 'none';
-  document.getElementById('progressBar').style.display    = isList  ? 'none' : '';
+  const isFlash   = currentMode === 'flash';
+  const isQuiz    = currentMode === 'quiz';
+  const isList    = currentMode === 'list';
+  const isCompare = currentMode === 'compare';
+  document.getElementById('flashArea').style.display      = isFlash   ? '' : 'none';
+  document.getElementById('quizArea').style.display       = isQuiz    ? '' : 'none';
+  document.getElementById('listArea').style.display       = isList    ? '' : 'none';
+  document.getElementById('compareArea').style.display    = isCompare ? '' : 'none';
+  document.getElementById('progressBar').style.display    = (isList || isCompare) ? 'none' : '';
   document.getElementById('completeScreen').style.display = 'none';
-  if (isFlash) renderFlashcard();
-  if (isQuiz)  renderQuiz();
-  if (isList)  renderList();
+  if (isFlash)   renderFlashcard();
+  if (isQuiz)    renderQuiz();
+  if (isList)    renderList();
+  if (isCompare) renderCompare('all');
 }
 
 // ── 플래시카드 ──
@@ -591,6 +664,146 @@ function renderList() {
     grid.appendChild(chip);
   });
 }
+
+// ── 대조 성경 데이터 (Vulgata ↔ 가톨릭 성경) ──
+const bibleComparison = [
+  { ref:'창세기 1:1',           topic:'창조',     type:'ot',
+    latin:  'In principio creavit Deus caelum et terram.',
+    korean: '한처음에 하느님께서 하늘과 땅을 창조하셨다.',
+    note:   'principio(처음)에서 영어 principle이, creavit(창조하다)에서 create가 유래' },
+
+  { ref:'창세기 1:2',           topic:'성령',     type:'ot',
+    latin:  'Spiritus Dei ferebatur super aquas.',
+    korean: '하느님의 영이 그 물 위를 감돌고 있었다.',
+    note:   'Spiritus(숨·영)는 헬라어 πνεῦμα(프네우마), 히브리어 רוּחַ(루아흐)에 대응' },
+
+  { ref:'창세기 1:26',          topic:'창조',     type:'ot',
+    latin:  'Faciamus hominem ad imaginem et similitudinem nostram.',
+    korean: '우리와 비슷하게 우리 모습으로 사람을 만들자.',
+    note:   'imago(형상)에서 image가, homo(사람)에서 human·homage가 유래' },
+
+  { ref:'탈출기 3:14',          topic:'야훼',     type:'ot',
+    latin:  'Ego sum qui sum.',
+    korean: '나는 있는 나다.',
+    note:   '히브리어 "에흐예 아쉐르 에흐예(אֶהְיֶה אֲשֶׁר אֶהְיֶה)" — 하느님의 이름 YHWH의 어원 설명' },
+
+  { ref:'시편 23:1-2',          topic:'목자',     type:'ot',
+    latin:  'Dominus pascit me, et nihil mihi deerit. In pascuis viridibus me collocat.',
+    korean: '주님은 나의 목자, 나는 아쉬울 것 없어라. 푸른 풀밭에 나를 쉬게 하시고.',
+    note:   'Dominus(주님)는 히브리어 יְהוָה(야훼), 헬라어 κύριος(키리오스)에 대응' },
+
+  { ref:'시편 119:105',         topic:'말씀',     type:'ot',
+    latin:  'Lucerna pedibus meis verbum tuum et lumen semitis meis.',
+    korean: '당신 말씀은 제 발의 등불, 저의 길에 빛입니다.',
+    note:   'verbum(말씀)은 헬라어 λόγος(로고스)의 라틴어 번역. lucerna(등불)에서 luminous가 유래' },
+
+  { ref:'이사야 6:3',           topic:'거룩',     type:'ot',
+    latin:  'Sanctus, sanctus, sanctus Dominus exercituum; plena est omnis terra gloria eius.',
+    korean: '거룩하시다, 거룩하시다, 거룩하시다, 만군의 주님! 온 땅에 그분의 영광이 가득하다.',
+    note:   'Sanctus(거룩함)에서 saint·sanctify가 유래. gloria(영광)는 헬라어 δόξα(독사)에 대응' },
+
+  { ref:'마태오 복음서 5:3',    topic:'팔복',     type:'nt',
+    latin:  'Beati pauperes spiritu, quoniam ipsorum est regnum caelorum.',
+    korean: '행복하여라, 마음이 가난한 사람들! 하늘 나라가 그들의 것이다.',
+    note:   'Beati(행복한)에서 beatitude·beatific이 유래. regnum(나라)은 kingdom의 어원' },
+
+  { ref:'마태오 복음서 6:9-10', topic:'주님의 기도', type:'nt',
+    latin:  'Pater noster, qui es in caelis, sanctificetur nomen tuum. Adveniat regnum tuum.',
+    korean: '하늘에 계신 우리 아버지, 아버지의 이름이 거룩히 빛나시며, 아버지의 나라가 오시며.',
+    note:   '오늘날 가톨릭 전례에서도 라틴어 "Pater Noster"로 널리 암송되는 기도' },
+
+  { ref:'마태오 복음서 5:8',    topic:'팔복',     type:'nt',
+    latin:  'Beati mundo corde, quoniam ipsi Deum videbunt.',
+    korean: '행복하여라, 마음이 깨끗한 사람들! 그들은 하느님을 볼 것이다.',
+    note:   'mundo corde = 깨끗한 마음. mundi(세계)와 mundus(깨끗한)는 동형이의어' },
+
+  { ref:'마태오 복음서 28:19',  topic:'선교',     type:'nt',
+    latin:  'Euntes ergo docete omnes gentes, baptizantes eos in nomine Patris et Filii et Spiritus Sancti.',
+    korean: '그러므로 가서 모든 민족들을 제자로 삼아 아버지와 아들과 성령의 이름으로 세례를 주어라.',
+    note:   '삼위일체 세례 공식. baptizantes(세례주다)에서 baptism이, docete(가르치다)에서 docent이 유래' },
+
+  { ref:'요한 복음서 1:1',      topic:'로고스',   type:'nt',
+    latin:  'In principio erat Verbum, et Verbum erat apud Deum, et Deus erat Verbum.',
+    korean: '한처음에 말씀이 계셨다. 말씀은 하느님과 함께 계셨는데 말씀은 하느님이셨다.',
+    note:   'Verbum = λόγος(로고스). 헬라 철학의 우주 이성 개념을 성경이 전유한 핵심 구절' },
+
+  { ref:'요한 복음서 3:16',     topic:'사랑',     type:'nt',
+    latin:  'Sic enim Deus dilexit mundum, ut Filium suum unigenitum daret.',
+    korean: '하느님께서는 세상을 너무나 사랑하신 나머지 외아들을 내주셨다.',
+    note:   'dilexit(사랑했다)은 dilectio(사랑)의 동사. unigenitum(외아들)은 "오직 하나뿐인"의 뜻' },
+
+  { ref:'요한 복음서 8:12',     topic:'빛',       type:'nt',
+    latin:  'Ego sum lux mundi; qui sequitur me non ambulabit in tenebris.',
+    korean: '나는 세상의 빛이다. 나를 따르는 이는 어둠 속을 걷지 않는다.',
+    note:   'lux(빛)에서 luxury·lucid·illuminate가 유래. tenebris(어둠)에서 tenebrous가 유래' },
+
+  { ref:'요한 복음서 14:6',     topic:'길·진리·생명', type:'nt',
+    latin:  'Ego sum via et veritas et vita.',
+    korean: '나는 길이요 진리요 생명이다.',
+    note:   '불가타 최단·최유명 구절 중 하나. via(길)→viaduct, veritas(진리)→verify, vita(생명)→vital 유래' },
+
+  { ref:'요한 복음서 14:27',    topic:'평화',     type:'nt',
+    latin:  'Pacem relinquo vobis, pacem meam do vobis.',
+    korean: '나는 너희에게 평화를 남기고 간다. 내 평화를 너희에게 준다.',
+    note:   'pacem(평화)은 라틴어 pax. 로마의 팍스 로마나(Pax Romana)도 같은 어원' },
+
+  { ref:'로마서 6:23',          topic:'죄와 은총', type:'nt',
+    latin:  'Stipendia enim peccati mors; gratia autem Dei vita aeterna in Christo Iesu.',
+    korean: '죄의 삯은 죽음입니다. 그러나 하느님의 은사는 그리스도 예수님 안에서 누리는 영원한 생명입니다.',
+    note:   'stipendia(임금·삯)는 군인의 급여에서 온 단어. gratia(은총)에서 grace·grateful이 유래' },
+
+  { ref:'에페소서 2:8',         topic:'은총',     type:'nt',
+    latin:  'Gratia enim salvati estis per fidem, et hoc non ex vobis: Dei donum est.',
+    korean: '여러분은 믿음을 통하여 은총으로 구원을 받았습니다. 이는 여러분에게서 난 것이 아니라 하느님의 선물입니다.',
+    note:   'donum(선물)에서 donation이 유래. 가톨릭 신학의 은총론(gratia)의 핵심 근거 구절' },
+
+  { ref:'필리피서 4:13',        topic:'힘',       type:'nt',
+    latin:  'Omnia possum in eo qui me confortat.',
+    korean: '나에게 힘을 주시는 분 안에서 나는 모든 것을 할 수 있습니다.',
+    note:   'confortat(강하게 하다)에서 comfort·confort가 유래. possum(할 수 있다)에서 possible이 유래' },
+
+  { ref:'요한 1서 4:8',         topic:'하느님은 사랑', type:'nt',
+    latin:  'Deus caritas est.',
+    korean: '하느님은 사랑이십니다.',
+    note:   '불가타에서 가장 짧고 강렬한 신학 명제 중 하나. caritas(사랑·자선)에서 charity가 유래' },
+];
+
+// ── 대조 성경 렌더링 ──
+let currentFilter = 'all';
+
+function renderCompare(filter) {
+  currentFilter = filter;
+  ['all','ot','nt'].forEach(f => {
+    document.getElementById('cf-' + f).classList.toggle('active', f === filter);
+  });
+
+  const list = document.getElementById('compareList');
+  const filtered = filter === 'all' ? bibleComparison : bibleComparison.filter(p => p.type === filter);
+  const typeLabel = { ot: '구약', nt: '신약' };
+  const typeClass = { ot: 'type-ot', nt: 'type-nt' };
+
+  list.innerHTML = filtered.map(p => `
+    <div class="compare-card">
+      <div class="compare-header">
+        <span class="compare-ref">${p.ref}</span>
+        <span class="compare-topic">${p.topic}</span>
+        <span class="compare-type ${typeClass[p.type]}">${typeLabel[p.type]}</span>
+      </div>
+      <div class="compare-pair">
+        <div class="compare-latin">
+          <div class="cp-label">🏛️ Vulgata Latina</div>
+          <div class="cp-text">${p.latin}</div>
+        </div>
+        <div class="compare-korean">
+          <div class="cp-label">📖 가톨릭 성경 (한국)</div>
+          <div class="cp-text">${p.korean}</div>
+        </div>
+      </div>
+      <div class="compare-note">📝 ${p.note}</div>
+    </div>`).join('');
+}
+
+function filterCompare(filter) { renderCompare(filter); }
 
 // ── TTS (Web Speech API) ──
 function speakWord() {
