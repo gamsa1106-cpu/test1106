@@ -505,10 +505,10 @@
 
   <!-- 언어 탭 -->
   <div class="lang-tabs">
-    <button class="lang-tab active" id="tab-greek"   onclick="setLang('greek')">🏛️ 헬라어</button>
-    <button class="lang-tab"        id="tab-hebrew"  onclick="setLang('hebrew')">✡️ 히브리어</button>
+    <button class="lang-tab active" id="tab-english" onclick="setLang('english')">🔤 영어</button>
     <button class="lang-tab"        id="tab-latin"   onclick="setLang('latin')">✝️ 라틴어</button>
-    <button class="lang-tab"        id="tab-english" onclick="setLang('english')">🔤 영어</button>
+    <button class="lang-tab"        id="tab-greek"   onclick="setLang('greek')">🏛️ 헬라어</button>
+    <button class="lang-tab"        id="tab-hebrew"  onclick="setLang('hebrew')">✡️ 히브리어</button>
   </div>
 
   <!-- 모드 탭 -->
@@ -760,7 +760,7 @@ const vocab = {
 };
 
 // ── 상태 ──
-let currentLang = 'greek';
+let currentLang = 'english';
 let currentMode = 'flash';
 let cardIndex   = 0;
 let isFlipped   = false;
