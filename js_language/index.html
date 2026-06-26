@@ -23,17 +23,20 @@
     header {
       background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
       color: #fff; padding: 18px 5%;
+      text-align: center;
       display: flex; align-items: center; justify-content: space-between;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-    .header-left { display: flex; align-items: center; gap: 14px; }
-    .header-icon  { font-size: 30px; }
-    .header-title { font-size: 1.2rem; font-weight: 800; }
-    .header-sub   { font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
+    .header-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
+    .header-icon  { font-size: 34px; }
+    .header-title { font-size: 1.35rem; font-weight: 800; letter-spacing: 0.5px; }
+    .header-sub   { font-size: 0.78rem; opacity: 0.7; }
     .back-link {
+      position: absolute; left: 0; top: 50%; transform: translateY(-50%);
       color: rgba(255,255,255,0.8); text-decoration: none;
-      font-size: 0.85rem; border: 1px solid rgba(255,255,255,0.3);
-      padding: 6px 14px; border-radius: 8px; transition: all 0.2s;
+      font-size: 0.82rem; border: 1px solid rgba(255,255,255,0.3);
+      padding: 5px 12px; border-radius: 8px; transition: all 0.2s;
+      white-space: nowrap;
     }
     .back-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
@@ -365,14 +368,12 @@
 <body>
 
 <header>
-  <div class="header-left">
+  <div class="header-inner">
+    <a href="../index.html" class="back-link">← 포트폴리오로</a>
     <div class="header-icon">📖</div>
-    <div>
-      <div class="header-title">성경 언어 학습</div>
-      <div class="header-sub">Greek · Hebrew · Latin · English</div>
-    </div>
+    <div class="header-title">성경 언어 학습</div>
+    <div class="header-sub">Greek · Hebrew · Latin · English</div>
   </div>
-  <a href="../index.html" class="back-link">← 포트폴리오로</a>
 </header>
 
 <div class="container">
@@ -1048,6 +1049,8 @@ function answerSent(isCorrect, wordIdx, clickedBtn) {
 }
 
 // ── TTS (Web Speech API) ──
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
 function speakWord() {
   if (!('speechSynthesis' in window)) {
     alert('브라우저가 TTS를 지원하지 않습니다.');
@@ -1062,25 +1065,46 @@ function speakWord() {
   const stopAnim = () => { if (btn) btn.classList.remove('speaking'); };
   if (btn) btn.classList.add('speaking');
 
-  window.speechSynthesis.cancel();
-
   const utter = new SpeechSynthesisUtterance();
   utter.rate  = 0.78;
   utter.pitch = 1;
 
+  // 모바일에서 he-IL / it-IT 음성이 없을 경우 en-US 로 fallback
+  const langMap = { hebrew: 'he-IL', latin: 'it-IT', english: 'en-US' };
+
   if (currentLang === 'greek') {
-    // 코이네 헬라어 전용 TTS 없음 → 발음기호를 영어로 읽기
     utter.text = w.translit;
     utter.lang = 'en-US';
   } else {
-    const langMap = { hebrew: 'he-IL', latin: 'it-IT', english: 'en-US' };
     utter.text = w.word;
     utter.lang = langMap[currentLang] || 'en-US';
   }
 
   utter.onend   = stopAnim;
-  utter.onerror = stopAnim;
-  window.speechSynthesis.speak(utter);
+  utter.onerror = (e) => {
+    // 음성 없음 오류 시 영어 발음기호로 재시도
+    if (e.error === 'language-unavailable' || e.error === 'voice-unavailable') {
+      const fallback = new SpeechSynthesisUtterance(w.translit || w.word);
+      fallback.lang = 'en-US';
+      fallback.rate = 0.78;
+      fallback.onend = stopAnim;
+      fallback.onerror = stopAnim;
+      window.speechSynthesis.speak(fallback);
+    } else {
+      stopAnim();
+    }
+  };
+
+  if (isIOS) {
+    // iOS: cancel() 직후 speak()가 무시되는 버그 → resume() 후 speak()
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
+    window.speechSynthesis.speak(utter);
+  } else {
+    // Android / Desktop: cancel 후 짧은 딜레이
+    window.speechSynthesis.cancel();
+    setTimeout(() => window.speechSynthesis.speak(utter), 80);
+  }
 }
 
 function currentWord() {
