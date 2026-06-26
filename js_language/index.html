@@ -23,13 +23,15 @@
     header {
       background: linear-gradient(135deg, #1e1b4b, #312e81, #4c1d95);
       color: #fff; padding: 18px 5%;
-      text-align: center;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: center;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-    .header-inner { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; }
-    .header-icon  { font-size: 34px; }
-    .header-title { font-size: 1.35rem; font-weight: 800; letter-spacing: 0.5px; }
+    .header-inner {
+      display: flex; flex-direction: column; align-items: center; gap: 5px;
+      position: relative; width: 100%; max-width: 760px;
+    }
+    .header-icon  { font-size: 32px; }
+    .header-title { font-size: 1.3rem; font-weight: 800; letter-spacing: 0.5px; }
     .header-sub   { font-size: 0.78rem; opacity: 0.7; }
     .back-link {
       position: absolute; left: 0; top: 50%; transform: translateY(-50%);
@@ -356,12 +358,72 @@
     }
     .sv-reveal.show { display: block; }
 
-    @media (max-width: 520px) {
-      .progress-stats { gap: 10px; }
+    /* ── 반응형 (태블릿 이하) ── */
+    @media (max-width: 640px) {
+      header { padding: 14px 4%; }
+      .header-title { font-size: 1.1rem; }
+      .back-link    { font-size: 0.75rem; padding: 4px 9px; }
+
+      .container { padding: 16px 12px 50px; }
+
+      /* 언어 탭 */
+      .lang-tab { font-size: 0.74rem; gap: 3px; padding: 9px 3px; }
+
+      /* 모드 탭 — 가로 스크롤 (탭이 5개라 화면 밖으로 넘침 방지) */
+      .mode-tabs {
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; flex-wrap: nowrap;
+        padding-bottom: 3px; margin-bottom: 14px;
+      }
+      .mode-tabs::-webkit-scrollbar { display: none; }
+      .mode-tab { white-space: nowrap; flex-shrink: 0; padding: 7px 12px; font-size: 0.79rem; }
+
+      /* 진도 — 세로 쌓기 */
+      .progress-bar-wrap { flex-direction: column; gap: 10px; padding: 12px 14px; }
+      .progress-stats { gap: 18px; justify-content: center; width: 100%; }
+      .progress-right { width: 100%; }
+
+      /* 플래시카드 */
+      .flashcard, .card-face { min-height: 260px; }
+      .card-face { padding: 22px 16px; }
+      .card-word { font-size: clamp(1.5rem, 8vw, 2.4rem); }
+      .card-verse-text { font-size: 0.7rem; }
+
+      /* 버튼 */
+      .ctrl-btn { padding: 9px 13px; font-size: 0.8rem; }
+
+      /* OX 퀴즈 */
+      .quiz-word-card { padding: 30px 16px; }
       .quiz-choices { grid-template-columns: 1fr; }
-      .lang-tab { font-size: 0.72rem; gap: 3px; }
-      .compare-pair { grid-template-columns: 1fr; }
-      .compare-korean { border-left: none; border-top: 1px solid var(--border); }
+
+      /* 완료 화면 */
+      .complete-screen { padding: 30px 16px; }
+      .complete-title  { font-size: 1.3rem; }
+      .complete-score  { font-size: 2rem; }
+
+      /* 단어 목록 */
+      .word-grid { grid-template-columns: 1fr 1fr; }
+
+      /* 대조 성경 */
+      .compare-pair   { grid-template-columns: 1fr; }
+      .compare-korean { border-left: none; border-top: 1px solid #a07828; }
+      .compare-card   { box-shadow: 2px 2px 0 #c9a855, 0 4px 14px rgba(100,70,10,0.14); }
+
+      /* 문장 학습 */
+      .sentence-card { padding: 18px 14px; }
+      .sv-verse      { font-size: 0.95rem; padding: 11px 12px; }
+      .sv-choice     { padding: 11px 12px; }
+    }
+
+    /* ── 소형 폰 (≤ 380px) ── */
+    @media (max-width: 380px) {
+      .header-icon  { font-size: 26px; }
+      .header-title { font-size: 0.98rem; }
+      .back-link    { font-size: 0.68rem; padding: 3px 7px; }
+      .lang-tab     { font-size: 0.68rem; }
+      .word-grid    { grid-template-columns: 1fr; }
+      .flashcard, .card-face { min-height: 230px; }
+      .ctrl-btn     { padding: 8px 10px; font-size: 0.76rem; }
     }
   </style>
 </head>
