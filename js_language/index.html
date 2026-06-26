@@ -355,10 +355,68 @@
     .sv-choice.disabled { cursor: default; pointer-events: none; }
     .sv-reveal {
       margin-top: 12px; padding: 12px 16px; border-radius: 10px;
-      background: #ede9fe; color: var(--primary); font-size: 0.85rem; line-height: 1.6;
+      background: #fef2f2; color: var(--red); font-size: 0.85rem; line-height: 1.6;
       display: none;
     }
     .sv-reveal.show { display: block; }
+
+    /* ── 정답 팝업 ── */
+    .sent-popup-overlay {
+      position: fixed; inset: 0; z-index: 2000;
+      background: rgba(15, 23, 42, 0.55);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      animation: popFadeIn 0.18s ease;
+    }
+    @keyframes popFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .sent-popup {
+      background: #fff; border-radius: 24px;
+      padding: 36px 26px 26px; text-align: center;
+      max-width: 360px; width: 100%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+      animation: popScaleIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative; overflow: hidden;
+    }
+    @keyframes popScaleIn {
+      from { transform: scale(0.72); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .popup-timer {
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: #e2e8f0; border-radius: 24px 24px 0 0;
+    }
+    .popup-timer-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), #4ade80);
+      animation: popTimer 2.5s linear forwards;
+    }
+    @keyframes popTimer { from { width: 100%; } to { width: 0%; } }
+
+    .popup-icon  { font-size: 54px; margin-bottom: 2px; }
+    .popup-label { font-size: 1.7rem; font-weight: 900; color: #16a34a; margin-bottom: 16px; }
+    .popup-word  {
+      font-size: 2.2rem; font-weight: 800; color: var(--primary);
+      letter-spacing: 2px; margin-bottom: 4px;
+    }
+    .popup-tl    { font-size: 0.88rem; color: var(--sub); font-style: italic; margin-bottom: 10px; }
+    .popup-kr    { font-size: 1.15rem; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+    .popup-sub   { font-size: 0.8rem; color: var(--sub); margin-bottom: 16px; }
+    .popup-verse {
+      font-size: 0.8rem; color: var(--sub); font-style: italic;
+      background: #f8fafc; border-radius: 8px; padding: 10px 12px;
+      margin-bottom: 20px; line-height: 1.65; text-align: left;
+      border-left: 3px solid var(--primary);
+    }
+    .popup-verse-ref { font-size: 0.75rem; font-weight: 700; color: var(--primary); margin-top: 5px; font-style: normal; display: block; }
+    .popup-next {
+      width: 100%; padding: 13px; border-radius: 12px; border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff; font-size: 0.95rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(79,70,229,0.3);
+    }
+    .popup-next:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,0.4); }
 
     /* ── 반응형 (태블릿 이하) ── */
     @media (max-width: 640px) {
@@ -1090,6 +1148,7 @@ function answerSent(isCorrect, wordIdx, clickedBtn) {
   sentAnswered = true;
   const w = words()[wordIdx];
 
+  // 버튼 색칠
   document.querySelectorAll('.sv-choice').forEach(btn => {
     btn.classList.add('disabled');
     const bWord = btn.querySelector('.choice-word').textContent.trim();
@@ -1097,22 +1156,53 @@ function answerSent(isCorrect, wordIdx, clickedBtn) {
   });
   if (!isCorrect && clickedBtn) clickedBtn.classList.add('wrong');
 
-  if (isCorrect) { sentScore++; sentStreak++; }
-  else           { sentStreak = 0; }
+  if (isCorrect) {
+    sentScore++; sentStreak++;
+    updateProgress(sentIdx + 1, words().length, sentScore, sentStreak);
+    showCorrectPopup(w, () => { sentIdx++; renderSentence(); });
+  } else {
+    sentStreak = 0;
+    const reveal = document.getElementById('svReveal');
+    reveal.innerHTML = `❌ 정답: <strong>${w.word}</strong> (${w.translit}) = ${w.meaning} — ${w.sub}`;
+    reveal.className = 'sv-reveal show';
+    updateProgress(sentIdx + 1, words().length, sentScore, sentStreak);
+    setTimeout(() => { sentIdx++; renderSentence(); }, 1900);
+  }
+}
 
-  // 해설 표시
-  const reveal = document.getElementById('svReveal');
-  reveal.innerHTML = isCorrect
-    ? `✅ <strong>${w.word}</strong> (${w.translit}) = ${w.meaning} — ${w.sub}`
-    : `❌ 정답: <strong>${w.word}</strong> (${w.translit}) = ${w.meaning} — ${w.sub}`;
-  reveal.className = 'sv-reveal show';
+function showCorrectPopup(w, callback) {
+  const overlay = document.createElement('div');
+  overlay.className = 'sent-popup-overlay';
+  const verseClean = w.verse.replace(/["""]/g, '').trim();
+  overlay.innerHTML = `
+    <div class="sent-popup">
+      <div class="popup-timer"><div class="popup-timer-fill"></div></div>
+      <div class="popup-icon">🎉</div>
+      <div class="popup-label">정답!</div>
+      <div class="popup-word" style="direction:${currentLang==='hebrew'?'rtl':'ltr'}">${w.word}</div>
+      <div class="popup-tl">${w.translit}</div>
+      <div class="popup-kr">${w.meaning}</div>
+      <div class="popup-sub">${w.sub}</div>
+      <div class="popup-verse">
+        "${verseClean}"
+        <span class="popup-verse-ref">${w.verseRef}</span>
+      </div>
+      <button class="popup-next">다음 문제 →</button>
+    </div>`;
 
-  updateProgress(sentIdx + 1, words().length, sentScore, sentStreak);
+  let done = false;
+  const dismiss = () => {
+    if (done) return;
+    done = true;
+    overlay.style.opacity = '0';
+    overlay.style.transition = 'opacity 0.15s';
+    setTimeout(() => { overlay.remove(); callback(); }, 150);
+  };
 
-  setTimeout(() => {
-    sentIdx++;
-    renderSentence();
-  }, 1800);
+  overlay.querySelector('.popup-next').addEventListener('click', dismiss);
+  overlay.addEventListener('click', e => { if (e.target === overlay) dismiss(); });
+  document.body.appendChild(overlay);
+  setTimeout(dismiss, 2500);
 }
 
 // ── TTS (Web Speech API) ──
