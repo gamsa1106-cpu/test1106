@@ -741,6 +741,23 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#fff3e0,#ffe0b2); font-size: 48px;">🍽️</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <div class="project-name">오늘 뭐 먹지?</div>
+        <div class="project-desc">5가지 질문으로 기분·날씨·상황에 맞는 오늘의 메뉴를 추천해주는 음식 테스트</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('food')">자세히 보기</button>
+          <a class="project-link" href="food_test/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -892,6 +909,23 @@
       ],
       liveUrl: 'js_language/index.html',
       liveLabel: '📖 학습하기',
+    },
+    food: {
+      emoji: '🍽️',
+      bg: 'linear-gradient(135deg,#fff3e0,#ffe0b2)',
+      tags: ['HTML', 'CSS', 'JavaScript'],
+      title: '오늘 뭐 먹지?',
+      desc: '기분, 동행, 날씨, 맛 취향, 배고픔 정도 등 5가지 질문에 답하면 치킨·삼겹살·라면·냉면 등 12가지 메뉴 중 딱 맞는 오늘의 음식을 추천해주는 퀴즈형 웹앱입니다.',
+      features: [
+        '5가지 질문 × 4지 선다 퀴즈 방식',
+        '질문별 가중치 점수로 12가지 음식 중 최적 추천',
+        '로딩 애니메이션 및 카드 전환 효과',
+        '추천 결과 + 꿀팁 카드 제공',
+        '반응형 디자인 (모바일 지원)',
+        '다시 테스트하기 기능',
+      ],
+      liveUrl: 'food_test/index.html',
+      liveLabel: '🍽️ 테스트해보기',
     },
     next: {
       emoji: '🚀',

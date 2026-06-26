@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘 뭐 먹지? 🍽️</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FF6B35 0%, #F7C59F 50%, #FFF3E0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  background: white;
+  border-radius: 28px;
+  padding: 40px 36px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.14);
+  animation: fadeUp 0.4s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* 시작 화면 */
+.start-icon { font-size: 88px; text-align: center; margin-bottom: 12px; }
+.start-title { font-size: 30px; font-weight: 900; text-align: center; color: #1a1a1a; margin-bottom: 6px; }
+.start-sub { font-size: 15px; text-align: center; color: #888; margin-bottom: 32px; line-height: 1.6; }
+.btn-start {
+  display: block; width: 100%; padding: 17px;
+  background: linear-gradient(135deg, #FF6B35, #E8450A);
+  color: white; border: none; border-radius: 16px;
+  font-size: 18px; font-weight: 700; cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  letter-spacing: -0.3px;
+}
+.btn-start:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(255,107,53,.45); }
+
+/* 진행 바 */
+.progress-wrap { margin-bottom: 28px; }
+.progress-meta { display: flex; justify-content: space-between; font-size: 13px; color: #aaa; margin-bottom: 8px; }
+.progress-bar { height: 7px; background: #f0f0f0; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #FF6B35, #E8450A); border-radius: 4px; transition: width .45s ease; }
+
+/* 질문 화면 */
+.q-num { font-size: 13px; font-weight: 700; color: #FF6B35; margin-bottom: 6px; letter-spacing: .5px; }
+.q-text { font-size: 21px; font-weight: 800; color: #1a1a1a; margin-bottom: 26px; line-height: 1.4; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.choice-btn {
+  padding: 18px 12px; background: #fafafa; border: 2px solid #eee;
+  border-radius: 16px; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all .2s; text-align: center;
+  color: #444; line-height: 1.45;
+}
+.choice-btn:hover { border-color: #FF6B35; background: #fff7f4; color: #FF6B35; transform: translateY(-3px); box-shadow: 0 6px 18px rgba(255,107,53,.15); }
+.choice-btn:active { transform: translateY(0); }
+
+/* 로딩 화면 */
+.loading-wrap { text-align: center; padding: 30px 0; }
+.loading-icon { font-size: 68px; display: block; animation: bounce .55s infinite alternate; }
+@keyframes bounce { from { transform: translateY(0) rotate(-5deg); } to { transform: translateY(-18px) rotate(5deg); } }
+.loading-title { font-size: 20px; font-weight: 800; color: #1a1a1a; margin-top: 22px; }
+.loading-sub { font-size: 14px; color: #aaa; margin-top: 6px; }
+.loading-dots span { display: inline-block; animation: dot 1.2s infinite; }
+.loading-dots span:nth-child(2) { animation-delay: .2s; }
+.loading-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dot { 0%,80%,100%{ opacity:.2; transform: scale(.8); } 40%{ opacity:1; transform: scale(1.1); } }
+
+/* 결과 화면 */
+.result-badge {
+  background: linear-gradient(135deg, #FF6B35, #E8450A);
+  color: white; font-size: 12px; font-weight: 700;
+  padding: 5px 14px; border-radius: 20px;
+  display: inline-block; margin-bottom: 14px; letter-spacing: .5px;
+}
+.result-center { text-align: center; }
+.result-icon { font-size: 90px; margin: 4px 0 8px; display: block; animation: pop .5s cubic-bezier(.175,.885,.32,1.275); }
+@keyframes pop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.result-name { font-size: 34px; font-weight: 900; color: #1a1a1a; margin-bottom: 10px; }
+.result-desc { font-size: 15px; color: #666; line-height: 1.75; margin-bottom: 18px; }
+.result-tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 22px; }
+.tag { padding: 6px 14px; background: #fff5f0; color: #FF6B35; border-radius: 20px; font-size: 13px; font-weight: 600; }
+.result-tip {
+  background: #f9f9f9; border-left: 4px solid #FF6B35;
+  border-radius: 0 12px 12px 0; padding: 16px 18px;
+  font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 24px;
+}
+.result-tip strong { color: #FF6B35; }
+.btn-group { display: flex; flex-direction: column; gap: 10px; }
+.btn-retry {
+  display: block; width: 100%; padding: 14px;
+  background: #f2f2f2; color: #555; border: none;
+  border-radius: 14px; font-size: 16px; font-weight: 700;
+  cursor: pointer; transition: background .2s;
+}
+.btn-retry:hover { background: #e5e5e5; }
+
+/* 뒤로 버튼 */
+.back-btn {
+  position: fixed; top: 18px; left: 18px;
+  background: white; border: none; border-radius: 50%;
+  width: 44px; height: 44px; font-size: 20px;
+  cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s;
+}
+.back-btn:hover { transform: scale(1.1); }
+
+@media (max-width: 420px) {
+  .card { padding: 30px 22px; }
+  .choices { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<button class="back-btn" onclick="location.href='../index.html'" title="포트폴리오로 돌아가기">←</button>
+<div class="card" id="app"></div>
+
+<script>
+const questions = [
+  {
+    q: "지금 기분이 어때요? 🙂",
+    choices: ["😊 기분 최고!", "😢 조금 우울해", "😫 너무 피곤해", "😤 스트레스 받아"]
+  },
+  {
+    q: "누구랑 먹어요? 👥",
+    choices: ["🙋 혼자", "👯 친구랑", "👨‍👩‍👧 가족이랑", "💕 데이트"]
+  },
+  {
+    q: "지금 날씨가 어때요? 🌤️",
+    choices: ["☀️ 더워", "❄️ 추워", "🌧️ 비 와", "🌤️ 쾌청해"]
+  },
+  {
+    q: "어떤 맛이 당겨요? 👅",
+    choices: ["🌶️ 매운 거", "🍯 달콤한 거", "🧂 짭짤한 거", "🥗 담백한 거"]
+  },
+  {
+    q: "지금 얼마나 배고파요? 🤤",
+    choices: ["🥱 조금 출출해", "😐 보통이야", "😋 많이 배고파", "🤤 죽겠어!"]
+  }
+];
+
+/* scores[질문][선택] = [치킨,삼겹살,라면,떡볶이,비빔밥,국밥,냉면,짜장면,피자,초밥,파스타,부대찌개] */
+const scores = [
+  /* Q1 기분 */
+  [[3,1,0,0,0,0,1,0,2,3,3,0],[1,1,3,3,0,2,0,1,1,0,0,2],[1,2,1,0,2,3,2,1,0,1,0,1],[1,3,2,3,0,0,0,2,1,0,0,3]],
+  /* Q2 누구랑 */
+  [[0,0,3,1,3,3,2,3,0,1,1,0],[3,2,1,3,0,0,0,1,3,1,1,3],[3,3,0,1,2,2,1,2,2,1,0,2],[1,0,0,0,1,0,2,0,2,3,3,0]],
+  /* Q3 날씨 */
+  [[1,0,0,1,2,0,3,2,0,3,1,0],[1,3,3,1,0,3,0,1,1,0,0,3],[1,2,3,2,0,1,0,1,1,0,0,3],[3,1,0,2,2,1,1,1,3,2,3,0]],
+  /* Q4 맛 */
+  [[1,1,2,3,0,1,0,0,0,0,0,3],[3,0,0,1,0,0,0,1,3,1,3,0],[1,3,2,1,0,3,1,2,1,0,0,2],[0,0,0,0,3,1,3,1,0,3,2,0]],
+  /* Q5 배고픔 */
+  [[0,0,2,3,1,0,2,2,0,2,2,0],[1,1,2,1,3,1,3,3,1,2,3,1],[3,3,1,1,1,3,0,1,2,0,0,3],[3,3,2,1,0,2,0,3,3,0,0,2]]
+];
+
+const foods = [
+  { name:"치킨",     emoji:"🍗", desc:"바삭하고 촉촉한 황금빛 치킨! 언제 먹어도 실패 없는 국민 야식의 왕입니다.", tags:["#야식","#치맥","#배달"], tip:"💡 달콤한 양념치킨과 바삭한 후라이드를 <strong>반반</strong>으로 시키면 두 가지 맛을 모두 즐길 수 있어요!" },
+  { name:"삼겹살",   emoji:"🥓", desc:"불판 위에서 지글지글 익어가는 삼겹살! 소주 한 잔과 함께라면 스트레스가 싹 날아갑니다.", tags:["#고기집","#소주한잔","#회식"], tip:"💡 상추에 마늘, 고추, 쌈장과 함께 싸 먹으면 <strong>최고의 조합</strong>이에요!" },
+  { name:"라면",     emoji:"🍜", desc:"후루룩 끓여 먹는 뜨끈한 라면 한 그릇! 피곤하거나 우울할 때 최고의 위로 음식입니다.", tags:["#혼밥","#간편식","#야식"], tip:"💡 계란을 넣고 뚜껑을 닫아 <strong>반숙</strong>으로 익히면 더욱 맛있어요!" },
+  { name:"떡볶이",   emoji:"🌶️", desc:"쫄깃한 떡과 얼큰한 소스의 조화! 스트레스 받을 때 매운 떡볶이 한 그릇이면 기분이 풀려요.", tags:["#분식","#매운맛","#간식"], tip:"💡 <strong>라볶이</strong>(라면+떡볶이)로 업그레이드하면 든든한 한 끼가 돼요!" },
+  { name:"비빔밥",   emoji:"🥗", desc:"알록달록 나물과 고소한 참기름의 만남! 건강하고 든든한 한 끼로 딱 좋습니다.", tags:["#건강식","#혼밥","#든든"], tip:"💡 달걀 프라이를 <strong>반숙</strong>으로 올리고 고추장을 살짝 넣으면 완벽해요!" },
+  { name:"국밥",     emoji:"🍲", desc:"뜨끈한 국물에 밥 한 공기! 몸이 피곤하거나 해장이 필요할 때 최고의 선택입니다.", tags:["#해장","#든든","#보양식"], tip:"💡 <strong>깍두기</strong>와 함께 먹으면 국물 맛이 더욱 살아나요!" },
+  { name:"냉면",     emoji:"🍝", desc:"시원하고 쫄깃한 냉면 한 그릇! 더운 날 땀 흘리고 먹으면 천국이 따로 없습니다.", tags:["#여름음식","#시원해","#담백"], tip:"💡 식초와 겨자를 적당히 넣으면 <strong>더 상큼</strong>하고 맛있어요!" },
+  { name:"짜장면",   emoji:"🖤", desc:"달콤하고 짭짤한 검은 소스의 마법! 배고플 때 빠르게 시킬 수 있는 배달의 왕입니다.", tags:["#배달","#중국집","#짬짜면"], tip:"💡 탕수육은 소스를 <strong>찍어</strong> 먹으면 튀김이 눅눅해지지 않아요!" },
+  { name:"피자",     emoji:"🍕", desc:"쭉 늘어나는 치즈와 풍성한 토핑의 파티! 여럿이 함께 먹으면 더욱 맛있습니다.", tags:["#파티","#배달","#치즈"], tip:"💡 <strong>엣지 치즈</strong>(테두리 치즈) 피자를 선택하면 더욱 풍성해요!" },
+  { name:"초밥",     emoji:"🍣", desc:"신선한 해산물과 촉촉한 밥의 조화! 특별한 날에 먹으면 더욱 맛있는 고급 음식입니다.", tags:["#특별한날","#데이트","#고급"], tip:"💡 간장은 <strong>생선 부분</strong>에만 살짝 찍어야 밥이 부서지지 않아요!" },
+  { name:"파스타",   emoji:"🍝", desc:"부드러운 면과 풍부한 소스의 이탈리아 감성! 데이트나 특별한 저녁 식사로 안성맞춤입니다.", tags:["#이탈리안","#데이트","#분위기"], tip:"💡 크림파스타엔 <strong>베이컨</strong>, 토마토파스타엔 <strong>바질</strong>을 추가하면 맛이 살아나요!" },
+  { name:"부대찌개", emoji:"🫕", desc:"얼큰하고 풍성한 부대찌개! 추운 날씨나 스트레스 받을 때 여럿이 함께 먹으면 최고입니다.", tags:["#얼큰해","#추운날","#회식"], tip:"💡 <strong>라면 사리</strong>를 추가해서 국물을 흡수시키면 꿀맛이에요!" }
+];
+
+let step = 0;
+let totals = [];
+
+function init() {
+  step = 0;
+  totals = new Array(foods.length).fill(0);
+  renderStart();
+}
+
+function renderStart() {
+  render(`
+    <div class="start-icon">🍽️</div>
+    <div class="start-title">오늘 뭐 먹지?</div>
+    <div class="start-sub">단 5가지 질문으로<br>딱 맞는 오늘의 메뉴를 추천해 드려요!</div>
+    <button class="btn-start" onclick="renderQuestion()">테스트 시작하기 →</button>
+  `);
+}
+
+function renderQuestion() {
+  const q = questions[step];
+  const pct = Math.round((step / questions.length) * 100);
+  render(`
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>질문 ${step + 1} / ${questions.length}</span><span>${pct}%</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>
+    <div class="q-num">Q${step + 1}.</div>
+    <div class="q-text">${q.q}</div>
+    <div class="choices">
+      ${q.choices.map((c, i) => `<button class="choice-btn" onclick="pick(${i})">${c}</button>`).join('')}
+    </div>
+  `);
+}
+
+function pick(choice) {
+  scores[step][choice].forEach((v, i) => totals[i] += v);
+  step++;
+  if (step < questions.length) {
+    renderQuestion();
+  } else {
+    renderLoading();
+  }
+}
+
+function renderLoading() {
+  const frames = ['🤔','🍳','🥘','🍽️','✨'];
+  let fi = 0;
+  render(`
+    <div class="loading-wrap">
+      <span class="loading-icon" id="lIcon">🤔</span>
+      <div class="loading-title">메뉴 분석 중<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="loading-sub">딱 맞는 음식을 찾고 있어요!</div>
+    </div>
+  `);
+  const iv = setInterval(() => {
+    fi = (fi + 1) % frames.length;
+    const el = document.getElementById('lIcon');
+    if (el) el.textContent = frames[fi];
+  }, 320);
+  setTimeout(() => { clearInterval(iv); renderResult(); }, 2000);
+}
+
+function renderResult() {
+  const idx = totals.indexOf(Math.max(...totals));
+  const f = foods[idx];
+  render(`
+    <div class="result-center">
+      <div class="result-badge">✨ 오늘의 추천 메뉴</div>
+      <span class="result-icon">${f.emoji}</span>
+      <div class="result-name">${f.name}</div>
+      <div class="result-desc">${f.desc}</div>
+      <div class="result-tags">${f.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    </div>
+    <div class="result-tip">${f.tip}</div>
+    <div class="btn-group">
+      <button class="btn-retry" onclick="init()">🔄 다시 테스트하기</button>
+    </div>
+  `);
+}
+
+function render(html) {
+  const app = document.getElementById('app');
+  app.style.animation = 'none';
+  app.offsetHeight; /* reflow */
+  app.style.animation = 'fadeUp .35s ease';
+  app.innerHTML = html;
+}
+
+init();
+</script>
+</body>
+</html>
