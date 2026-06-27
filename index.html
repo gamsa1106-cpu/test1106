@@ -584,7 +584,7 @@
       </p>
       <div class="about-stats">
         <div class="stat-box">
-          <div class="stat-num">5+</div>
+          <div class="stat-num">7+</div>
           <div class="stat-lbl">완성한 프로젝트</div>
         </div>
         <div class="stat-box">
@@ -641,6 +641,18 @@
       <div class="skill-name">반응형 디자인</div>
       <div class="skill-bar"><div class="skill-fill" data-width="15"></div></div>
       <div class="skill-level">입문 단계</div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">🐍</div>
+      <div class="skill-name">Python</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="20"></div></div>
+      <div class="skill-level">자동화 스크립트 경험</div>
+    </div>
+    <div class="skill-card fade-up">
+      <div class="skill-icon">⚙️</div>
+      <div class="skill-name">GitHub Actions</div>
+      <div class="skill-bar"><div class="skill-fill" data-width="20"></div></div>
+      <div class="skill-level">CI/CD 자동화 경험</div>
     </div>
   </div>
 </section>
@@ -753,6 +765,24 @@
         <div class="project-actions">
           <button class="btn-detail" onclick="openModal('food')">자세히 보기</button>
           <a class="project-link" href="food_test/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#e8f4fd,#dbeafe)">🏢</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">공공 API</span>
+          <span class="tag">GitHub Actions</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <div class="project-name">부동산 실거래가 대시보드</div>
+        <div class="project-desc">광명·시흥 아파트 매매·전세 실거래가를 매일 자동 수집해 웹 대시보드로 시각화</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('realestate')">자세히 보기</button>
+          <a class="project-link" href="https://gamsa1106-cpu.github.io/real-estate/" target="_blank">실행하기 →</a>
         </div>
       </div>
     </div>
@@ -927,6 +957,25 @@
       liveUrl: 'food_test/index.html',
       liveLabel: '🍽️ 테스트해보기',
     },
+    realestate: {
+      emoji: '🏢',
+      bg: 'linear-gradient(135deg,#e8f4fd,#dbeafe)',
+      tags: ['Python', '국토교통부 API', 'GitHub Actions', 'JavaScript', 'GitHub Pages'],
+      title: '부동산 실거래가 대시보드',
+      desc: '광명시·시흥시 아파트 매매·전세 실거래가를 국토교통부 공공 API로 자동 수집하고, 웹 대시보드로 시각화한 프로젝트입니다. GitHub Actions로 매일 오전 10시 데이터를 자동 업데이트하며, Python 크롤러와 프론트엔드를 처음으로 연동해본 자동화 프로젝트입니다.',
+      features: [
+        '국토교통부 공공 API로 합법적 실거래가 수집',
+        'Python 크롤러 — 매매·전세 최근 3개월 데이터 수집',
+        'GitHub Actions 스케줄러로 매일 오전 10시 자동 실행',
+        '도시·거래 유형 필터 및 아파트 이름 검색',
+        '가격·날짜·면적 정렬 기능',
+        '평균 매매가·전세가 요약 통계 카드',
+        'GitHub Pages로 무료 배포',
+      ],
+      liveUrl: 'https://gamsa1106-cpu.github.io/real-estate/',
+      liveLabel: '🏢 대시보드 보기',
+      externalLink: true,
+    },
     next: {
       emoji: '🚀',
       bg: 'linear-gradient(135deg,#fdf4ff,#fae8ff)',
@@ -961,9 +1010,10 @@
     if (p.comingSoon) {
       btnsEl.innerHTML = `<span class="coming-soon-badge">⏳ 준비 중입니다</span>`;
     } else {
+      const target = p.externalLink ? 'target="_blank"' : '';
       btnsEl.innerHTML = `
-        <a href="${p.liveUrl}" class="modal-btn-primary">${p.liveLabel}</a>
-        <a href="https://github.com" target="_blank" class="modal-btn-outline">💻 GitHub</a>
+        <a href="${p.liveUrl}" class="modal-btn-primary" ${target}>${p.liveLabel}</a>
+        <a href="https://github.com/gamsa1106-cpu" target="_blank" class="modal-btn-outline">💻 GitHub</a>
       `;
     }
 
