@@ -584,7 +584,7 @@
       </p>
       <div class="about-stats">
         <div class="stat-box">
-          <div class="stat-num">8+</div>
+          <div class="stat-num">9+</div>
           <div class="stat-lbl">완성한 프로젝트</div>
         </div>
         <div class="stat-box">
@@ -806,6 +806,23 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#e0f7fa,#b2ebf2)">🔲</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">JavaScript</span>
+          <span class="tag">Canvas API</span>
+          <span class="tag">GitHub Pages</span>
+        </div>
+        <div class="project-name">QR코드 생성기</div>
+        <div class="project-desc">텍스트나 URL을 입력하면 실시간으로 QR코드를 생성하고, 색상·크기를 커스터마이징해 PNG로 다운로드할 수 있는 웹앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('qrcode')">자세히 보기</button>
+          <a class="project-link" href="qr_code/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1012,6 +1029,23 @@
       liveUrl: 'https://gamsa1106-cpu.github.io/real-estate/',
       liveLabel: '🏢 대시보드 보기',
       externalLink: true,
+    },
+    qrcode: {
+      emoji: '🔲',
+      bg: 'linear-gradient(135deg,#e0f7fa,#b2ebf2)',
+      tags: ['JavaScript', 'Canvas API', 'GitHub Pages'],
+      title: 'QR코드 생성기',
+      desc: '텍스트나 URL을 입력하면 실시간으로 QR코드를 생성해주는 웹앱입니다. QR코드 색상과 배경색을 자유롭게 지정하고 크기를 선택할 수 있으며, 완성된 QR코드는 PNG 이미지로 바로 다운로드할 수 있습니다.',
+      features: [
+        '텍스트/URL 입력 시 실시간 QR코드 생성',
+        'QR 색상 및 배경색 커스터마이징',
+        '3가지 크기 옵션 (200 / 300 / 400px)',
+        'Canvas 기반 렌더링 및 PNG 다운로드',
+        '빈 입력·오류 상태 안내 처리',
+        '반응형 디자인 (모바일 지원)',
+      ],
+      liveUrl: 'qr_code/index.html',
+      liveLabel: '🔲 만들어보기',
     },
     next: {
       emoji: '🚀',

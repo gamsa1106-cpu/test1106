@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR코드 생성기 🔲</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0EA5A5 0%, #38BDF8 50%, #E0F7FA 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.card {
+  background: white;
+  border-radius: 28px;
+  padding: 40px 36px;
+  max-width: 460px;
+  width: 100%;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.14);
+  animation: fadeUp 0.4s ease;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.title-icon { font-size: 56px; text-align: center; margin-bottom: 8px; }
+.title { font-size: 26px; font-weight: 900; text-align: center; color: #1a1a1a; margin-bottom: 4px; }
+.subtitle { font-size: 14px; text-align: center; color: #888; margin-bottom: 28px; }
+
+.field { margin-bottom: 18px; }
+.field-label { font-size: 13px; font-weight: 700; color: #555; margin-bottom: 8px; display: block; }
+.text-input {
+  width: 100%; padding: 14px 16px; border: 2px solid #eee; border-radius: 14px;
+  font-size: 15px; font-family: inherit; outline: none; transition: border-color .2s;
+  resize: none;
+}
+.text-input:focus { border-color: #0EA5A5; }
+
+.row { display: flex; gap: 14px; }
+.row .field { flex: 1; }
+
+.color-input {
+  width: 100%; height: 44px; border: 2px solid #eee; border-radius: 12px;
+  cursor: pointer; padding: 4px; background: white;
+}
+
+.size-select {
+  width: 100%; padding: 12px 14px; border: 2px solid #eee; border-radius: 12px;
+  font-size: 14px; font-family: inherit; cursor: pointer; background: white; color: #333;
+}
+
+.qr-wrap {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 240px; margin: 24px 0 8px;
+  background: #fafafa; border-radius: 18px; padding: 20px;
+}
+.qr-wrap canvas { max-width: 100%; border-radius: 8px; }
+.qr-placeholder { color: #bbb; font-size: 14px; text-align: center; }
+
+.btn-download {
+  display: block; width: 100%; padding: 15px;
+  background: linear-gradient(135deg, #0EA5A5, #0891B2);
+  color: white; border: none; border-radius: 14px;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+  opacity: 0.5; pointer-events: none;
+}
+.btn-download.active { opacity: 1; pointer-events: auto; }
+.btn-download.active:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(14,165,165,.4); }
+
+.back-btn {
+  position: fixed; top: 18px; left: 18px;
+  background: white; border: none; border-radius: 50%;
+  width: 44px; height: 44px; font-size: 20px;
+  cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s;
+}
+.back-btn:hover { transform: scale(1.1); }
+
+@media (max-width: 420px) {
+  .card { padding: 30px 22px; }
+  .row { flex-direction: column; gap: 18px; }
+}
+</style>
+</head>
+<body>
+<button class="back-btn" onclick="location.href='../index.html'" title="포트폴리오로 돌아가기">←</button>
+
+<div class="card">
+  <div class="title-icon">🔲</div>
+  <div class="title">QR코드 생성기</div>
+  <div class="subtitle">텍스트나 URL을 입력하면 즉시 QR코드를 만들어드려요</div>
+
+  <div class="field">
+    <label class="field-label">텍스트 / URL</label>
+    <textarea id="qrText" class="text-input" rows="2" placeholder="예: https://github.com/gamsa1106-cpu" oninput="generateQR()"></textarea>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label class="field-label">QR 색상</label>
+      <input type="color" id="qrColor" class="color-input" value="#0f172a" oninput="generateQR()">
+    </div>
+    <div class="field">
+      <label class="field-label">배경 색상</label>
+      <input type="color" id="bgColor" class="color-input" value="#ffffff" oninput="generateQR()">
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="field-label">크기</label>
+    <select id="qrSize" class="size-select" onchange="generateQR()">
+      <option value="200">작게 (200px)</option>
+      <option value="300" selected>보통 (300px)</option>
+      <option value="400">크게 (400px)</option>
+    </select>
+  </div>
+
+  <div class="qr-wrap" id="qrWrap">
+    <div class="qr-placeholder">텍스트를 입력하면<br>여기에 QR코드가 나타나요</div>
+  </div>
+
+  <button class="btn-download" id="downloadBtn" onclick="downloadQR()">⬇ PNG로 다운로드</button>
+</div>
+
+<script>
+let currentCanvas = null;
+
+function generateQR() {
+  const text = document.getElementById('qrText').value.trim();
+  const color = document.getElementById('qrColor').value;
+  const bg = document.getElementById('bgColor').value;
+  const size = parseInt(document.getElementById('qrSize').value, 10);
+  const wrap = document.getElementById('qrWrap');
+  const downloadBtn = document.getElementById('downloadBtn');
+
+  if (!text) {
+    wrap.innerHTML = '<div class="qr-placeholder">텍스트를 입력하면<br>여기에 QR코드가 나타나요</div>';
+    currentCanvas = null;
+    downloadBtn.classList.remove('active');
+    return;
+  }
+
+  wrap.innerHTML = '';
+  new QRCode(wrap, {
+    text: text,
+    width: size,
+    height: size,
+    colorDark: color,
+    colorLight: bg,
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  currentCanvas = wrap.querySelector('canvas');
+  downloadBtn.classList.add('active');
+}
+
+function downloadQR() {
+  if (!currentCanvas) return;
+  const link = document.createElement('a');
+  link.download = 'qrcode.png';
+  link.href = currentCanvas.toDataURL('image/png');
+  link.click();
+}
+</script>
+</body>
+</html>
