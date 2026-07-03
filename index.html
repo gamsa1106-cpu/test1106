@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>진우선 | 포트폴리오</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <style>
     /* ── 기본 설정 ── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -161,6 +165,31 @@
       box-shadow: 0 4px 16px rgba(79,70,229,0.3);
     }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.4); }
+
+    .btn-install {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 999;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary2));
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(79,70,229,0.45);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-install:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(79,70,229,0.55); }
+    @media (max-width: 480px) {
+      .btn-install { right: 14px; bottom: 14px; padding: 12px 16px; font-size: 0.85rem; }
+    }
     .btn-outline {
       padding: 13px 28px;
       background: transparent;
@@ -532,6 +561,8 @@
   </style>
 </head>
 <body>
+
+<button id="installBtn" class="btn-install">📲 앱으로 설치하기</button>
 
 <!-- ── 네비게이션 ── -->
 <nav>
@@ -1132,6 +1163,54 @@
       a.style.color = a.getAttribute('href') === '#' + current ? 'var(--primary)' : '';
     });
   });
+
+  // ── PWA 서비스 워커 등록 ──
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(err => {
+        console.warn('서비스 워커 등록 실패:', err);
+      });
+    });
+  }
+
+  // ── PWA 설치 버튼 ──
+  (function () {
+    const installBtn = document.getElementById('installBtn');
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    if (isStandalone) return;
+
+    let deferredPrompt = null;
+
+    if (isIOS) {
+      installBtn.style.display = 'flex';
+      installBtn.addEventListener('click', () => {
+        alert('Safari 하단 공유 버튼(⬆️)을 누른 뒤\n"홈 화면에 추가"를 선택해주세요!');
+      });
+    } else {
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'flex';
+      });
+
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          installBtn.style.display = 'none';
+        } else {
+          alert('브라우저 메뉴(⋮)에서 "앱 설치" 또는 "홈 화면에 추가"를 선택해주세요!');
+        }
+      });
+
+      window.addEventListener('appinstalled', () => {
+        installBtn.style.display = 'none';
+      });
+    }
+  })();
 </script>
 </body>
 </html>
