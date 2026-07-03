@@ -615,7 +615,7 @@
       </p>
       <div class="about-stats">
         <div class="stat-box">
-          <div class="stat-num">9+</div>
+          <div class="stat-num">10+</div>
           <div class="stat-lbl">완성한 프로젝트</div>
         </div>
         <div class="stat-box">
@@ -854,6 +854,23 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#fce7f3,#ede9fe)">🎮</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">JavaScript</span>
+          <span class="tag">Minimax AI</span>
+          <span class="tag">localStorage</span>
+        </div>
+        <div class="project-name">틱택토</div>
+        <div class="project-desc">사람과 대결하거나, 미니맥스 알고리즘으로 절대 지지 않는 컴퓨터와 대결할 수 있는 3x3 틱택토 게임</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('tictactoe')">자세히 보기</button>
+          <a class="project-link" href="tic_tac_toe/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1077,6 +1094,23 @@
       ],
       liveUrl: 'qr_code/index.html',
       liveLabel: '🔲 만들어보기',
+    },
+    tictactoe: {
+      emoji: '🎮',
+      bg: 'linear-gradient(135deg,#fce7f3,#ede9fe)',
+      tags: ['JavaScript', 'Minimax 알고리즘', 'localStorage'],
+      title: '틱택토',
+      desc: '3x3 틱택토 게임입니다. 두 사람이 번갈아 두는 모드와, 미니맥스(Minimax) 알고리즘으로 모든 경우의 수를 계산해 절대 지지 않는 컴퓨터와 대결하는 모드를 선택할 수 있습니다.',
+      features: [
+        '사람 vs 사람 / 사람 vs 컴퓨터 모드 전환',
+        '미니맥스 알고리즘 기반 완벽한 컴퓨터 AI',
+        '승리 시 완성된 줄 하이라이트 애니메이션',
+        'localStorage로 승/패/무승부 전적 저장',
+        '점수 초기화 기능',
+        '반응형 디자인 (모바일 지원)',
+      ],
+      liveUrl: 'tic_tac_toe/index.html',
+      liveLabel: '🎮 플레이하기',
     },
     next: {
       emoji: '🚀',
