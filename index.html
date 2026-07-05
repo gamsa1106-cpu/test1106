@@ -247,6 +247,16 @@
     .stat-num { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
     .stat-lbl { font-size: 11px; color: var(--sub); margin-top: 2px; }
 
+    /* ── 2-1. ABOUT: 파란색 + 흰색 테마 ── */
+    #about { background: linear-gradient(135deg, #1e3a8a, #2563eb); }
+    #about .section-label { background: rgba(255,255,255,0.15); color: #fff; }
+    #about .section-title { color: #fff; }
+    #about .about-text p { color: rgba(255,255,255,0.85); }
+    #about .about-avatar { background: rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
+    #about .stat-box { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+    #about .stat-num { color: #fff; }
+    #about .stat-lbl { color: rgba(255,255,255,0.75); }
+
     /* ── 3. SKILLS ── */
     #skills { background: var(--bg); }
     .skills-grid {
@@ -871,6 +881,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#008C45,#CD212A); font-size: 48px;">🇮🇹</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">Web Speech API</span>
+        </div>
+        <div class="project-name">이탈리아어 학습</div>
+        <div class="project-desc">한글-이탈리아어 문법 비교, 단어·회화 TTS 발음, 패턴 학습, 퀴즈까지 갖춘 이탈리아어 학습 웹앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('italian')">자세히 보기</button>
+          <a class="project-link" href="italian_language/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1111,6 +1139,23 @@
       ],
       liveUrl: 'tic_tac_toe/index.html',
       liveLabel: '🎮 플레이하기',
+    },
+    italian: {
+      emoji: '🇮🇹',
+      bg: 'linear-gradient(135deg,#008C45,#CD212A)',
+      tags: ['HTML', 'CSS', 'JavaScript', 'Web Speech API'],
+      title: '이탈리아어 학습',
+      desc: '한글 문법과 이탈리아어 문법을 비교하며 배우는 학습 웹앱입니다. 품사별 문법, 카테고리별 단어(TTS 발음 지원), 초급~중급 회화, 문장 패턴 연습, 발음 규칙표, 퀴즈까지 6가지 학습 모드를 제공합니다.',
+      features: [
+        '한글 ↔ 이탈리아어 문법 비교 8종 + 품사별(명사/형용사/대명사/동사) 문법 정리',
+        '카테고리별 단어 60개 — Web Speech API로 이탈리아어 발음 듣기',
+        '초급 · 중급 회화 6세트, 대사별 발음 듣기 버튼',
+        '"Vorrei ___" 같은 문장 패턴에 단어를 바꿔 끼우는 패턴 학습',
+        '이탈리아어 발음 규칙(글자 조합별 소리) 정리 카드',
+        '4지선다 퀴즈 — 정답/오답 시 효과음, 최고 기록 저장',
+      ],
+      liveUrl: 'italian_language/index.html',
+      liveLabel: '🇮🇹 학습하기',
     },
     next: {
       emoji: '🚀',
