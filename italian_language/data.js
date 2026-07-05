@@ -159,6 +159,20 @@ const words = {
     { it: "vedere", pron: "베데레", ko: "보다", emoji: "👀" },
     { it: "dormire", pron: "도르미레", ko: "자다", emoji: "😴" }
   ],
+  fruitveg: [
+    { it: "mela", pron: "멜라", ko: "사과", svg: `<svg viewBox="0 0 64 64"><path d="M32 22c-9 0-16 8-16 19 0 9 6 15 12 15 3 0 4-2 4-2s1 2 4 2c6 0 12-6 12-15 0-11-7-19-16-19z" fill="#e63946"/><rect x="30" y="10" width="3" height="12" rx="1.5" fill="#6b4226"/><path d="M33 14c4-4 10-3 10 2-5 2-8 0-10-2z" fill="#4CAF50"/></svg>` },
+    { it: "banana", pron: "바나나", ko: "바나나", svg: `<svg viewBox="0 0 64 64"><path d="M14 44c6 10 30 12 38-2 2-4-1-7-4-5-8 12-26 10-30 2-1-2-5-1-4 5z" fill="#FFD54F"/><path d="M48 42c2-1 4-1 5 1-2 2-4 3-6 2z" fill="#C9A227"/></svg>` },
+    { it: "arancia", pron: "아란챠", ko: "오렌지", svg: `<svg viewBox="0 0 64 64"><circle cx="32" cy="36" r="18" fill="#FB8C00"/><rect x="30" y="16" width="3" height="6" fill="#6b4226"/><path d="M33 18c4-3 9-1 8 3-4 1-7-1-8-3z" fill="#4CAF50"/></svg>` },
+    { it: "fragola", pron: "프라골라", ko: "딸기", svg: `<svg viewBox="0 0 64 64"><path d="M32 24c12 0 16 12 12 22-3 8-9 12-12 12s-9-4-12-12c-4-10 0-22 12-22z" fill="#E53935"/><path d="M20 24l6 6M32 22l0 8M44 24l-6 6" stroke="#4CAF50" stroke-width="2" fill="none"/><circle cx="26" cy="34" r="1.4" fill="#FFF59D"/><circle cx="34" cy="30" r="1.4" fill="#FFF59D"/><circle cx="38" cy="40" r="1.4" fill="#FFF59D"/><circle cx="28" cy="46" r="1.4" fill="#FFF59D"/></svg>` },
+    { it: "uva", pron: "우바", ko: "포도", svg: `<svg viewBox="0 0 64 64"><circle cx="26" cy="30" r="6" fill="#7B1FA2"/><circle cx="36" cy="30" r="6" fill="#7B1FA2"/><circle cx="22" cy="40" r="6" fill="#7B1FA2"/><circle cx="32" cy="40" r="6" fill="#7B1FA2"/><circle cx="42" cy="40" r="6" fill="#7B1FA2"/><circle cx="28" cy="50" r="6" fill="#7B1FA2"/><circle cx="38" cy="50" r="6" fill="#7B1FA2"/><path d="M30 18c4-4 10-2 8 3-4 1-7-1-8-3z" fill="#4CAF50"/></svg>` },
+    { it: "pomodoro", pron: "포모도로", ko: "토마토", svg: `<svg viewBox="0 0 64 64"><circle cx="32" cy="36" r="17" fill="#E53935"/><path d="M32 16l2 5 5-2-2 5 5 2-5 2 2 5-5-2-2 5-2-5-5 2 2-5-5-2 5-2-2-5 5 2z" fill="#4CAF50"/></svg>` },
+    { it: "carota", pron: "카로타", ko: "당근", svg: `<svg viewBox="0 0 64 64"><path d="M28 26l8 0 4 26c0 4-3 8-8 8s-8-4-8-8z" fill="#FB8C00"/><path d="M30 26c-2-8 0-14 2-16 2 2 4 8 2 16z" fill="#4CAF50"/><path d="M26 24c-2-6 0-11 3-13 1 3 2 8 0 13z" fill="#4CAF50"/><path d="M38 24c2-6 0-11-3-13-1 3-2 8 0 13z" fill="#4CAF50"/></svg>` },
+    { it: "patata", pron: "파타타", ko: "감자", svg: `<svg viewBox="0 0 64 64"><ellipse cx="32" cy="34" rx="18" ry="13" fill="#C8A165"/><circle cx="24" cy="30" r="1.5" fill="#8D6E42"/><circle cx="36" cy="38" r="1.5" fill="#8D6E42"/><circle cx="40" cy="28" r="1.5" fill="#8D6E42"/></svg>` },
+    { it: "cipolla", pron: "치폴라", ko: "양파", svg: `<svg viewBox="0 0 64 64"><path d="M32 20c10 0 16 10 16 20s-7 12-16 12-16-4-16-12 6-20 16-20z" fill="#F3E5F5"/><path d="M20 30c3-6 5-9 12-10M44 30c-3-6-5-9-12-10" stroke="#CE93D8" stroke-width="2" fill="none"/><path d="M30 18c1-4 2-6 2-6s1 2 2 6z" fill="#7CB342"/></svg>` },
+    { it: "melanzana", pron: "멜란자나", ko: "가지", svg: `<svg viewBox="0 0 64 64"><path d="M30 22c-10 4-14 16-9 26 3 6 9 8 12 5 6-6 10-20 5-29-2-3-5-3-8-2z" fill="#6A1B9A"/><path d="M28 20c2-4 6-5 9-3-2 3-5 4-9 3z" fill="#4CAF50"/></svg>` },
+    { it: "limone", pron: "리모네", ko: "레몬", svg: `<svg viewBox="0 0 64 64"><ellipse cx="32" cy="34" rx="17" ry="13" fill="#FDD835"/><path d="M15 34c-2 0-3-1-3-2s1-2 3-2z" fill="#FBC02D"/><path d="M49 34c2 0 3-1 3-2s-1-2-3-2z" fill="#FBC02D"/></svg>` },
+    { it: "pera", pron: "페라", ko: "배", svg: `<svg viewBox="0 0 64 64"><path d="M32 20c3 0 4 4 3 7-6 3-9 8-9 15 0 8 6 12 12 12s12-4 12-12c0-9-6-13-9-16 1-3 0-6-3-6z" fill="#9CCC65"/><rect x="30" y="14" width="3" height="7" rx="1.5" fill="#6b4226"/></svg>` }
+  ],
   greeting: [
     { it: "ciao", pron: "챠오", ko: "안녕 (반말 인사)", emoji: "👋" },
     { it: "buongiorno", pron: "부온조르노", ko: "안녕하세요 (아침~낮)", emoji: "🌅" },
@@ -243,7 +257,6 @@ const glossary = {
   "parte":    { ko: "쪽, 부분", pos: "명사" },
   "consiglia":{ ko: "추천하다 — consigliare 존댓말 활용형", pos: "동사" },
   "pasta":    { ko: "파스타", pos: "명사", emoji: "🍝" },
-  "pomodoro": { ko: "토마토", pos: "명사", emoji: "🍅" },
   "ottima":   { ko: "최고의", pos: "형용사" },
   "oggi":     { ko: "오늘", pos: "부사", emoji: "📅" },
   "va":       { ko: "가다 — andare 활용형 (va bene = 좋아요)", pos: "동사" },

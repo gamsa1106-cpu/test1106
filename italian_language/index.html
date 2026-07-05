@@ -121,6 +121,8 @@
   .word-it { font-size: 1.1rem; font-weight: 800; color: var(--text); }
   .word-pron { font-size: 0.76rem; color: var(--sub); font-style: italic; }
   .word-ko { font-size: 0.86rem; color: var(--green); font-weight: 600; margin-top: 2px; }
+  .word-thumb { flex-shrink: 0; width: 40px; height: 40px; }
+  .word-thumb svg { width: 100%; height: 100%; }
 
   /* ── 회화 카드 ── */
   .dialogue-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; margin-bottom: 16px; }
@@ -163,15 +165,29 @@
   .rule-note { font-size: 0.78rem; color: var(--sub); line-height: 1.5; }
 
   /* ── 퀴즈 ── */
-  .quiz-intro { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 20px; text-align: center; }
-  .quiz-best { font-size: 0.86rem; color: var(--sub); margin: 10px 0 18px; }
+  .quiz-cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .quiz-cat-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 22px 16px;
+    text-align: center; cursor: pointer; transition: all 0.2s;
+  }
+  .quiz-cat-card:hover { border-color: var(--green); box-shadow: 0 8px 24px rgba(0,140,69,0.15); transform: translateY(-3px); }
+  .quiz-cat-icon { font-size: 38px; margin-bottom: 8px; }
+  .quiz-cat-label { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
+  .quiz-cat-desc { font-size: 0.78rem; color: var(--sub); margin-bottom: 10px; }
+  .quiz-cat-best { font-size: 0.76rem; color: var(--red); font-weight: 700; }
   .btn-main {
     padding: 12px 26px; background: linear-gradient(135deg, var(--green), var(--green2)); color: #fff;
     border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700; cursor: pointer;
   }
+  .quiz-back {
+    display: block; margin: 16px auto 0; background: none; border: none; color: var(--sub);
+    font-size: 0.84rem; text-decoration: underline; cursor: pointer;
+  }
   .quiz-progress { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--sub); margin-bottom: 8px; }
   .quiz-track { height: 7px; background: var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 18px; }
   .quiz-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green2)); transition: width 0.4s; }
+  .quiz-image { text-align: center; margin-bottom: 14px; }
+  .quiz-image svg { width: 130px; height: 130px; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.15)); }
   .quiz-question { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px 20px; text-align: center; margin-bottom: 14px; font-size: 1.1rem; font-weight: 700; }
   .quiz-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .quiz-choice {
@@ -194,6 +210,7 @@
     pointer-events: none; text-align: center; max-width: 220px;
   }
   .word-tooltip .tt-emoji { font-size: 34px; margin-bottom: 4px; }
+  .word-tooltip .tt-emoji svg { width: 44px; height: 44px; }
   .word-tooltip .tt-word { font-weight: 800; font-size: 1rem; color: var(--text); }
   .word-tooltip .tt-ko { font-size: 0.86rem; color: var(--green); font-weight: 700; margin-top: 3px; line-height: 1.4; }
   .word-tooltip .tt-pos {
@@ -300,15 +317,15 @@ function speakBtn(text) {
 }
 
 // ── 단어 hover 툴팁: word + glossary를 합쳐 단어 사전(wordIndex) 구성 ──
-const wordCatPos = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', greeting: '인사·표현' };
+const wordCatPos = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', fruitveg: '명사', greeting: '인사·표현' };
 const wordIndex = {};
-Object.entries(words).forEach(([cat, list]) => {
-  list.forEach(w => {
-    wordIndex[w.it.toLowerCase()] = { it: w.it, ko: w.ko, pos: wordCatPos[cat], emoji: w.emoji };
-  });
-});
 Object.entries(glossary).forEach(([key, entry]) => {
   wordIndex[key] = { it: key, ko: entry.ko, pos: entry.pos, emoji: entry.emoji };
+});
+Object.entries(words).forEach(([cat, list]) => {
+  list.forEach(w => {
+    wordIndex[w.it.toLowerCase()] = { it: w.it, ko: w.ko, pos: wordCatPos[cat], emoji: w.emoji, svg: w.svg };
+  });
 });
 
 // 문장을 단어 단위로 쪼개 사전에 있는 단어만 hover 가능한 span으로 감싼다
@@ -342,7 +359,7 @@ function showWordTooltip(span) {
   if (!entry) return;
   const tt = document.getElementById('wordTooltip');
   tt.innerHTML = `
-    ${entry.emoji ? `<div class="tt-emoji">${entry.emoji}</div>` : ''}
+    ${entry.svg ? `<div class="tt-emoji">${entry.svg}</div>` : entry.emoji ? `<div class="tt-emoji">${entry.emoji}</div>` : ''}
     <div class="tt-word">${entry.it}</div>
     <div class="tt-ko">${entry.ko}</div>
     <span class="tt-pos">${entry.pos}</span>
@@ -427,7 +444,7 @@ function renderGrammarTopics() {
 }
 
 // ── 2. 단어 ──
-const wordCatLabels = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', greeting: '인사·표현' };
+const wordCatLabels = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', fruitveg: '야채·과일', greeting: '인사·표현' };
 let currentWordCat = 'noun';
 function renderWordTabs() {
   const el = document.getElementById('word-cat-tabs');
@@ -444,12 +461,13 @@ function renderWordGrid() {
   const el = document.getElementById('word-grid');
   el.innerHTML = words[currentWordCat].map(w => `
     <div class="word-card">
-      ${speakBtn(w.it)}
+      ${w.svg ? `<div class="word-thumb">${w.svg}</div>` : speakBtn(w.it)}
       <div class="word-info">
         <div class="word-it">${tokenize(w.it)}</div>
         <div class="word-pron">${w.pron}</div>
         <div class="word-ko">${w.ko}</div>
       </div>
+      ${w.svg ? speakBtn(w.it) : ''}
     </div>
   `).join('');
 }
@@ -515,22 +533,21 @@ function renderRules() {
   `).join('');
 }
 
-// ── 6. 퀴즈 ──
+// ── 6. 퀴즈 (4개 카테고리: 단어 / 숫자 / 야채·과일 / 문법·발음) ──
 let quizStarted = false;
 let quizPool = [];
 let quizIndex = 0;
 let quizScore = 0;
-const QUIZ_LEN = 15;
+let currentQuizCat = null;
+const QUIZ_LEN = 12;
 
-function buildWordQuestions() {
-  const all = Object.values(words).flat();
-  return all.map(w => {
-    const wrongPool = all.filter(x => x.ko !== w.ko);
-    const wrongs = shuffle(wrongPool).slice(0, 3).map(x => x.ko);
-    const choices = shuffle([w.ko, ...wrongs]);
-    return { question: `"${w.it}"의 뜻은?`, choices, answer: choices.indexOf(w.ko) };
-  });
-}
+const QUIZ_CATS = {
+  words:    { icon: '📚', label: '단어 퀴즈',      desc: '명사·형용사·동사·인사표현' },
+  number:   { icon: '🔢', label: '숫자 퀴즈',      desc: '0~100 숫자만 모아서' },
+  fruitveg: { icon: '🍎', label: '야채·과일 퀴즈', desc: '그림을 보고 이탈리아어 맞추기' },
+  grammar:  { icon: '📖', label: '문법·발음 퀴즈', desc: '문법·발음 규칙 이해도 확인' }
+};
+
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -539,23 +556,57 @@ function shuffle(arr) {
   }
   return a;
 }
+// 단어 목록에서 "it→ko" 또는 "ko→it" 방향을 랜덤으로 섞어 문제를 생성
+function buildDirectionalQuestions(list) {
+  return list.map(w => {
+    if (Math.random() < 0.5) {
+      const wrongs = shuffle(list.filter(x => x.it !== w.it)).slice(0, 3).map(x => x.it);
+      const choices = shuffle([w.it, ...wrongs]);
+      return { question: `"${w.ko}"를 이탈리아어로 하면?`, choices, answer: choices.indexOf(w.it) };
+    }
+    const wrongs = shuffle(list.filter(x => x.ko !== w.ko)).slice(0, 3).map(x => x.ko);
+    const choices = shuffle([w.ko, ...wrongs]);
+    return { question: `"${w.it}"의 뜻은?`, choices, answer: choices.indexOf(w.ko) };
+  });
+}
+// 야채·과일: 그림(svg)을 보여주고 알맞은 이탈리아어 단어를 고르는 문제
+function buildImageQuestions(list) {
+  return list.map(w => {
+    const wrongs = shuffle(list.filter(x => x.it !== w.it)).slice(0, 3).map(x => x.it);
+    const choices = shuffle([w.it, ...wrongs]);
+    return { question: '이 그림은 이탈리아어로 무엇일까요?', image: w.svg, choices, answer: choices.indexOf(w.it) };
+  });
+}
+function buildQuizPool(cat) {
+  if (cat === 'words') return shuffle(buildDirectionalQuestions([...words.noun, ...words.adjective, ...words.verb, ...words.greeting]));
+  if (cat === 'number') return shuffle(buildDirectionalQuestions(words.number));
+  if (cat === 'fruitveg') return shuffle(buildImageQuestions(words.fruitveg));
+  if (cat === 'grammar') return shuffle([...quizExtra]);
+  return [];
+}
 function renderQuizIntro() {
-  const best = localStorage.getItem('italianQuizBest');
   document.getElementById('quiz-area').innerHTML = `
-    <div class="quiz-intro">
-      <div style="font-size:40px">❓</div>
-      <h3 style="margin:10px 0">단어 · 문법 · 패턴 퀴즈 (${QUIZ_LEN}문제)</h3>
-      <div class="quiz-best">${best ? `최고 기록: ${best} / ${QUIZ_LEN}` : '아직 기록이 없어요. 첫 도전을 해보세요!'}</div>
-      <button class="btn-main" onclick="startQuiz()">퀴즈 시작하기</button>
+    <div class="quiz-cat-grid">
+      ${Object.entries(QUIZ_CATS).map(([key, c]) => {
+        const best = localStorage.getItem('italianQuizBest_' + key);
+        return `
+          <div class="quiz-cat-card" onclick="startQuiz('${key}')">
+            <div class="quiz-cat-icon">${c.icon}</div>
+            <div class="quiz-cat-label">${c.label}</div>
+            <div class="quiz-cat-desc">${c.desc}</div>
+            <div class="quiz-cat-best">${best ? `🏆 최고 기록 ${best}` : '아직 기록 없음'}</div>
+          </div>
+        `;
+      }).join('')}
     </div>
   `;
 }
-function startQuiz() {
+function startQuiz(cat) {
+  currentQuizCat = cat;
   quizStarted = true;
   quizIndex = 0;
   quizScore = 0;
-  const pool = shuffle([...buildWordQuestions(), ...quizExtra]);
-  quizPool = pool.slice(0, QUIZ_LEN);
+  quizPool = buildQuizPool(cat).slice(0, QUIZ_LEN);
   showQuizQuestion();
 }
 function showQuizQuestion() {
@@ -563,12 +614,14 @@ function showQuizQuestion() {
   const q = quizPool[quizIndex];
   const pct = Math.round((quizIndex / quizPool.length) * 100);
   document.getElementById('quiz-area').innerHTML = `
-    <div class="quiz-progress"><span>${quizIndex + 1} / ${quizPool.length}</span><span>점수 ${quizScore}</span></div>
+    <div class="quiz-progress"><span>${QUIZ_CATS[currentQuizCat].icon} ${quizIndex + 1} / ${quizPool.length}</span><span>점수 ${quizScore}</span></div>
     <div class="quiz-track"><div class="quiz-fill" style="width:${pct}%"></div></div>
+    ${q.image ? `<div class="quiz-image">${q.image}</div>` : ''}
     <div class="quiz-question">${q.question}</div>
     <div class="quiz-choices">
       ${q.choices.map((c, i) => `<button class="quiz-choice" onclick="answerQuiz(${i})">${c}</button>`).join('')}
     </div>
+    <button class="quiz-back" onclick="renderQuizIntro()">← 다른 퀴즈 선택</button>
   `;
 }
 function answerQuiz(i) {
@@ -586,13 +639,16 @@ function answerQuiz(i) {
   setTimeout(() => { quizIndex++; showQuizQuestion(); }, 900);
 }
 function showQuizResult() {
-  const best = Number(localStorage.getItem('italianQuizBest') || 0);
-  if (quizScore > best) localStorage.setItem('italianQuizBest', quizScore);
+  const bestKey = 'italianQuizBest_' + currentQuizCat;
+  const prevBest = localStorage.getItem(bestKey);
+  const prevBestScore = prevBest ? Number(prevBest.split('/')[0]) : -1;
+  if (quizScore > prevBestScore) localStorage.setItem(bestKey, `${quizScore}/${quizPool.length}`);
   document.getElementById('quiz-area').innerHTML = `
     <div class="quiz-result">
-      <div>수고하셨어요!</div>
+      <div>${QUIZ_CATS[currentQuizCat].icon} ${QUIZ_CATS[currentQuizCat].label} 완료!</div>
       <div class="score">${quizScore} / ${quizPool.length}</div>
-      <button class="btn-main" onclick="startQuiz()">다시 도전하기</button>
+      <button class="btn-main" onclick="startQuiz('${currentQuizCat}')">다시 도전하기</button>
+      <button class="quiz-back" onclick="renderQuizIntro()">다른 퀴즈 선택</button>
     </div>
   `;
 }
