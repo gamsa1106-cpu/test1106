@@ -140,6 +140,15 @@
   .dialogue-it { font-weight: 700; font-size: 0.92rem; }
   .dialogue-ko { font-size: 0.8rem; color: var(--sub); margin-top: 1px; }
 
+  /* ── 짧은 예문 카드 ── */
+  .sentence-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+  }
+  .sentence-text { flex: 1; min-width: 0; }
+  .sentence-it { font-weight: 700; font-size: 0.98rem; }
+  .sentence-ko { font-size: 0.82rem; color: var(--sub); margin-top: 2px; }
+
   /* ── 패턴 카드 ── */
   .pattern-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; margin-bottom: 16px; }
   .pattern-template {
@@ -236,7 +245,7 @@
   <div class="header-center">
     <div class="header-icon">🇮🇹</div>
     <div class="header-title">이탈리아어 학습</div>
-    <div class="header-sub">문법 · 단어 · 회화 · 패턴 · 발음 · 퀴즈</div>
+    <div class="header-sub">문법 · 단어 · 회화 · 예문 · 패턴 · 발음 · 퀴즈</div>
   </div>
   <div></div>
 </header>
@@ -247,6 +256,7 @@
     <button class="main-tab active" data-tab="grammar" onclick="setMainTab('grammar')">📖 문법</button>
     <button class="main-tab" data-tab="words" onclick="setMainTab('words')">📚 단어</button>
     <button class="main-tab" data-tab="dialogue" onclick="setMainTab('dialogue')">💬 회화</button>
+    <button class="main-tab" data-tab="sentence" onclick="setMainTab('sentence')">📝 예문</button>
     <button class="main-tab" data-tab="pattern" onclick="setMainTab('pattern')">🔁 패턴</button>
     <button class="main-tab" data-tab="pronun" onclick="setMainTab('pronun')">🔤 발음</button>
     <button class="main-tab" data-tab="quiz" onclick="setMainTab('quiz')">❓ 퀴즈</button>
@@ -275,6 +285,12 @@
       <button class="sub-tab" data-level="intermediate" onclick="setDialogueLevel('intermediate')">중급</button>
     </div>
     <div id="dialogue-list"></div>
+  </div>
+
+  <!-- ── 3-1. 짧은 예문 ── -->
+  <div class="tab-panel" id="panel-sentence">
+    <p class="section-desc">회화처럼 대화체가 아니라, 책이나 교재에 나올 법한 3인칭 서술 문장으로 문법과 어휘를 복습해보세요.</p>
+    <div id="sentence-list"></div>
   </div>
 
   <!-- ── 4. 패턴 학습 ── -->
@@ -498,6 +514,20 @@ function renderDialogues() {
   `).join('');
 }
 
+// ── 3-1. 짧은 예문 ──
+function renderSentences() {
+  const el = document.getElementById('sentence-list');
+  el.innerHTML = sentences.map(s => `
+    <div class="sentence-card">
+      ${speakBtn(s.it)}
+      <div class="sentence-text">
+        <div class="sentence-it">${tokenize(s.it)}</div>
+        <div class="sentence-ko">${s.ko}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
 // ── 4. 패턴 학습 ──
 function renderPatterns() {
   const el = document.getElementById('pattern-list');
@@ -659,6 +689,7 @@ renderGrammarTopics();
 renderWordTabs();
 renderWordGrid();
 renderDialogues();
+renderSentences();
 renderPatterns();
 renderRules();
 </script>

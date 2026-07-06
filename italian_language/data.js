@@ -293,7 +293,42 @@ const glossary = {
   "stanco":   { ko: "피곤한", pos: "형용사", emoji: "😪" },
   "ho":       { ko: "가지고 있다 — avere 활용형", pos: "동사" },
   "anni":     { ko: "나이, 살 (년)", pos: "명사", emoji: "🎂" },
-  "trenta":   { ko: "30", pos: "숫자", emoji: "🔢" }
+  "trenta":   { ko: "30", pos: "숫자", emoji: "🔢" },
+  "sole":       { ko: "해, 태양", pos: "명사", emoji: "☀️" },
+  "dorme":      { ko: "(그는/그녀는) 자다 — dormire 활용형", pos: "동사" },
+  "sul":        { ko: "~위에 (su+il 축약)", pos: "전치사+관사" },
+  "letto":      { ko: "침대", pos: "명사", emoji: "🛏️" },
+  "legge":      { ko: "(그는/그녀는) 읽다 — leggere 활용형", pos: "동사" },
+  "gatto":      { ko: "고양이", pos: "명사", emoji: "🐱" },
+  "bambini":    { ko: "아이들", pos: "명사", emoji: "🧒" },
+  "giocano":    { ko: "(그들은) 놀다 — giocare 활용형", pos: "동사" },
+  "giardino":   { ko: "정원", pos: "명사", emoji: "🌳" },
+  "cane":       { ko: "개", pos: "명사", emoji: "🐶" },
+  "nero":       { ko: "검은", pos: "형용사" },
+  "cielo":      { ko: "하늘", pos: "명사", emoji: "☁️" },
+  "azzurro":    { ko: "파란", pos: "형용사" },
+  "madre":      { ko: "어머니", pos: "명사", emoji: "👩" },
+  "cucina":     { ko: "(그는/그녀는) 요리하다 — cucinare 활용형 (명사로는 '부엌'이라는 뜻도 있음)", pos: "동사" },
+  "studenti":   { ko: "학생들 (studente의 복수형)", pos: "명사", emoji: "🎓" },
+  "studiano":   { ko: "(그들은) 공부하다 — studiare 활용형", pos: "동사" },
+  "italiano":   { ko: "이탈리아어, 이탈리아인(남성)", pos: "명사/형용사" },
+  "l'italiano": { ko: "이탈리아어 (그것)", pos: "표현" },
+  "treno":      { ko: "기차", pos: "명사", emoji: "🚆" },
+  "arriva":     { ko: "(그것은) 도착하다 — arrivare 활용형", pos: "동사" },
+  "alle":       { ko: "~시에 (a+le 축약, 시간 표현)", pos: "전치사+관사" },
+  "lavora":     { ko: "(그는/그녀는) 일하다 — lavorare 활용형", pos: "동사" },
+  "ufficio":    { ko: "사무실", pos: "명사", emoji: "🏢" },
+  "ragazza":    { ko: "소녀, 여자아이", pos: "명사", emoji: "👧" },
+  "canta":      { ko: "(그는/그녀는) 노래하다 — cantare 활용형", pos: "동사" },
+  "bella":      { ko: "아름다운 (여성형, bello의 여성형)", pos: "형용사" },
+  "canzone":    { ko: "노래", pos: "명사", emoji: "🎵" },
+  "noi":        { ko: "우리", pos: "대명사" },
+  "abitiamo":   { ko: "(우리는) 살다 — abitare 활용형", pos: "동사" },
+  "inverno":    { ko: "겨울", pos: "명사", emoji: "❄️" },
+  "l'inverno":  { ko: "겨울 (그것)", pos: "표현", emoji: "❄️" },
+  "estate":     { ko: "여름", pos: "명사", emoji: "☀️" },
+  "l'estate":   { ko: "여름 (그것)", pos: "표현", emoji: "☀️" },
+  "calda":      { ko: "더운, 뜨거운 (여성형, caldo의 여성형)", pos: "형용사" }
 };
 
 // 4. 회화 (초급 3세트 + 중급 3세트)
@@ -472,4 +507,22 @@ const quizExtra = [
   { question: "'Vorrei un caffè'의 뜻은?", choices: ["커피가 있어요", "커피 한 잔 주세요", "커피를 좋아해요", "커피는 얼마예요?"], answer: 1 },
   { question: "'C'è' 다음에는 보통 어떤 명사가 올까요?", choices: ["복수 명사만", "단수 명사", "동사만", "형용사만"], answer: 1 },
   { question: "nonno와 nono의 차이를 만드는 이탈리아어 발음 규칙은?", choices: ["강세 위치", "이중자음", "모음 조화", "성조"], answer: 1 }
+];
+
+// 8. 짧은 문장 (책·교재 속 서술형 예문 — 대화체가 아닌 3인칭 묘사 문장으로 문법을 복습)
+const sentences = [
+  { it: "Il sole è caldo.", ko: "해는 따뜻하다." },
+  { it: "Il gatto dorme sul letto.", ko: "고양이가 침대 위에서 잔다." },
+  { it: "Maria legge un libro.", ko: "마리아는 책을 읽는다." },
+  { it: "I bambini giocano in giardino.", ko: "아이들이 정원에서 논다." },
+  { it: "Il cane è piccolo e nero.", ko: "그 개는 작고 검다." },
+  { it: "Oggi il cielo è azzurro.", ko: "오늘 하늘은 파랗다." },
+  { it: "Mia madre cucina la pasta.", ko: "우리 엄마는 파스타를 요리한다." },
+  { it: "Gli studenti studiano l'italiano.", ko: "학생들은 이탈리아어를 공부한다." },
+  { it: "Il treno arriva alle otto.", ko: "기차는 8시에 도착한다." },
+  { it: "Marco lavora in un ufficio.", ko: "마르코는 사무실에서 일한다." },
+  { it: "Il libro è sul tavolo.", ko: "책은 테이블 위에 있다." },
+  { it: "La ragazza canta una bella canzone.", ko: "그 소녀는 아름다운 노래를 부른다." },
+  { it: "Noi abitiamo in città.", ko: "우리는 도시에 산다." },
+  { it: "L'inverno è freddo, l'estate è calda.", ko: "겨울은 춥고, 여름은 덥다." }
 ];
