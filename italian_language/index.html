@@ -110,6 +110,24 @@
   .topic-table-row .it { font-weight: 700; color: var(--green); }
   .topic-table-row .desc { color: var(--sub); }
 
+  /* ── 품사 비교 카드 ── */
+  .pos-intro {
+    background: #fdf2e9; border: 1px solid #f3d9bd; border-radius: 14px; padding: 16px 20px;
+    font-size: 0.88rem; line-height: 1.65; color: #6b4226; margin-bottom: 18px;
+  }
+  .pos-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; }
+  .pos-title { font-weight: 800; font-size: 1rem; margin-bottom: 10px; }
+  .pos-row { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; font-size: 0.87rem; line-height: 1.55; border-top: 1px dashed var(--border); }
+  .pos-row:first-of-type { border-top: none; }
+  .pos-row .lang-tag {
+    flex-shrink: 0; width: 68px; font-weight: 800; font-size: 0.72rem;
+    padding: 3px 8px; border-radius: 20px; text-align: center; height: fit-content;
+  }
+  .pos-row.ko .lang-tag { background: #f1f5f9; color: var(--sub); }
+  .pos-row.it .lang-tag { background: #e6f6ee; color: var(--green); }
+  .pos-row.en .lang-tag { background: #e0edff; color: #1d4ed8; }
+  .pos-row.la .lang-tag { background: #fdf2e9; color: #92400e; }
+
   /* ── 단어 카드 ── */
   .word-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .word-card {
@@ -267,9 +285,11 @@
     <div class="sub-tabs">
       <button class="sub-tab active" data-sub="compare" onclick="setGrammarSub('compare')">한글 ↔ 이탈리아어 비교</button>
       <button class="sub-tab" data-sub="topics" onclick="setGrammarSub('topics')">품사별 문법</button>
+      <button class="sub-tab" data-sub="pos" onclick="setGrammarSub('pos')">품사란?</button>
     </div>
     <div id="grammar-compare"></div>
     <div id="grammar-topics" style="display:none"></div>
+    <div id="grammar-pos" style="display:none"></div>
   </div>
 
   <!-- ── 2. 단어 ── -->
@@ -428,6 +448,7 @@ function setGrammarSub(sub) {
   document.querySelectorAll('#panel-grammar .sub-tab').forEach(b => b.classList.toggle('active', b.dataset.sub === sub));
   document.getElementById('grammar-compare').style.display = sub === 'compare' ? '' : 'none';
   document.getElementById('grammar-topics').style.display = sub === 'topics' ? '' : 'none';
+  document.getElementById('grammar-pos').style.display = sub === 'pos' ? '' : 'none';
 }
 function renderGrammarCompare() {
   const el = document.getElementById('grammar-compare');
@@ -457,6 +478,21 @@ function renderGrammarTopics() {
       `).join('')}
     </div>
   `).join('');
+}
+function renderPosCompare() {
+  const el = document.getElementById('grammar-pos');
+  el.innerHTML = `
+    <div class="pos-intro">${posIntro}</div>
+    ${posCompare.map(p => `
+      <div class="pos-card">
+        <div class="pos-title">${p.pos}</div>
+        <div class="pos-row ko"><span class="lang-tag">한국어</span><span>${p.ko}</span></div>
+        <div class="pos-row it"><span class="lang-tag">이탈리아어</span><span>${tokenize(p.it)}</span></div>
+        <div class="pos-row en"><span class="lang-tag">영어</span><span>${p.en}</span></div>
+        <div class="pos-row la"><span class="lang-tag">라틴어</span><span>${p.la}</span></div>
+      </div>
+    `).join('')}
+  `;
 }
 
 // ── 2. 단어 ──
@@ -686,6 +722,7 @@ function showQuizResult() {
 // ── 초기화 ──
 renderGrammarCompare();
 renderGrammarTopics();
+renderPosCompare();
 renderWordTabs();
 renderWordGrid();
 renderDialogues();
