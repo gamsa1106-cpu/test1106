@@ -231,10 +231,11 @@
 
   /* ── 단어 hover 툴팁 ── */
   .hoverable { border-bottom: 1.5px dotted var(--green); cursor: help; }
+  .term-hoverable { border-bottom: 1.5px dotted #92400e; cursor: help; font-weight: 700; }
   .word-tooltip {
     position: fixed; z-index: 3000; background: #fff; border: 1px solid var(--border);
     border-radius: 14px; padding: 14px 18px; box-shadow: 0 12px 32px rgba(0,0,0,0.2);
-    pointer-events: none; text-align: center; max-width: 220px;
+    pointer-events: none; text-align: center; max-width: 260px;
   }
   .word-tooltip .tt-emoji { font-size: 34px; margin-bottom: 4px; }
   .word-tooltip .tt-emoji svg { width: 44px; height: 44px; }
@@ -373,33 +374,51 @@ function tokenize(sentence) {
   });
 }
 
+// 품사 용어(명사·동사·관사·정관사 등) 자체에 마우스를 올리면 뜻을 보여주는 hover 처리
+// 긴 용어(부정관사, 정관사)를 짧은 용어(관사)보다 먼저 매칭하도록 길이순 정렬
+const termKeys = Object.keys(termGlossary).sort((a, b) => b.length - a.length);
+const termRegex = new RegExp(termKeys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'g');
+function tokenizeTerms(text) {
+  return text.replace(termRegex, term => `<span class="term-hoverable" data-term="${term}">${term}</span>`);
+}
+
 // 2초간 정지 상태로 hover하면 단어 툴팁 표시
 let hoverTimer = null;
 let hoverTarget = null;
 document.addEventListener('mouseover', e => {
-  const span = e.target.closest('.hoverable');
+  const span = e.target.closest('.hoverable, .term-hoverable');
   if (!span || span === hoverTarget) return;
   if (hoverTimer) clearTimeout(hoverTimer);
   hoverTarget = span;
   hoverTimer = setTimeout(() => showWordTooltip(span), 2000);
 });
 document.addEventListener('mouseout', e => {
-  const span = e.target.closest('.hoverable');
+  const span = e.target.closest('.hoverable, .term-hoverable');
   if (!span || span !== hoverTarget) return;
   if (hoverTimer) { clearTimeout(hoverTimer); hoverTimer = null; }
   hoverTarget = null;
   hideWordTooltip();
 });
 function showWordTooltip(span) {
-  const entry = wordIndex[span.dataset.key];
-  if (!entry) return;
   const tt = document.getElementById('wordTooltip');
-  tt.innerHTML = `
-    ${entry.svg ? `<div class="tt-emoji">${entry.svg}</div>` : entry.emoji ? `<div class="tt-emoji">${entry.emoji}</div>` : ''}
-    <div class="tt-word">${entry.it}</div>
-    <div class="tt-ko">${entry.ko}</div>
-    <span class="tt-pos">${entry.pos}</span>
-  `;
+  if (span.classList.contains('term-hoverable')) {
+    const def = termGlossary[span.dataset.term];
+    if (!def) return;
+    tt.innerHTML = `
+      <div class="tt-emoji">📘</div>
+      <div class="tt-word">${span.dataset.term}</div>
+      <div class="tt-ko">${def}</div>
+    `;
+  } else {
+    const entry = wordIndex[span.dataset.key];
+    if (!entry) return;
+    tt.innerHTML = `
+      ${entry.svg ? `<div class="tt-emoji">${entry.svg}</div>` : entry.emoji ? `<div class="tt-emoji">${entry.emoji}</div>` : ''}
+      <div class="tt-word">${entry.it}</div>
+      <div class="tt-ko">${entry.ko}</div>
+      <span class="tt-pos">${entry.pos}</span>
+    `;
+  }
   tt.style.display = 'block';
   const rect = span.getBoundingClientRect();
   const ttRect = tt.getBoundingClientRect();
@@ -468,12 +487,12 @@ function renderGrammarTopics() {
   const el = document.getElementById('grammar-topics');
   el.innerHTML = Object.values(grammarTopics).map(t => `
     <div class="topic-card">
-      <div class="topic-head"><span class="topic-icon">${t.icon}</span><span class="topic-title">${t.title}</span></div>
-      <div class="topic-explain">${t.explain}</div>
+      <div class="topic-head"><span class="topic-icon">${t.icon}</span><span class="topic-title">${tokenizeTerms(t.title)}</span></div>
+      <div class="topic-explain">${tokenizeTerms(t.explain)}</div>
       ${t.table.map(row => `
         <div class="topic-table-row">
           <span class="it">${row.it}</span>
-          <span class="desc">${row.desc}</span>
+          <span class="desc">${tokenizeTerms(row.desc)}</span>
         </div>
       `).join('')}
     </div>
@@ -485,11 +504,11 @@ function renderPosCompare() {
     <div class="pos-intro">${posIntro}</div>
     ${posCompare.map(p => `
       <div class="pos-card">
-        <div class="pos-title">${p.pos}</div>
-        <div class="pos-row ko"><span class="lang-tag">한국어</span><span>${p.ko}</span></div>
-        <div class="pos-row it"><span class="lang-tag">이탈리아어</span><span>${tokenize(p.it)}</span></div>
-        <div class="pos-row en"><span class="lang-tag">영어</span><span>${p.en}</span></div>
-        <div class="pos-row la"><span class="lang-tag">라틴어</span><span>${p.la}</span></div>
+        <div class="pos-title">${tokenizeTerms(p.pos)}</div>
+        <div class="pos-row ko"><span class="lang-tag">한국어</span><span>${tokenizeTerms(p.ko)}</span></div>
+        <div class="pos-row it"><span class="lang-tag">이탈리아어</span><span>${tokenizeTerms(tokenize(p.it))}</span></div>
+        <div class="pos-row en"><span class="lang-tag">영어</span><span>${tokenizeTerms(p.en)}</span></div>
+        <div class="pos-row la"><span class="lang-tag">라틴어</span><span>${tokenizeTerms(p.la)}</span></div>
       </div>
     `).join('')}
   `;
