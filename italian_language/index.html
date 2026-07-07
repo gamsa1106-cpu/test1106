@@ -47,6 +47,24 @@
 
   .container { max-width: 880px; margin: 0 auto; padding: 24px 20px 60px; }
 
+  /* ── 오늘의 단어 ── */
+  .today-section {
+    background: linear-gradient(135deg, #f0fbf4, #fff);
+    border: 1px solid #cdeedb; border-radius: 16px; padding: 16px 18px; margin-bottom: 18px;
+  }
+  .today-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
+  .today-title { font-weight: 800; font-size: 1rem; color: var(--green); }
+  .today-date { font-size: 0.78rem; color: var(--sub); }
+  .today-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .today-card {
+    background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+    text-align: center; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .today-emoji { font-size: 26px; }
+  .today-card .word-thumb { width: 32px; height: 32px; }
+  .today-it { font-weight: 700; font-size: 0.88rem; }
+  .today-ko { font-size: 0.76rem; color: var(--green); font-weight: 600; }
+
   /* ── 메인 탭 ── */
   .main-tabs {
     display: flex; gap: 5px; margin-bottom: 20px; background: #fff;
@@ -167,6 +185,17 @@
   .sentence-it { font-weight: 700; font-size: 0.98rem; }
   .sentence-ko { font-size: 0.82rem; color: var(--sub); margin-top: 2px; }
 
+  /* ── 명언·명문장 카드 ── */
+  .quote-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 22px; margin-bottom: 14px; border-left: 4px solid var(--red);
+  }
+  .quote-top { display: flex; align-items: flex-start; gap: 10px; }
+  .quote-it { font-size: 1.02rem; font-weight: 700; font-style: italic; line-height: 1.5; flex: 1; }
+  .quote-ko { font-size: 0.88rem; color: var(--text); margin-top: 8px; }
+  .quote-source { font-size: 0.78rem; color: var(--red); font-weight: 700; margin-top: 10px; }
+  .quote-note { font-size: 0.78rem; color: var(--sub); margin-top: 4px; line-height: 1.5; }
+
   /* ── 패턴 카드 ── */
   .pattern-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; margin-bottom: 16px; }
   .pattern-template {
@@ -264,18 +293,21 @@
   <div class="header-center">
     <div class="header-icon">🇮🇹</div>
     <div class="header-title">이탈리아어 학습</div>
-    <div class="header-sub">문법 · 단어 · 회화 · 예문 · 패턴 · 발음 · 퀴즈</div>
+    <div class="header-sub">문법 · 단어 · 회화 · 예문 · 명언 · 패턴 · 발음 · 퀴즈</div>
   </div>
   <div></div>
 </header>
 
 <div class="container">
 
+  <div id="today-words"></div>
+
   <div class="main-tabs">
     <button class="main-tab active" data-tab="grammar" onclick="setMainTab('grammar')">📖 문법</button>
     <button class="main-tab" data-tab="words" onclick="setMainTab('words')">📚 단어</button>
     <button class="main-tab" data-tab="dialogue" onclick="setMainTab('dialogue')">💬 회화</button>
     <button class="main-tab" data-tab="sentence" onclick="setMainTab('sentence')">📝 예문</button>
+    <button class="main-tab" data-tab="quote" onclick="setMainTab('quote')">📜 명언</button>
     <button class="main-tab" data-tab="pattern" onclick="setMainTab('pattern')">🔁 패턴</button>
     <button class="main-tab" data-tab="pronun" onclick="setMainTab('pronun')">🔤 발음</button>
     <button class="main-tab" data-tab="quiz" onclick="setMainTab('quiz')">❓ 퀴즈</button>
@@ -312,6 +344,12 @@
   <div class="tab-panel" id="panel-sentence">
     <p class="section-desc">회화처럼 대화체가 아니라, 책이나 교재에 나올 법한 3인칭 서술 문장으로 문법과 어휘를 복습해보세요.</p>
     <div id="sentence-list"></div>
+  </div>
+
+  <!-- ── 3-2. 명언·명문장 ── -->
+  <div class="tab-panel" id="panel-quote">
+    <p class="section-desc">이탈리아 속담부터 단테·만초니·레오파르디 같은 대문호의 유명한 문학 구절까지, 짧지만 깊은 문장 10개를 모았어요.</p>
+    <div id="quote-list"></div>
   </div>
 
   <!-- ── 4. 패턴 학습 ── -->
@@ -354,7 +392,7 @@ function speakBtn(text) {
 }
 
 // ── 단어 hover 툴팁: word + glossary를 합쳐 단어 사전(wordIndex) 구성 ──
-const wordCatPos = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', fruitveg: '명사', greeting: '인사·표현' };
+const wordCatPos = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', fruitveg: '명사', color: '형용사', body: '명사', time: '명사', greeting: '인사·표현' };
 const wordIndex = {};
 Object.entries(glossary).forEach(([key, entry]) => {
   wordIndex[key] = { it: key, ko: entry.ko, pos: entry.pos, emoji: entry.emoji };
@@ -399,6 +437,15 @@ document.addEventListener('mouseout', e => {
   hoverTarget = null;
   hideWordTooltip();
 });
+// 모바일 터치 화면은 마우스 hover가 없어서, 탭하면 바로 툴팁을 보여주고 다른 곳을 탭하면 닫히게 처리
+document.addEventListener('touchstart', e => {
+  const span = e.target.closest('.hoverable, .term-hoverable');
+  if (span) {
+    showWordTooltip(span);
+  } else {
+    hideWordTooltip();
+  }
+}, { passive: true });
 function showWordTooltip(span) {
   const tt = document.getElementById('wordTooltip');
   if (span.classList.contains('term-hoverable')) {
@@ -453,6 +500,37 @@ function beep(freq, startTime, duration, type = 'sine', gain = 0.15) {
 }
 function playCorrectSound() { beep(880, 0, 0.12); beep(1174.66, 0.12, 0.2); }
 function playWrongSound() { beep(220, 0, 0.3, 'sawtooth', 0.12); }
+
+// ── 오늘의 단어 (날짜 기반으로 매일 자동으로 바뀌는 5개 단어) ──
+function getTodayWords(n = 5) {
+  const all = Object.values(words).flat();
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - start) / 86400000);
+  const startIdx = dayOfYear % all.length;
+  const picks = [];
+  for (let i = 0; i < n; i++) picks.push(all[(startIdx + i) % all.length]);
+  return picks;
+}
+function renderTodayWords() {
+  const el = document.getElementById('today-words');
+  const dateStr = new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+  el.innerHTML = `
+    <div class="today-section">
+      <div class="today-head"><span class="today-title">☀️ 오늘의 단어</span><span class="today-date">${dateStr}</span></div>
+      <div class="today-grid">
+        ${getTodayWords(5).map(w => `
+          <div class="today-card">
+            ${w.svg ? `<div class="word-thumb">${w.svg}</div>` : (w.emoji ? `<div class="today-emoji">${w.emoji}</div>` : '')}
+            <div class="today-it">${tokenize(w.it)}</div>
+            <div class="today-ko">${w.ko}</div>
+            ${speakBtn(w.it)}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
 
 // ── 메인 탭 전환 ──
 function setMainTab(tab) {
@@ -515,7 +593,7 @@ function renderPosCompare() {
 }
 
 // ── 2. 단어 ──
-const wordCatLabels = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', fruitveg: '야채·과일', greeting: '인사·표현' };
+const wordCatLabels = { noun: '명사', adjective: '형용사', number: '숫자', verb: '동사', fruitveg: '야채·과일', color: '색깔', body: '신체', time: '요일·시간', greeting: '인사·표현' };
 let currentWordCat = 'noun';
 function renderWordTabs() {
   const el = document.getElementById('word-cat-tabs');
@@ -579,6 +657,22 @@ function renderSentences() {
         <div class="sentence-it">${tokenize(s.it)}</div>
         <div class="sentence-ko">${s.ko}</div>
       </div>
+    </div>
+  `).join('');
+}
+
+// ── 3-2. 명언·명문장 ──
+function renderQuotes() {
+  const el = document.getElementById('quote-list');
+  el.innerHTML = quotes.map(q => `
+    <div class="quote-card">
+      <div class="quote-top">
+        <div class="quote-it">${tokenize(q.it)}</div>
+        ${speakBtn(q.it)}
+      </div>
+      <div class="quote-ko">${q.ko}</div>
+      <div class="quote-source">— ${q.source}</div>
+      <div class="quote-note">${q.note}</div>
     </div>
   `).join('');
 }
@@ -663,7 +757,7 @@ function buildImageQuestions(list) {
   });
 }
 function buildQuizPool(cat) {
-  if (cat === 'words') return shuffle(buildDirectionalQuestions([...words.noun, ...words.adjective, ...words.verb, ...words.greeting]));
+  if (cat === 'words') return shuffle(buildDirectionalQuestions([...words.noun, ...words.adjective, ...words.verb, ...words.greeting, ...words.color, ...words.body, ...words.time]));
   if (cat === 'number') return shuffle(buildDirectionalQuestions(words.number));
   if (cat === 'fruitveg') return shuffle(buildImageQuestions(words.fruitveg));
   if (cat === 'grammar') return shuffle([...quizExtra]);
@@ -739,6 +833,7 @@ function showQuizResult() {
 }
 
 // ── 초기화 ──
+renderTodayWords();
 renderGrammarCompare();
 renderGrammarTopics();
 renderPosCompare();
@@ -746,6 +841,7 @@ renderWordTabs();
 renderWordGrid();
 renderDialogues();
 renderSentences();
+renderQuotes();
 renderPatterns();
 renderRules();
 </script>

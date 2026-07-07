@@ -258,6 +258,42 @@ const words = {
     { it: "limone", pron: "리모네", ko: "레몬", svg: `<svg viewBox="0 0 64 64"><ellipse cx="32" cy="34" rx="17" ry="13" fill="#FDD835"/><path d="M15 34c-2 0-3-1-3-2s1-2 3-2z" fill="#FBC02D"/><path d="M49 34c2 0 3-1 3-2s-1-2-3-2z" fill="#FBC02D"/></svg>` },
     { it: "pera", pron: "페라", ko: "배", svg: `<svg viewBox="0 0 64 64"><path d="M32 20c3 0 4 4 3 7-6 3-9 8-9 15 0 8 6 12 12 12s12-4 12-12c0-9-6-13-9-16 1-3 0-6-3-6z" fill="#9CCC65"/><rect x="30" y="14" width="3" height="7" rx="1.5" fill="#6b4226"/></svg>` }
   ],
+  color: [
+    { it: "rosso", pron: "로쏘", ko: "빨간색", emoji: "🔴" },
+    { it: "blu", pron: "블루", ko: "파란색", emoji: "🔵" },
+    { it: "verde", pron: "베르데", ko: "초록색", emoji: "🟢" },
+    { it: "giallo", pron: "잘로", ko: "노란색", emoji: "🟡" },
+    { it: "bianco", pron: "비앙코", ko: "하얀색", emoji: "⚪" },
+    { it: "nero", pron: "네로", ko: "검은색", emoji: "⚫" },
+    { it: "viola", pron: "비올라", ko: "보라색", emoji: "🟣" },
+    { it: "arancione", pron: "아란쵸네", ko: "주황색", emoji: "🟠" },
+    { it: "marrone", pron: "마로네", ko: "갈색", emoji: "🟤" },
+    { it: "rosa", pron: "로자", ko: "분홍색", emoji: "🌸" }
+  ],
+  body: [
+    { it: "testa", pron: "테스타", ko: "머리", emoji: "🧠" },
+    { it: "occhio", pron: "오끼오", ko: "눈", emoji: "👁️" },
+    { it: "naso", pron: "나조", ko: "코", emoji: "👃" },
+    { it: "orecchio", pron: "오레끼오", ko: "귀", emoji: "👂" },
+    { it: "bocca", pron: "보까", ko: "입", emoji: "👄" },
+    { it: "mano", pron: "마노", ko: "손", emoji: "✋" },
+    { it: "braccio", pron: "브라쵸", ko: "팔", emoji: "💪" },
+    { it: "gamba", pron: "감바", ko: "다리", emoji: "🦵" },
+    { it: "piede", pron: "피에데", ko: "발", emoji: "🦶" },
+    { it: "dito", pron: "디토", ko: "손가락", emoji: "👆" }
+  ],
+  time: [
+    { it: "lunedì", pron: "루네디", ko: "월요일", emoji: "🌙" },
+    { it: "martedì", pron: "마르테디", ko: "화요일", emoji: "🔴" },
+    { it: "mercoledì", pron: "메르콜레디", ko: "수요일", emoji: "☿️" },
+    { it: "giovedì", pron: "죠베디", ko: "목요일", emoji: "♃" },
+    { it: "venerdì", pron: "베네르디", ko: "금요일", emoji: "♀️" },
+    { it: "sabato", pron: "사바토", ko: "토요일", emoji: "🪐" },
+    { it: "domenica", pron: "도메니카", ko: "일요일", emoji: "☀️" },
+    { it: "settimana", pron: "세띠마나", ko: "주(week)", emoji: "📅" },
+    { it: "mese", pron: "메제", ko: "달(month)", emoji: "🗓️" },
+    { it: "anno", pron: "안노", ko: "해, 년(year)", emoji: "📆" }
+  ],
   greeting: [
     { it: "ciao", pron: "챠오", ko: "안녕 (반말 인사)", emoji: "👋" },
     { it: "buongiorno", pron: "부온조르노", ko: "안녕하세요 (아침~낮)", emoji: "🌅" },
@@ -336,6 +372,7 @@ const glossary = {
   "piedi":    { ko: "발 (a piedi = 걸어서)", pos: "명사", emoji: "🚶" },
   "mille":    { ko: "천 (grazie mille = 정말 감사해요)", pos: "숫자" },
   "avete":    { ko: "너희는 가지고 있다 — avere 활용형", pos: "동사" },
+  "hanno":    { ko: "(그들은) 가지고 있다 — avere 활용형", pos: "동사" },
   "tavolo":   { ko: "테이블", pos: "명사", emoji: "🪑" },
   "per":      { ko: "~를 위해", pos: "전치사" },
   "questa":   { ko: "이 (여성)", pos: "지시형용사" },
@@ -360,7 +397,6 @@ const glossary = {
   "esame":    { ko: "시험", pos: "명사", emoji: "📝" },
   "l'esame":  { ko: "그 시험", pos: "표현", emoji: "📝" },
   "in":       { ko: "~안에", pos: "전치사" },
-  "bocca":    { ko: "입", pos: "명사", emoji: "👄" },
   "lupo":     { ko: "늑대 (in bocca al lupo = 행운을 빌어요)", pos: "명사", emoji: "🐺" },
   "crepi":    { ko: "고마워 — 위 관용표현에 대한 정해진 대답", pos: "표현" },
   "piace":    { ko: "좋아하다 (대상이 단수일 때) — piacere 활용형", pos: "동사" },
@@ -391,7 +427,6 @@ const glossary = {
   "giocano":    { ko: "(그들은) 놀다 — giocare 활용형", pos: "동사" },
   "giardino":   { ko: "정원", pos: "명사", emoji: "🌳" },
   "cane":       { ko: "개", pos: "명사", emoji: "🐶" },
-  "nero":       { ko: "검은", pos: "형용사" },
   "cielo":      { ko: "하늘", pos: "명사", emoji: "☁️" },
   "azzurro":    { ko: "파란", pos: "형용사" },
   "madre":      { ko: "어머니", pos: "명사", emoji: "👩" },
@@ -415,7 +450,25 @@ const glossary = {
   "l'inverno":  { ko: "겨울 (그것)", pos: "표현", emoji: "❄️" },
   "estate":     { ko: "여름", pos: "명사", emoji: "☀️" },
   "l'estate":   { ko: "여름 (그것)", pos: "표현", emoji: "☀️" },
-  "calda":      { ko: "더운, 뜨거운 (여성형, caldo의 여성형)", pos: "형용사" }
+  "calda":      { ko: "더운, 뜨거운 (여성형, caldo의 여성형)", pos: "형용사" },
+  "chi":        { ko: "~하는 사람 (관계대명사/의문사)", pos: "대명사" },
+  "piano":      { ko: "천천히, 조용히", pos: "부사" },
+  "sano":       { ko: "건강한", pos: "형용사" },
+  "trova":      { ko: "(그는/그녀는) 찾다 — trovare 활용형", pos: "동사" },
+  "tesoro":     { ko: "보물", pos: "명사", emoji: "💰" },
+  "piglia":     { ko: "(그는/그녀는) 잡다 — pigliare(고어체) 활용형", pos: "동사" },
+  "pesci":      { ko: "물고기들 (pesce의 복수형)", pos: "명사", emoji: "🐟" },
+  "appetito":   { ko: "식욕", pos: "명사", emoji: "🍽️" },
+  "l'appetito": { ko: "식욕 (그것)", pos: "표현", emoji: "🍽️" },
+  "tutte":      { ko: "모든 (여성 복수, tutto의 활용형)", pos: "형용사" },
+  "strade":     { ko: "길들, 거리들 (strada의 복수형)", pos: "명사" },
+  "portano":    { ko: "(그들은) 이끌다, 데려가다 — portare 활용형", pos: "동사" },
+  "non":        { ko: "아니다, ~않다 (부정어)", pos: "부사" },
+  "vien":       { ko: "오다 — venire의 축약형(vien = viene)", pos: "동사" },
+  "mangiando":  { ko: "먹으면서 — mangiare의 동명사(gerundio)", pos: "동사" },
+  "bugie":      { ko: "거짓말들", pos: "명사", emoji: "🤥" },
+  "gambe":      { ko: "다리들 (gamba의 복수형)", pos: "명사", emoji: "🦵" },
+  "corte":      { ko: "짧은 (corto의 여성/복수형)", pos: "형용사" }
 };
 
 // 4. 회화 (초급 3세트 + 중급 3세트)
@@ -612,4 +665,18 @@ const sentences = [
   { it: "La ragazza canta una bella canzone.", ko: "그 소녀는 아름다운 노래를 부른다." },
   { it: "Noi abitiamo in città.", ko: "우리는 도시에 산다." },
   { it: "L'inverno è freddo, l'estate è calda.", ko: "겨울은 춥고, 여름은 덥다." }
+];
+
+// 9. 이탈리아 명언·명문장 (속담 + 유명 문학 구절 10개)
+const quotes = [
+  { it: "Chi va piano, va sano e va lontano.", ko: "천천히 가는 자가 건강하게, 멀리 간다.", source: "이탈리아 속담", note: "서두르지 않고 신중하게 하면 결국 더 멀리, 오래 간다는 뜻이에요." },
+  { it: "Tutte le strade portano a Roma.", ko: "모든 길은 로마로 통한다.", source: "이탈리아 속담", note: "방법은 달라도 결국 같은 목표에 도달한다는 뜻이에요." },
+  { it: "Chi trova un amico, trova un tesoro.", ko: "친구를 찾는 자는 보물을 찾는 것이다.", source: "이탈리아 속담", note: "진정한 우정이 얼마나 큰 가치인지를 표현해요." },
+  { it: "Chi dorme non piglia pesci.", ko: "잠자는 자는 물고기를 잡지 못한다.", source: "이탈리아 속담", note: "부지런해야 원하는 것을 얻을 수 있다는 뜻이에요." },
+  { it: "L'appetito vien mangiando.", ko: "식욕은 먹으면서 생긴다.", source: "이탈리아 속담", note: "일단 시작하면 의욕과 흥미가 붙는다는 뜻이에요." },
+  { it: "Le bugie hanno le gambe corte.", ko: "거짓말은 다리가 짧다.", source: "이탈리아 속담", note: "거짓말은 오래가지 못하고 곧 들통난다는 뜻이에요." },
+  { it: "Nel mezzo del cammin di nostra vita mi ritrovai per una selva oscura.", ko: "우리 인생 여정의 한가운데서, 나는 어두운 숲 속에 있는 나 자신을 발견했다.", source: "단테 알리기에리, 「신곡」 지옥편 제1곡", note: "이탈리아 문학 역사상 가장 유명한 첫 구절 중 하나예요." },
+  { it: "Lasciate ogne speranza, voi ch'intrate.", ko: "여기 들어오는 자여, 모든 희망을 버려라.", source: "단테 알리기에리, 「신곡」 지옥편", note: "지옥문에 새겨진 문구로 잘 알려진 구절이에요." },
+  { it: "Quel ramo del lago di Como, che volge a mezzogiorno...", ko: "남쪽으로 뻗은 코모 호수의 그 지류는...", source: "알레산드로 만초니, 「약혼자들」", note: "이탈리아 소설 역사상 가장 유명한 첫 문장으로 꼽혀요." },
+  { it: "E il naufragar m'è dolce in questo mare.", ko: "그리고 이 바다에서 침몰하는 것이 내게는 달콤하다.", source: "자코모 레오파르디, 시 「무한(L'infinito)」", note: "짧은 시의 마지막 구절로, 무한함 앞에서 느끼는 황홀한 두려움을 표현해요." }
 ];
