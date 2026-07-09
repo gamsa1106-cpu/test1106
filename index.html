@@ -899,6 +899,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#f0fdfa,#ccfbf1)">🗺️</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">JavaScript</span>
+          <span class="tag">Kakao Maps API</span>
+          <span class="tag">Geolocation</span>
+          <span class="tag">localStorage</span>
+        </div>
+        <div class="project-name">지도 맛집 추천</div>
+        <div class="project-desc">카카오맵으로 주변 맛집·카페를 실시간 검색하고, 카테고리 필터·거리순 정보·즐겨찾기 기능을 제공하는 지도 웹앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('restaurant')">자세히 보기</button>
+          <a class="project-link" href="restaurant_map/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1157,6 +1175,23 @@
       ],
       liveUrl: 'italian_language/index.html',
       liveLabel: '🇮🇹 학습하기',
+    },
+    restaurant: {
+      emoji: '🗺️',
+      bg: 'linear-gradient(135deg,#f0fdfa,#ccfbf1)',
+      tags: ['JavaScript', 'Kakao Maps API', 'Geolocation', 'localStorage'],
+      title: '지도 맛집 추천',
+      desc: '카카오맵 JavaScript SDK로 만든 지도 기반 맛집·카페 검색 웹앱입니다. 카카오 로컬 검색을 클라이언트에서 바로 호출해 별도 서버 없이 실시간 검색이 가능하고, 현재 위치를 기준으로 결과를 보여줍니다.',
+      features: [
+        '카카오맵 실시간 키워드/카테고리 검색 (음식점·카페)',
+        '한식·중식·일식·양식·고기·분식·술집 등 카테고리 퀵필터',
+        'Geolocation으로 현재 위치 자동 감지, 거부 시 서울시청 기준으로 대체',
+        '지도 이동 시 "이 지역에서 재검색" 버튼으로 원하는 지역 탐색',
+        '마커 ↔ 결과 리스트 연동, 거리순 정보 및 카카오맵 상세 링크 제공',
+        'localStorage 기반 즐겨찾기(찜) 저장 및 별도 탭에서 조회',
+      ],
+      liveUrl: 'restaurant_map/index.html',
+      liveLabel: '🗺️ 맛집 찾아보기',
     },
     next: {
       emoji: '🚀',
