@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>라틴어 사전 | Lexicon Latinum</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --yellow:  #FFC93C;
+    --yellow2: #FFE18A;
+    --text:    #262218;
+    --sub:     #7a7462;
+    --bg:      #ffffff;
+    --card:    #fffdf5;
+    --border:  #f0e6c0;
+  }
+
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, var(--yellow), var(--yellow2));
+    padding: 22px 5% 26px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+  .back-link {
+    display: inline-block; margin-bottom: 10px;
+    color: var(--text); text-decoration: none; font-size: 0.82rem;
+    border: 1px solid rgba(0,0,0,0.25); padding: 5px 12px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .back-link:hover { background: rgba(255,255,255,0.4); }
+  .header-title { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.5px; }
+  .header-sub { font-size: 0.85rem; margin-top: 4px; opacity: 0.75; }
+
+  .container { max-width: 760px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  /* ── 검색 ── */
+  .search-box {
+    display: flex; gap: 8px; background: #fff;
+    border: 2px solid var(--yellow); border-radius: 14px;
+    padding: 6px 6px 6px 18px; box-shadow: 0 2px 10px rgba(255,201,60,0.25);
+  }
+  .search-box input {
+    flex: 1; border: none; outline: none; font-size: 1.05rem;
+    padding: 12px 0; color: var(--text); background: transparent;
+  }
+  .search-box button {
+    background: var(--yellow); border: none; border-radius: 10px;
+    padding: 0 20px; font-weight: 700; cursor: pointer; font-size: 0.95rem;
+    color: var(--text); transition: background 0.15s;
+  }
+  .search-box button:hover { background: #ffb800; }
+
+  .search-meta { margin: 14px 2px; font-size: 0.85rem; color: var(--sub); }
+  .search-meta b { color: var(--text); }
+
+  /* ── 결과 리스트 ── */
+  .result-list { display: flex; flex-direction: column; gap: 10px; }
+  .word-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px; cursor: pointer; transition: box-shadow 0.15s, transform 0.1s;
+  }
+  .word-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); transform: translateY(-1px); }
+  .word-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .word-headword { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+  .word-pos { font-size: 0.78rem; color: #b8860b; background: #fff6d9; padding: 2px 8px; border-radius: 6px; }
+  .word-meaning { margin-top: 4px; font-size: 0.95rem; color: #4a4536; }
+
+  /* ── 상세 패널 ── */
+  .detail-panel {
+    display: none; background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px 22px 24px; margin-bottom: 18px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  }
+  .detail-panel.open { display: block; }
+  .detail-top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .detail-word { font-size: 1.6rem; font-weight: 800; }
+  .speak-btn {
+    border: none; background: var(--yellow); width: 38px; height: 38px; border-radius: 50%;
+    cursor: pointer; font-size: 1.05rem; display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .speak-btn:hover { background: #ffb800; }
+  .detail-pos { margin-top: 6px; font-size: 0.85rem; color: #b8860b; font-weight: 600; }
+  .detail-forms { margin-top: 4px; font-size: 0.85rem; color: var(--sub); font-style: italic; }
+  .detail-meaning { margin-top: 12px; font-size: 1.1rem; font-weight: 600; }
+  .detail-example {
+    margin-top: 14px; background: #fffaea; border-left: 4px solid var(--yellow);
+    padding: 10px 14px; border-radius: 6px;
+  }
+  .detail-example .la { font-style: italic; font-weight: 600; }
+  .detail-example .ko { margin-top: 4px; font-size: 0.9rem; color: var(--sub); }
+
+  .empty-state { text-align: center; color: var(--sub); padding: 40px 0; font-size: 0.95rem; }
+
+  /* ── 탭 ── */
+  .tab-nav { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tab-btn {
+    flex: 1; padding: 12px; border: 2px solid var(--yellow); background: #fff;
+    border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer;
+    color: var(--text); transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--yellow); }
+  .tab-view { display: none; }
+  .tab-view.active { display: block; }
+
+  /* ── 챗봇 ── */
+  .chat-window {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    height: 420px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px;
+  }
+  .chat-msg { max-width: 78%; padding: 10px 14px; border-radius: 14px; font-size: 0.92rem; line-height: 1.45; }
+  .chat-msg.bot { align-self: flex-start; background: #fff6d9; border: 1px solid var(--border); }
+  .chat-msg.user { align-self: flex-end; background: var(--yellow); }
+  .chat-input-row { display: flex; gap: 8px; margin-top: 12px; }
+  .chat-input-row input {
+    flex: 1; padding: 12px 16px; border: 2px solid var(--yellow); border-radius: 12px;
+    outline: none; font-size: 0.95rem;
+  }
+  .chat-input-row button {
+    background: var(--yellow); border: none; border-radius: 12px; padding: 0 22px;
+    font-weight: 700; cursor: pointer;
+  }
+  .chat-input-row button:hover { background: #ffb800; }
+  .chat-hint { margin-top: 10px; font-size: 0.78rem; color: var(--sub); }
+
+  @media (max-width: 480px) {
+    .header-title { font-size: 1.3rem; }
+    .detail-word { font-size: 1.3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-link" href="../index.html">← 포트폴리오로</a>
+  <div class="header-title">📜 Lexicon Latinum</div>
+  <div class="header-sub">라틴어 사전 — 검색하고, 듣고, 익히기</div>
+</header>
+
+<div class="container">
+  <div class="tab-nav">
+    <button class="tab-btn active" id="tabBtnDict" onclick="switchTab('dict')">📖 사전</button>
+    <button class="tab-btn" id="tabBtnChat" onclick="switchTab('chat')">🦉 챗봇 Magister</button>
+  </div>
+
+  <div class="tab-view active" id="tabDict">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="라틴어 단어 또는 뜻으로 검색... (예: amor, 사랑)" autocomplete="off">
+      <button onclick="renderResults()">검색</button>
+    </div>
+
+    <div id="detailPanel" class="detail-panel"></div>
+
+    <div class="search-meta" id="searchMeta"></div>
+    <div class="result-list" id="resultList"></div>
+  </div>
+
+  <div class="tab-view" id="tabChat">
+    <div class="chat-window" id="chatWindow"></div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="예: amor 뜻이 뭐야? / 사랑 라틴어로 뭐야? / 명언 알려줘" autocomplete="off">
+      <button onclick="sendChat()">전송</button>
+    </div>
+    <div class="chat-hint">Magister는 사전 단어를 기반으로 답하는 규칙 기반 챗봇이에요. 인사, 단어 뜻, 명언 요청에 답할 수 있어요.</div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+// ── TTS: 'la' 음성이 있으면 사용, 없으면 이탈리아어(it-IT)로 폴백 ──
+function speak(text) {
+  if (!('speechSynthesis' in window)) { alert('이 브라우저는 음성 합성을 지원하지 않아요.'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  const voices = window.speechSynthesis.getVoices();
+  const latinVoice = voices.find(v => v.lang.toLowerCase().startsWith('la'));
+  u.lang = latinVoice ? latinVoice.lang : 'it-IT';
+  if (latinVoice) u.voice = latinVoice;
+  u.rate = 0.85;
+  window.speechSynthesis.speak(u);
+}
+
+// ── 검색 ──
+function search(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return LATIN_WORDS;
+  return LATIN_WORDS.filter(w =>
+    w.word.toLowerCase().includes(q) || w.meaning.toLowerCase().includes(q)
+  );
+}
+
+function renderResults() {
+  const q = document.getElementById('searchInput').value;
+  const results = search(q);
+  const list = document.getElementById('resultList');
+  const meta = document.getElementById('searchMeta');
+
+  meta.innerHTML = q.trim()
+    ? `<b>"${escapeHtml(q)}"</b> 검색 결과 <b>${results.length}</b>건`
+    : `전체 단어 <b>${results.length}</b>개`;
+
+  if (results.length === 0) {
+    list.innerHTML = `<div class="empty-state">검색 결과가 없어요. 다른 단어로 시도해보세요.</div>`;
+    return;
+  }
+
+  list.innerHTML = results.map((w, i) => `
+    <div class="word-card" onclick="showDetail(${LATIN_WORDS.indexOf(w)})">
+      <div class="word-row">
+        <span class="word-headword">${escapeHtml(w.word)}</span>
+        <span class="word-pos">${escapeHtml(w.pos)}</span>
+      </div>
+      <div class="word-meaning">${escapeHtml(w.meaning)}</div>
+    </div>
+  `).join('');
+}
+
+function showDetail(idx) {
+  const w = LATIN_WORDS[idx];
+  const panel = document.getElementById('detailPanel');
+  panel.innerHTML = `
+    <div class="detail-top">
+      <span class="detail-word">${escapeHtml(w.word)}</span>
+      <button class="speak-btn" onclick="speak('${w.word.replace(/'/g, "\\'")}')" title="발음 듣기">🔊</button>
+    </div>
+    <div class="detail-pos">${escapeHtml(w.pos)}</div>
+    <div class="detail-forms">${escapeHtml(w.forms)}</div>
+    <div class="detail-meaning">${escapeHtml(w.meaning)}</div>
+    <div class="detail-example">
+      <div class="la">${escapeHtml(w.example.la)}
+        <button class="speak-btn" style="width:28px;height:28px;font-size:0.8rem;vertical-align:middle;margin-left:4px"
+          onclick="speak('${w.example.la.replace(/'/g, "\\'")}')" title="예문 듣기">🔊</button>
+      </div>
+      <div class="ko">${escapeHtml(w.example.ko)}</div>
+    </div>
+  `;
+  panel.classList.add('open');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+document.getElementById('searchInput').addEventListener('input', renderResults);
+if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => {};
+renderResults();
+
+// ── 탭 전환 ──
+function switchTab(name) {
+  document.getElementById('tabDict').classList.toggle('active', name === 'dict');
+  document.getElementById('tabChat').classList.toggle('active', name === 'chat');
+  document.getElementById('tabBtnDict').classList.toggle('active', name === 'dict');
+  document.getElementById('tabBtnChat').classList.toggle('active', name === 'chat');
+}
+
+// ── 챗봇 (규칙 기반) ──
+function addChatMsg(role, html) {
+  const win = document.getElementById('chatWindow');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${role}`;
+  div.innerHTML = html;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+function findByWord(term) {
+  const t = term.trim().toLowerCase();
+  return LATIN_WORDS.find(w => w.word.toLowerCase() === t) ||
+         LATIN_WORDS.find(w => w.word.toLowerCase().includes(t));
+}
+function findByMeaning(term) {
+  const t = term.trim();
+  return LATIN_WORDS.find(w => w.meaning.includes(t));
+}
+function stripParticles(s) {
+  return s.trim().replace(/(이|가|은|는|을|를)$/, '').trim();
+}
+
+function botReply(userText) {
+  const text = userText.trim();
+  const lower = text.toLowerCase();
+
+  if (/salve|안녕/.test(lower)) {
+    return 'Salve! (안녕하세요!) 오늘은 어떤 라틴어 단어가 궁금하세요?';
+  }
+  if (/vale|잘\s?가|바이|bye/.test(lower)) {
+    return 'Vale! (안녕히 가세요!) 또 봐요.';
+  }
+  if (/고마워|감사|gratias/.test(lower)) {
+    return 'Libenter! (천만에요!)';
+  }
+  if (/너\s?누구|정체|뭐하는|이름이/.test(text)) {
+    return '저는 <b>Magister</b>예요 (라틴어로 "선생님"). 사전에 있는 단어와 명언으로 답해드릴 수 있어요.';
+  }
+  if (/명언|격언|속담|quote/.test(lower)) {
+    const w = LATIN_WORDS[Math.floor(Math.random() * LATIN_WORDS.length)];
+    return `오늘의 라틴어 명언: <br><i>"${w.example.la}"</i><br>→ ${w.example.ko}`;
+  }
+
+  // "OO 뜻(이 뭐야)?" 패턴 → 라틴어 단어로 검색
+  let m = text.match(/^(.+?)\s*(뜻|의미)/);
+  if (m) {
+    const w = findByWord(stripParticles(m[1]));
+    if (w) return `<b>${w.word}</b> (${w.pos}) — ${w.meaning}<br><i>예문: ${w.example.la}</i> (${w.example.ko})`;
+    return `"${m[1].trim()}"은(는) 아직 사전에 없어요. 사전 탭에서 검색해보시겠어요?`;
+  }
+
+  // "OO 라틴어로 (뭐야|뭐라고)" 패턴 → 한국어 뜻으로 역검색
+  m = text.match(/^(.+?)\s*(를|을)?\s*라틴어로/);
+  if (m) {
+    const w = findByMeaning(stripParticles(m[1]));
+    if (w) return `"${m[1].trim()}"은(는) 라틴어로 <b>${w.word}</b> (${w.pos})예요.`;
+    return `"${m[1].trim()}"에 해당하는 단어를 아직 못 찾았어요. 사전에 계속 단어를 추가할게요!`;
+  }
+
+  // 사전에 있는 단어를 그대로 입력한 경우
+  const direct = findByWord(text);
+  if (direct) return `<b>${direct.word}</b> (${direct.pos}) — ${direct.meaning}<br><i>예문: ${direct.example.la}</i> (${direct.example.ko})`;
+
+  return '아직 배우지 못한 표현이에요. "amor 뜻이 뭐야?", "사랑 라틴어로 뭐야?", "명언 알려줘" 같은 식으로 물어봐주세요!';
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  addChatMsg('user', escapeHtml(text));
+  input.value = '';
+  setTimeout(() => addChatMsg('bot', botReply(text)), 250);
+}
+
+document.getElementById('chatInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendChat();
+});
+
+addChatMsg('bot', 'Salve! 저는 <b>Magister</b>예요. 라틴어 단어 뜻이나 명언이 궁금하면 물어보세요. 🦉');
+</script>
+
+</body>
+</html>

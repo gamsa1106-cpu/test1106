@@ -917,6 +917,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#FFC93C,#FFE18A)">📜</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">Web Speech API</span>
+        </div>
+        <div class="project-name">라틴어 사전</div>
+        <div class="project-desc">단어 검색, TTS 발음 듣기, 규칙 기반 챗봇(Magister)까지 갖춘 개인용 라틴어 학습 사전 웹앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('latin')">자세히 보기</button>
+          <a class="project-link" href="latin_dictionary/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1192,6 +1210,21 @@
       ],
       liveUrl: 'restaurant_map/index.html',
       liveLabel: '🗺️ 맛집 찾아보기',
+    },
+    latin: {
+      emoji: '📜',
+      bg: 'linear-gradient(135deg,#FFC93C,#FFE18A)',
+      tags: ['HTML', 'CSS', 'JavaScript', 'Web Speech API'],
+      title: '라틴어 사전',
+      desc: '라틴어 공부를 위해 만든 개인용 사전 웹앱입니다. 네이버 사전처럼 실시간 검색으로 단어를 찾고, TTS로 발음을 들을 수 있으며, 규칙 기반 챗봇과 대화하며 단어와 명언을 익힐 수 있습니다.',
+      features: [
+        '실시간 검색 — 라틴어 단어/한국어 뜻으로 필터링',
+        '단어 상세 카드 — 품사, 격변화/활용형, 예문(라틴어+한국어 번역)',
+        'TTS 발음 듣기 — Web Speech API, 라틴어 음성이 없으면 이탈리아어(it-IT)로 자동 대체',
+        '챗봇 Magister — 인사, 단어 뜻 질문, 한국어→라틴어 역검색, 오늘의 명언 요청에 규칙 기반으로 응답',
+      ],
+      liveUrl: 'latin_dictionary/index.html',
+      liveLabel: '📜 사전 열어보기',
     },
     next: {
       emoji: '🚀',
