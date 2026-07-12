@@ -97,6 +97,11 @@ const LATIN_PHRASES = [
   { category: "인사", la: "Valete!", ko: "잘 가! (여러 사람에게)" },
   { category: "인사", la: "Quomodo vocaris?", ko: "네 이름이 뭐야?" },
   { category: "인사", la: "Nomen mihi est Marcus.", ko: "내 이름은 마르쿠스야." },
+  { category: "인사", la: "Bene venisti!", ko: "잘 왔어! (환영해)" },
+  { category: "인사", la: "Ignosce mihi.", ko: "미안해요 (용서해줘)." },
+  { category: "인사", la: "Nihil est.", ko: "별거 아니에요 (괜찮아요)." },
+  { category: "인사", la: "Feliciter!", ko: "축하해!" },
+  { category: "인사", la: "Bona nox.", ko: "좋은 밤 (잘 자)." },
 
   // 일상 회화
   { category: "일상", la: "Ubi est bibliotheca?", ko: "도서관이 어디에 있나요?" },
@@ -109,6 +114,11 @@ const LATIN_PHRASES = [
   { category: "일상", la: "Fessus sum.", ko: "피곤해요." },
   { category: "일상", la: "Laetus sum.", ko: "기뻐요." },
   { category: "일상", la: "Hodie pluit.", ko: "오늘 비가 와요." },
+  { category: "일상", la: "Quantum constat?", ko: "얼마예요?" },
+  { category: "일상", la: "Ubi habitas?", ko: "어디 사세요?" },
+  { category: "일상", la: "Mihi placet.", ko: "마음에 들어요." },
+  { category: "일상", la: "Non mihi placet.", ko: "마음에 안 들어요." },
+  { category: "일상", la: "Adiuva me, quaeso.", ko: "도와주세요." },
 
   // 학문 · 철학 표현
   { category: "학문", la: "Scientia potentia est.", ko: "아는 것이 힘이다." },
@@ -121,6 +131,11 @@ const LATIN_PHRASES = [
   { category: "학문", la: "Natura non facit saltus.", ko: "자연은 비약하지 않는다." },
   { category: "학문", la: "Ad infinitum.", ko: "무한히." },
   { category: "학문", la: "Nosce te ipsum.", ko: "너 자신을 알라." },
+  { category: "학문", la: "Historia magistra vitae est.", ko: "역사는 삶의 스승이다." },
+  { category: "학문", la: "Verba volant, scripta manent.", ko: "말은 날아가지만 글은 남는다." },
+  { category: "학문", la: "Repetitio est mater studiorum.", ko: "반복은 학습의 어머니다." },
+  { category: "학문", la: "Non scholae sed vitae discimus.", ko: "우리는 학교가 아니라 삶을 위해 배운다." },
+  { category: "학문", la: "Ubi dubium, ibi libertas.", ko: "의심이 있는 곳에 자유가 있다." },
 
   // 명언 · 속담
   { category: "명언", la: "Alea iacta est.", ko: "주사위는 던져졌다." },
@@ -133,4 +148,9 @@ const LATIN_PHRASES = [
   { category: "명언", la: "Si vis pacem, para bellum.", ko: "평화를 원한다면 전쟁을 준비하라." },
   { category: "명언", la: "Audentes fortuna iuvat.", ko: "운명은 대담한 자를 돕는다." },
   { category: "명언", la: "Omnia vincit amor.", ko: "사랑은 모든 것을 정복한다." },
+  { category: "명언", la: "Aut viam inveniam aut faciam.", ko: "길을 찾거나 만들 것이다." },
+  { category: "명언", la: "Non omnis moriar.", ko: "나는 완전히 죽지 않을 것이다." },
+  { category: "명언", la: "Fac fortia et patere.", ko: "용감하게 행하고 견뎌라." },
+  { category: "명언", la: "Vincit qui patitur.", ko: "인내하는 자가 승리한다." },
+  { category: "명언", la: "Aquila non capit muscas.", ko: "독수리는 파리를 잡지 않는다 (큰 인물은 사소한 일에 신경 쓰지 않는다)." },
 ];
