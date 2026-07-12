@@ -127,6 +127,23 @@
   .chat-input-row button:hover { background: #ffb800; }
   .chat-hint { margin-top: 10px; font-size: 0.78rem; color: var(--sub); }
 
+  /* ── 예문집 ── */
+  .phrase-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .phrase-chip {
+    border: 2px solid var(--yellow); background: #fff; border-radius: 999px;
+    padding: 6px 16px; font-size: 0.85rem; font-weight: 700; cursor: pointer; color: var(--text);
+    transition: all 0.15s;
+  }
+  .phrase-chip.active { background: var(--yellow); }
+  .phrase-list { display: flex; flex-direction: column; gap: 10px; }
+  .phrase-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  }
+  .phrase-text .la { font-weight: 700; font-size: 1rem; }
+  .phrase-text .ko { margin-top: 3px; font-size: 0.85rem; color: var(--sub); }
+  .phrase-cat-tag { font-size: 0.72rem; color: #b8860b; background: #fff6d9; padding: 2px 8px; border-radius: 6px; margin-left: 8px; }
+
   @media (max-width: 480px) {
     .header-title { font-size: 1.3rem; }
     .detail-word { font-size: 1.3rem; }
@@ -144,6 +161,7 @@
 <div class="container">
   <div class="tab-nav">
     <button class="tab-btn active" id="tabBtnDict" onclick="switchTab('dict')">📖 사전</button>
+    <button class="tab-btn" id="tabBtnPhrase" onclick="switchTab('phrase')">💬 예문집</button>
     <button class="tab-btn" id="tabBtnChat" onclick="switchTab('chat')">🦉 챗봇 Magister</button>
   </div>
 
@@ -157,6 +175,11 @@
 
     <div class="search-meta" id="searchMeta"></div>
     <div class="result-list" id="resultList"></div>
+  </div>
+
+  <div class="tab-view" id="tabPhrase">
+    <div class="phrase-filters" id="phraseFilters"></div>
+    <div class="phrase-list" id="phraseList"></div>
   </div>
 
   <div class="tab-view" id="tabChat">
@@ -252,11 +275,41 @@ renderResults();
 
 // ── 탭 전환 ──
 function switchTab(name) {
-  document.getElementById('tabDict').classList.toggle('active', name === 'dict');
-  document.getElementById('tabChat').classList.toggle('active', name === 'chat');
-  document.getElementById('tabBtnDict').classList.toggle('active', name === 'dict');
-  document.getElementById('tabBtnChat').classList.toggle('active', name === 'chat');
+  ['dict', 'phrase', 'chat'].forEach(t => {
+    document.getElementById('tab' + t[0].toUpperCase() + t.slice(1)).classList.toggle('active', t === name);
+    document.getElementById('tabBtn' + t[0].toUpperCase() + t.slice(1)).classList.toggle('active', t === name);
+  });
 }
+
+// ── 예문집 ──
+let currentPhraseCat = '전체';
+function renderPhraseFilters() {
+  const cats = ['전체', ...new Set(LATIN_PHRASES.map(p => p.category))];
+  document.getElementById('phraseFilters').innerHTML = cats.map(c =>
+    `<button class="phrase-chip ${c === currentPhraseCat ? 'active' : ''}" onclick="setPhraseCat('${c}')">${c}</button>`
+  ).join('');
+}
+function setPhraseCat(cat) {
+  currentPhraseCat = cat;
+  renderPhraseFilters();
+  renderPhrases();
+}
+function renderPhrases() {
+  const items = currentPhraseCat === '전체'
+    ? LATIN_PHRASES
+    : LATIN_PHRASES.filter(p => p.category === currentPhraseCat);
+  document.getElementById('phraseList').innerHTML = items.map(p => `
+    <div class="phrase-card">
+      <div class="phrase-text">
+        <div class="la">${escapeHtml(p.la)}<span class="phrase-cat-tag">${p.category}</span></div>
+        <div class="ko">${escapeHtml(p.ko)}</div>
+      </div>
+      <button class="speak-btn" onclick="speak('${p.la.replace(/'/g, "\\'")}')" title="발음 듣기">🔊</button>
+    </div>
+  `).join('');
+}
+renderPhraseFilters();
+renderPhrases();
 
 // ── 챗봇 (규칙 기반) ──
 function addChatMsg(role, html) {
@@ -298,8 +351,9 @@ function botReply(userText) {
     return '저는 <b>Magister</b>예요 (라틴어로 "선생님"). 사전에 있는 단어와 명언으로 답해드릴 수 있어요.';
   }
   if (/명언|격언|속담|quote/.test(lower)) {
-    const w = LATIN_WORDS[Math.floor(Math.random() * LATIN_WORDS.length)];
-    return `오늘의 라틴어 명언: <br><i>"${w.example.la}"</i><br>→ ${w.example.ko}`;
+    const pool = LATIN_PHRASES.filter(p => p.category === '명언');
+    const p = pool[Math.floor(Math.random() * pool.length)];
+    return `오늘의 라틴어 명언: <br><i>"${p.la}"</i><br>→ ${p.ko}`;
   }
 
   // "OO 뜻(이 뭐야)?" 패턴 → 라틴어 단어로 검색

@@ -83,3 +83,54 @@ const LATIN_WORDS = [
   { word: "cum", pos: "전치사 (+탈격)", meaning: "~와 함께", forms: "(불변화)",
     example: { la: "Cum laude.", ko: "우수한 성적으로." } },
 ];
+
+// 예문집(프레이즈북): category별 실생활/학문/명언 문장 모음
+const LATIN_PHRASES = [
+  // 인사 · 기본 표현
+  { category: "인사", la: "Salve!", ko: "안녕! (한 사람에게)" },
+  { category: "인사", la: "Salvete!", ko: "안녕! (여러 사람에게)" },
+  { category: "인사", la: "Quid agis?", ko: "어떻게 지내?" },
+  { category: "인사", la: "Bene ago, gratias.", ko: "잘 지내, 고마워." },
+  { category: "인사", la: "Gratias tibi ago.", ko: "너에게 감사해." },
+  { category: "인사", la: "Quaeso.", ko: "부탁이야. / 제발." },
+  { category: "인사", la: "Vale!", ko: "잘 가! (한 사람에게)" },
+  { category: "인사", la: "Valete!", ko: "잘 가! (여러 사람에게)" },
+  { category: "인사", la: "Quomodo vocaris?", ko: "네 이름이 뭐야?" },
+  { category: "인사", la: "Nomen mihi est Marcus.", ko: "내 이름은 마르쿠스야." },
+
+  // 일상 회화
+  { category: "일상", la: "Ubi est bibliotheca?", ko: "도서관이 어디에 있나요?" },
+  { category: "일상", la: "Quid hoc est?", ko: "이것은 무엇인가요?" },
+  { category: "일상", la: "Non intellego.", ko: "이해하지 못하겠어요." },
+  { category: "일상", la: "Iterum dic, quaeso.", ko: "다시 말해 주세요." },
+  { category: "일상", la: "Quota hora est?", ko: "몇 시인가요?" },
+  { category: "일상", la: "Esurio.", ko: "배고파요." },
+  { category: "일상", la: "Sitio.", ko: "목말라요." },
+  { category: "일상", la: "Fessus sum.", ko: "피곤해요." },
+  { category: "일상", la: "Laetus sum.", ko: "기뻐요." },
+  { category: "일상", la: "Hodie pluit.", ko: "오늘 비가 와요." },
+
+  // 학문 · 철학 표현
+  { category: "학문", la: "Scientia potentia est.", ko: "아는 것이 힘이다." },
+  { category: "학문", la: "Cogito ergo sum.", ko: "나는 생각한다, 고로 존재한다." },
+  { category: "학문", la: "Errare humanum est.", ko: "실수하는 것은 인간적인 일이다." },
+  { category: "학문", la: "Carpe diem.", ko: "오늘을 잡아라 (현재를 즐겨라)." },
+  { category: "학문", la: "Memento mori.", ko: "죽음을 기억하라." },
+  { category: "학문", la: "Per aspera ad astra.", ko: "고난을 거쳐 별에 이른다." },
+  { category: "학문", la: "Ex nihilo nihil fit.", ko: "무에서는 아무것도 생기지 않는다." },
+  { category: "학문", la: "Natura non facit saltus.", ko: "자연은 비약하지 않는다." },
+  { category: "학문", la: "Ad infinitum.", ko: "무한히." },
+  { category: "학문", la: "Nosce te ipsum.", ko: "너 자신을 알라." },
+
+  // 명언 · 속담
+  { category: "명언", la: "Alea iacta est.", ko: "주사위는 던져졌다." },
+  { category: "명언", la: "Veni, vidi, vici.", ko: "왔노라, 보았노라, 이겼노라." },
+  { category: "명언", la: "Fortuna audaces iuvat.", ko: "운명은 용감한 자를 돕는다." },
+  { category: "명언", la: "In vino veritas.", ko: "술 속에 진실이 있다." },
+  { category: "명언", la: "Ars longa, vita brevis.", ko: "예술은 길고 인생은 짧다." },
+  { category: "명언", la: "Amor vincit omnia.", ko: "사랑은 모든 것을 이긴다." },
+  { category: "명언", la: "Dum spiro, spero.", ko: "숨쉬는 한 나는 희망한다." },
+  { category: "명언", la: "Si vis pacem, para bellum.", ko: "평화를 원한다면 전쟁을 준비하라." },
+  { category: "명언", la: "Audentes fortuna iuvat.", ko: "운명은 대담한 자를 돕는다." },
+  { category: "명언", la: "Omnia vincit amor.", ko: "사랑은 모든 것을 정복한다." },
+];
