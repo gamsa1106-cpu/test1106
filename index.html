@@ -935,6 +935,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#C8102E,#8f0c21); font-size: 48px;">🏮</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">Web Speech API</span>
+        </div>
+        <div class="project-name">중국어 사전</div>
+        <div class="project-desc">한자·병음·성조를 색으로 구분해 보여주고 TTS 발음까지 들을 수 있는 개인용 중국어 학습 사전 웹앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('chinese')">자세히 보기</button>
+          <a class="project-link" href="chinese_language/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1225,6 +1243,21 @@
       ],
       liveUrl: 'latin_dictionary/index.html',
       liveLabel: '📜 사전 열어보기',
+    },
+    chinese: {
+      emoji: '🏮',
+      bg: 'linear-gradient(135deg,#C8102E,#8f0c21)',
+      tags: ['HTML', 'CSS', 'JavaScript', 'Web Speech API'],
+      title: '중국어 사전',
+      desc: '중국어 공부를 위해 만든 개인용 단어 사전 웹앱입니다. 한자·병음·뜻으로 검색하고, 성조를 색상으로 구분해서 눈으로 바로 익힐 수 있으며, TTS로 발음을 들을 수 있습니다.',
+      features: [
+        '실시간 검색 — 한자/병음/한국어 뜻으로 필터링, 카테고리(인사·숫자·가족·음식·일상표현)별 보기',
+        '성조 색상 구분 — 1성 빨강·2성 주황·3성 초록·4성 파랑·경성 회색으로 병음 음절마다 색칠',
+        'TTS 발음 듣기 — Web Speech API 중국어(zh-CN) 음성으로 단어/예문 발음',
+        '단어 상세 카드 — 한자, 병음, 뜻, 실생활 예문(중국어+병음+한국어 번역)',
+      ],
+      liveUrl: 'chinese_language/index.html',
+      liveLabel: '🏮 사전 열어보기',
     },
     next: {
       emoji: '🚀',
