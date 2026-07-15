@@ -953,6 +953,23 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#1a1a2e,#d4af37); font-size: 48px;">⚡</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+        </div>
+        <div class="project-name">신화이야기</div>
+        <div class="project-desc">그리스·로마 신화의 12 티탄과 12 올림포스 신을 조각상·명화 이미지와 함께 소개하는 웹앱</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('mythology')">자세히 보기</button>
+          <a class="project-link" href="mythology/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1258,6 +1275,21 @@
       ],
       liveUrl: 'chinese_language/index.html',
       liveLabel: '🏮 사전 열어보기',
+    },
+    mythology: {
+      emoji: '⚡',
+      bg: 'linear-gradient(135deg,#1a1a2e,#d4af37)',
+      tags: ['HTML', 'CSS', 'JavaScript'],
+      title: '신화이야기',
+      desc: '그리스·로마 신화를 소개하는 웹앱입니다. 12 티탄과 12 올림포스 신을 각각 카드로 정리하고, 클릭하면 조각상·명화 이미지와 함께 신들의 탄생과 일화를 자세히 읽을 수 있습니다.',
+      features: [
+        '12 티탄 / 12 올림포스 신 탭 구분, 카드 클릭 시 상세 모달',
+        '신마다 고대 조각상·부조·모자이크·고전 회화 이미지 수록 (Wikimedia Commons, 저작권 만료/CC)',
+        '한국어·영어·로마 신화 이름 병기, 상징(별칭)과 신화 이야기 서술',
+        '헤스티아/디오니소스처럼 전승에 따라 갈리는 부분은 별도 안내 카드로 설명',
+      ],
+      liveUrl: 'mythology/index.html',
+      liveLabel: '⚡ 신화 읽어보기',
     },
     next: {
       emoji: '🚀',

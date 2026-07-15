@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신화이야기 | 그리스·로마 신화</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold:    #d4af37;
+    --gold2:   #b8912c;
+    --bronze:  #8b5a2b;
+    --bronze2: #6e4620;
+    --navy:    #1a1a2e;
+    --navy2:   #262647;
+    --text:    #2a2a2a;
+    --sub:     #6b6560;
+    --bg:      #faf6ec;
+    --card:    #ffffff;
+    --border:  #ebe0c8;
+  }
+
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  header {
+    background: linear-gradient(135deg, var(--navy), var(--navy2));
+    padding: 26px 5% 30px; text-align: center; color: #fff;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    border-bottom: 3px solid var(--gold);
+  }
+  .back-link {
+    display: inline-block; margin-bottom: 10px;
+    color: var(--gold); text-decoration: none; font-size: 0.82rem;
+    border: 1px solid rgba(212,175,55,0.5); padding: 5px 12px; border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .back-link:hover { background: rgba(212,175,55,0.15); }
+  .header-title { font-size: 1.7rem; font-weight: 800; letter-spacing: 0.5px; }
+  .header-sub { font-size: 0.85rem; margin-top: 6px; opacity: 0.8; }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 26px 20px 60px; }
+
+  /* ── 탭 ── */
+  .tab-nav { display: flex; gap: 10px; margin-bottom: 22px; }
+  .tab-btn {
+    flex: 1; padding: 14px; border: 2px solid var(--gold); background: #fff;
+    border-radius: 12px; font-weight: 800; font-size: 1rem; cursor: pointer;
+    color: var(--navy); transition: all 0.15s;
+  }
+  .tab-btn[data-group="titan"] { border-color: var(--bronze); }
+  .tab-btn.active[data-group="titan"] { background: var(--bronze); color: #fff; }
+  .tab-btn.active[data-group="olympian"] { background: var(--gold); color: var(--navy); }
+  .tab-view { display: none; }
+  .tab-view.active { display: block; }
+
+  .group-desc { font-size: 0.88rem; color: var(--sub); margin-bottom: 16px; line-height: 1.5; }
+
+  /* ── 카드 그리드 ── */
+  .god-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .god-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    overflow: hidden; cursor: pointer; transition: box-shadow 0.15s, transform 0.1s;
+  }
+  .god-card:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.12); transform: translateY(-2px); }
+  .god-thumb { width: 100%; aspect-ratio: 3/4; object-fit: cover; background: #eee; display: block; }
+  .god-card-body { padding: 10px 12px 12px; }
+  .god-name { font-weight: 800; font-size: 1rem; }
+  .god-epithet { font-size: 0.78rem; color: var(--sub); margin-top: 2px; }
+
+  /* ── 상세 모달 ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(20,15,5,0.65);
+    align-items: center; justify-content: center; padding: 20px; z-index: 100;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--card); border-radius: 18px; max-width: 640px; width: 100%;
+    max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  .modal-img-wrap { width: 100%; max-height: 340px; overflow: hidden; background: var(--navy); }
+  .modal-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .modal-body { padding: 24px 26px 28px; }
+  .modal-close {
+    position: sticky; top: 10px; float: right; margin: 10px 10px 0 0;
+    background: rgba(0,0,0,0.5); color: #fff; border: none; border-radius: 50%;
+    width: 32px; height: 32px; font-size: 1.1rem; cursor: pointer; z-index: 2;
+  }
+  .modal-names { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .modal-nameko { font-size: 1.5rem; font-weight: 800; }
+  .modal-nameen { font-size: 0.95rem; color: var(--sub); }
+  .modal-roman { font-size: 0.82rem; color: var(--gold2); margin-top: 4px; }
+  .modal-epithet {
+    display: inline-block; margin-top: 10px; font-size: 0.85rem; font-weight: 700;
+    background: #fff8e6; color: var(--gold2); padding: 4px 12px; border-radius: 999px;
+  }
+  .modal-story { margin-top: 16px; font-size: 0.95rem; line-height: 1.75; color: #3a3530; }
+  .modal-credit { margin-top: 16px; font-size: 0.75rem; color: var(--sub); font-style: italic; }
+
+  .note-card {
+    margin-top: 18px; background: #fff8e6; border: 1px dashed var(--gold);
+    border-radius: 12px; padding: 14px 16px; font-size: 0.85rem; color: #5a4a1e; line-height: 1.6;
+  }
+
+  footer { text-align: center; font-size: 0.75rem; color: var(--sub); padding: 20px 0 40px; }
+
+  @media (max-width: 480px) {
+    .header-title { font-size: 1.3rem; }
+    .god-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="back-link" href="../index.html">← 포트폴리오로</a>
+  <div class="header-title">⚡ 신화이야기</div>
+  <div class="header-sub">그리스·로마 신화 — 12 티탄과 12 올림포스 신</div>
+</header>
+
+<div class="container">
+  <div class="tab-nav">
+    <button class="tab-btn active" data-group="titan" id="tabBtnTitan" onclick="switchTab('titan')">⛰️ 12 티탄</button>
+    <button class="tab-btn" data-group="olympian" id="tabBtnOlympian" onclick="switchTab('olympian')">⚡ 12 올림포스 신</button>
+  </div>
+
+  <div class="tab-view active" id="tabTitan">
+    <div class="group-desc">티탄은 올림포스 신들보다 앞선 세대의 거신족으로, 우라노스(하늘)와 가이아(대지)의 자녀들입니다. 막내 크로노스가 아버지를 몰아내고 왕좌에 올랐지만, 훗날 그의 아들 제우스에게 다시 왕좌를 빼앗기며 올림포스 시대가 열립니다.</div>
+    <div class="god-grid" id="titanGrid"></div>
+  </div>
+
+  <div class="tab-view" id="tabOlympian">
+    <div class="group-desc">올림포스 신들은 제우스를 중심으로 올림포스산에 거처하며 세상을 다스리는 그리스·로마 신화의 주역들입니다. 각 카드를 눌러 신들의 이야기를 읽어보세요.</div>
+    <div class="god-grid" id="olympianGrid"></div>
+    <div class="note-card" id="dionysusNote"></div>
+  </div>
+</div>
+
+<footer>이미지 출처: Wikimedia Commons (고대 조각·부조·모자이크·고전 회화, 저작권 만료 및 CC 라이선스)</footer>
+
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-img-wrap"><img class="modal-img" id="modalImg" src="" alt=""></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderGrid(group, elId) {
+  const gods = MYTH_GODS.filter(g => g.group === group);
+  document.getElementById(elId).innerHTML = gods.map(g => `
+    <div class="god-card" onclick="openModal('${g.id}')">
+      <img class="god-thumb" src="${g.image}" alt="${escapeHtml(g.nameKo)}" loading="lazy">
+      <div class="god-card-body">
+        <div class="god-name">${escapeHtml(g.nameKo)}</div>
+        <div class="god-epithet">${escapeHtml(g.epithet)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function switchTab(name) {
+  document.getElementById('tabTitan').classList.toggle('active', name === 'titan');
+  document.getElementById('tabOlympian').classList.toggle('active', name === 'olympian');
+  document.getElementById('tabBtnTitan').classList.toggle('active', name === 'titan');
+  document.getElementById('tabBtnOlympian').classList.toggle('active', name === 'olympian');
+}
+
+function openModal(id) {
+  const g = MYTH_GODS.find(x => x.id === id);
+  document.getElementById('modalImg').src = g.image;
+  document.getElementById('modalImg').alt = g.nameKo;
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-names">
+      <span class="modal-nameko">${escapeHtml(g.nameKo)}</span>
+      <span class="modal-nameen">${escapeHtml(g.nameEn)}</span>
+    </div>
+    <div class="modal-roman">로마 신화: ${escapeHtml(g.romanName)}</div>
+    <div class="modal-epithet">${escapeHtml(g.epithet)}</div>
+    <div class="modal-story">${escapeHtml(g.story)}</div>
+    <div class="modal-credit">이미지: ${escapeHtml(g.imageCredit)}</div>
+  `;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+renderGrid('titan', 'titanGrid');
+renderGrid('olympian', 'olympianGrid');
+document.getElementById('dionysusNote').innerHTML = '🍷 ' + escapeHtml(DIONYSUS_NOTE);
+</script>
+
+</body>
+</html>
