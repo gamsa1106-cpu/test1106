@@ -987,6 +987,24 @@
     </div>
 
     <div class="project-card fade-up">
+      <div class="project-thumb" style="background: linear-gradient(135deg,#f6f0e2,#a8342c); font-size: 48px;">🈴</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">CSS</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">HanziWriter</span>
+        </div>
+        <div class="project-name">파자 학습장</div>
+        <div class="project-desc">한자를 부수로 나눠 뜻을 유추해보는 파자(破字) 학습 웹앱. 획순 애니메이션과 따라 쓰기, 나만의 메모 기능 포함</div>
+        <div class="project-actions">
+          <button class="btn-detail" onclick="openModal('hanja')">자세히 보기</button>
+          <a class="project-link" href="hanja_paja/index.html">실행하기 →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-card fade-up">
       <div class="project-thumb" style="background: linear-gradient(135deg,#fdf4ff,#fae8ff)">🚀</div>
       <div class="project-body">
         <div class="project-tags">
@@ -1307,6 +1325,22 @@
       ],
       liveUrl: 'mythology/index.html',
       liveLabel: '⚡ 신화 읽어보기',
+    },
+    hanja: {
+      emoji: '🈴',
+      bg: 'linear-gradient(135deg,#f6f0e2,#a8342c)',
+      tags: ['HTML', 'CSS', 'JavaScript', 'HanziWriter'],
+      title: '파자 학습장',
+      desc: '한자를 부수(구성요소)로 나눠 뜻을 유추해보는 파자(破字) 학습 웹앱입니다. 한자능력검정 8급 50자를 대상으로, 획순 애니메이션과 따라 쓰기 연습, 표준 파자 해석을 제공하고 개인적인 해석은 메모로 남길 수 있습니다.',
+      features: [
+        '8급 배정한자 50자 — 검색 및 카테고리(숫자·가족·학교·방위·사람·나라·자연·생활) 필터',
+        'HanziWriter 기반 획순 애니메이션 재생 및 따라 쓰기(퀴즈) 모드',
+        '한자별 훈음·획수·부수·육서 분류(상형/지사/회의/형성) 정보',
+        '표준 파자(구성요소) 해석 제공 — 사람마다 다르게 해석할 수 있어 "나만의 메모"를 localStorage에 저장',
+        '관련 단어 예시 (요일·가족·학교 등 실생활 연계)',
+      ],
+      liveUrl: 'hanja_paja/index.html',
+      liveLabel: '🈴 파자 배우러 가기',
     },
     latinGrammar: {
       emoji: '✒️',
